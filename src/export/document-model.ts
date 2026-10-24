@@ -1,7 +1,7 @@
 import type { AnnexDraft } from '../domain/types'
 import { modalityLabels } from '../domain/types'
 import { letterDate } from '../domain/dates'
-import { getTemplateLayout } from './template-registry'
+import { getTemplateLayout, type LetterStyle } from './template-registry'
 
 export interface DocumentParagraph {
   text: string
@@ -54,6 +54,15 @@ const studentSigner = (values: Record<string, string>, templateId: string) => [
   ...(templateId.startsWith('anexo-14') ? [`Dirección: ${values.direccion}`] : []),
   `${institutionalEmail.has(templateId) ? 'Correo electrónico institucional' : 'Correo electrónico'}: ${values.email}`,
 ]
+
+const plainSigner = (values: Record<string, string>) =>
+  [values.nombres, values.cedula, values.celular, values.email].filter(Boolean)
+
+const signers: Record<LetterStyle['signer'], (values: Record<string, string>, templateId: string) => string[]> = {
+  student: studentSigner,
+  company: companySigner,
+  plain: plainSigner,
+}
 
 export function buildDocumentModel(input: AnnexDraft): DocumentModel {
   const draft = structuredClone(input)
@@ -137,32 +146,30 @@ export function buildDocumentModel(input: AnnexDraft): DocumentModel {
     ].map((item) => ({ ...item, align: 'center' as const }))
   } else {
     const spaced = (text: string, spaceAfter: number) => ({ ...paragraph(text), spaceAfter })
-    const company = !!layout.template.companyOnly
+    const style = layout.letter
     const recipient = [
       values.destinatario,
-      layout.recipientRole,
-      ...(company ? [`Carrera de ${profile.carrera}`] : []),
+      substitute(layout.recipientRole).toUpperCase(),
+      ...(style.careerLine ? [`Carrera de ${profile.carrera}`] : []),
       profile.facultad,
-      ...(draft.templateId === 'anexo-3' ? [] : ['Presente. -']),
+      ...(style.presente ? ['Presente. -'] : []),
     ].map((text, index, lines) => spaced(text, index === lines.length - 1 ? blockGap : 0))
     model.paragraphs = [
       { ...spaced(`${values.lugar}, ${letterDate(values.fecha ?? '')}`, blockGap), align: 'right' },
       ...recipient,
-      ...(company ? [] : [spaced('De mi consideración:', paragraphGap)]),
+      ...(style.salutation ? [spaced('De mi consideración:', paragraphGap)] : []),
       ...layout.body.map((text) => spaced(substitute(text), paragraphGap)),
     ]
     if (draft.templateId === 'anexo-1' && profile.modalidad === 'complexivo')
       model.paragraphs = model.paragraphs.filter((item) => !item.text.startsWith('PROPUESTA'))
-    if (!company)
+    if (style.closing)
       model.paragraphs.push(
         spaced('Por la favorable atención que se dé al presente, agradezco y suscribo.', paragraphGap),
       )
     model.signature = [
       paragraph('Atentamente'),
       signatureLine(),
-      ...(company ? companySigner(values, draft.templateId) : studentSigner(values, draft.templateId)).map((text) =>
-        paragraph(text),
-      ),
+      ...signers[style.signer](values, draft.templateId).map((text) => paragraph(text)),
     ]
     if (draft.templateId === 'anexo-1' && profile.modalidad !== 'complexivo')
       model.signature.push(paragraph(`Tutor sugerido (nombre y firma): ${profile.tutor}`))

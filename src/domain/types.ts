@@ -163,6 +163,13 @@ export interface Requirement {
   modalities?: Modality[]
   annex?: string
   template?: string
+  requestEmail?: RequestEmail
+}
+export interface RequestEmail {
+  to: string
+  subject: string
+  paragraphs: string[]
+  closing?: string
 }
 export type GuideIcon =
   | 'prepare'

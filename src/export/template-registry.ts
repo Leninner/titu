@@ -50,10 +50,35 @@ const bodies: Record<string, string[]> = {
   'anexo-15': [
     `${identity}, solicito se me extienda el CERTIFICADO DE APTITUD LEGAL, documento que requiero para continuar con mi proceso de titulación, bajo la modalidad {{modalidad}}.`,
   ],
+  'solicitud-habilitantes': [
+    'Yo, {{nombres}}, portador de la cédula de ciudadanía Nro. {{cedula}}, estudiante del {{nivel}} nivel de la carrera de {{carrera}} en el ciclo académico {{ciclo}} me dirijo a usted para solicitarle de la manera más comedida se me otorgue el Certificado de Requisitos Habilitantes.',
+  ],
   'anexo-21': [
     `${identity}, solicito la recalificación del EXAMEN DE GRADO DE CARÁCTER COMPLEXIVO, previo a la obtención del título de {{titulo}}, por el siguiente motivo: {{motivo}}`,
   ],
 }
+export interface LetterStyle {
+  careerLine: boolean
+  presente: boolean
+  salutation: boolean
+  closing: boolean
+  signer: 'student' | 'company' | 'plain'
+}
+
+const studentLetter: LetterStyle = { careerLine: false, presente: true, salutation: true, closing: true, signer: 'student' }
+const letterStyles: Record<string, Partial<LetterStyle>> = {
+  'anexo-3': { careerLine: true, presente: false, salutation: false, closing: false, signer: 'company' },
+  'cumplimiento-empresarial': { careerLine: true, salutation: false, closing: false, signer: 'company' },
+  'solicitud-habilitantes': { salutation: false, signer: 'plain' },
+}
+
+function recipientRole(templateId: string) {
+  if (/anexo-10|anexo-14|recalificacion-research/.test(templateId)) return 'PRESIDENTE DE CONSEJO DIRECTIVO'
+  if (templateId === 'anexo-15') return 'DECANO'
+  if (templateId === 'solicitud-habilitantes') return 'COORDINADOR DE LA CARRERA DE {{carrera}}'
+  return 'PRESIDENTE DE LA UNIDAD DE TITULACIÓN'
+}
+
 export function getTemplateLayout(templateId: string) {
   const template = templates.find((item) => item.id === templateId)
   if (!template || template.kind !== 'editable') throw new Error('Plantilla no editable')
@@ -89,10 +114,7 @@ export function getTemplateLayout(templateId: string) {
     headings: report ? lines.slice(0, 2) : [],
     body: bodies[templateId] ?? [],
     notes,
-    recipientRole: /anexo-10|anexo-14|recalificacion-research/.test(templateId)
-      ? 'PRESIDENTE DE CONSEJO DIRECTIVO'
-      : templateId === 'anexo-15'
-        ? 'DECANO'
-        : 'PRESIDENTE DE LA UNIDAD DE TITULACIÓN',
+    recipientRole: recipientRole(templateId),
+    letter: { ...studentLetter, ...letterStyles[templateId] },
   }
 }

@@ -50,6 +50,20 @@ const legalCertificate = doc(
   ['Certificado de aptitud legal', 'Emitido por Secretaría; es distinto de la solicitud Anexo 15'],
   'aptitud-legal',
 )
+const enablingCertificate: Requirement = {
+  ...doc('habilitantes', ['Requisitos habilitantes', 'Certificado actualizado, emitido por Coordinación de Carrera'], 'habilitantes'),
+  template: 'solicitud-habilitantes',
+  requestEmail: {
+    to: 'informacion.fisei@uta.edu.ec',
+    subject: 'Solicitud de certificado de requisitos habilitantes',
+    paragraphs: [
+      'Estimados señores:',
+      'Reciban un cordial saludo.',
+      'Solicito de la manera más comedida su apoyo con la emisión del certificado de requisitos habilitantes.',
+      'Quedo atento a su confirmación.',
+    ],
+  },
+}
 const grades = [
   check('grade-1', ['Nota del primer calificador', 'Sobre 10, según su Anexo 12']),
   check('grade-2', ['Nota del segundo calificador', 'Sobre 10, según su Anexo 12']),
@@ -146,11 +160,8 @@ add({
       modalities: work,
     },
     {
-      ...doc(
-        'habilitantes',
-        ['Requisitos habilitantes', 'Certificado actualizado; solo si la solicitud se presenta después de la verificación del récord académico'],
-        'habilitantes',
-      ),
+      ...enablingCertificate,
+      ...labelled(['Requisitos habilitantes', 'Certificado actualizado; solo si la solicitud se presenta después de la verificación del récord académico']),
       optional: true,
     },
   ],
@@ -231,11 +242,21 @@ add({
   },
   role: 'Tutor',
 })
-const reviewEndorsement = doc(
-  'aval-informes',
-  ['Aval de revisión de informes', 'Emitido por la secretaría de la Unidad de Titulación (titulacion_fisei@uta.edu.ec)'],
-  'aval-informes',
-)
+const reviewEndorsement: Requirement = {
+  ...doc(
+    'aval-informes',
+    ['Aval de informes', 'Aval de revisión de los informes mensuales e informe final, emitido por la secretaría de la Unidad de Titulación (titulacion_fisei@uta.edu.ec)'],
+    'aval-informes',
+  ),
+  requestEmail: {
+    to: 'titulacion_fisei@uta.edu.ec',
+    subject: 'Aval de revisión de informes {{nombres}}',
+    paragraphs: [
+      'Solicito de la manera más comedida se emita el aval de revisión de los informes mensuales e informe final del trabajo de titulación desarrollado bajo la tutoría del {{tutor}}.',
+    ],
+    closing: 'Saludos',
+  },
+}
 const enrollment = doc(
   'matricula',
   ['Folio y matrícula', 'Certificado de folio y matrícula del período actual, obtenido del sistema. Si tus datos no están en el sistema, se pide al Coordinador de Carrera'],
@@ -369,7 +390,7 @@ for (const modality of all) {
   const modalityRequirements =
     modality === 'complexivo'
       ? [attendance, attendanceReport, { ...examResolutions, label: 'Resoluciones del examen' }]
-      : [final, { ...gradeReports, ...labelled(['Calificaciones', 'Las dos calificaciones, solicitadas en la Unidad de Titulación']) }]
+      : [final, { ...gradeReports, ...labelled(['Calificaciones', 'Las dos notas de los calificadores, con promedio de 7 o más; se piden en la Unidad de Titulación (titulacion_fisei@uta.edu.ec)']) }]
   add({
     id: `aptitud-legal-${modality}`,
   summary: 'Envía el Anexo 15 con tus documentos y espera el certificado de aptitud legal.',
@@ -382,10 +403,16 @@ for (const modality of all) {
       modality === 'complexivo' ? 'complexivo' : `calificadores-${modality}`,
     ],
     requirements: [
-      request('solicitud-aptitud', ['Anexo 15 · Solicitud de aptitud legal', 'Dirigida al Decano, en PDF con OCR e indicando la modalidad']),
-      { ...personal, ...labelled(['Cédula y papeleta de votación', 'A color, en un solo archivo']) },
-      doc('record', ['Récord académico', 'Con la matrícula en titulación con la leyenda «En proceso»'], 'record'),
-      doc('habilitantes', ['Requisitos habilitantes', 'Certificado actualizado, emitido por Coordinación de Carrera'], 'habilitantes'),
+      {
+        ...request('solicitud-aptitud', ['Anexo 15 · Solicitud', 'Solicitud del certificado de aptitud legal, dirigida al Decano, en PDF con OCR e indicando la modalidad']),
+        template: 'anexo-15',
+      },
+      { ...personal, ...labelled(['Cédula y papeleta de votación', 'Actualizadas, a color, en un solo archivo legible y en tamaño real']) },
+      doc('record', ['Récord académico', 'Actualizado y obtenido del sistema, con la matrícula en titulación del período actual con la leyenda «En proceso». Si tus datos no están en el sistema, se pide al Coordinador de Carrera por informacion.fisei@uta.edu.ec'], 'record'),
+      {
+        ...enablingCertificate,
+        ...labelled(['Requisitos habilitantes', 'Certificado actualizado de Coordinación de Carrera con la matrícula en noveno «En proceso», las asignaturas aprobadas y por aprobar, las fechas de inicio y fin de estudios, y la aprobación de segunda lengua, cultura física, prácticas laborales, servicio comunitario y modalidad y propuesta de titulación']),
+      },
       noDebt,
       ...modalityRequirements,
     ],
@@ -399,6 +426,8 @@ for (const modality of all) {
       notes: [
         ...sendRules,
         'El certificado es distinto de la solicitud; sus anexos se presentan igual al pedir la fecha de sustentación.',
+        'El formulario de no adeudar debe seguir vigente hasta que pidas día y hora.',
+        'Si falta un requisito, el trámite no avanza y se te notifica para completarlo.',
       ],
     },
     role: 'Estudiante y Secretaría',
@@ -630,7 +659,7 @@ exceptional({
     request('solicitud-cambio-modalidad', ['Anexo 4 · Solicitud de cambio', 'Dirigida al Presidente de la Unidad de Titulación; firma también el tutor sugerido si el cambio es a trabajo de titulación']),
     { ...personal, ...labelled(['Cédula', 'Copia legible']) },
     approvalResolution,
-    doc('habilitantes', ['Requisitos habilitantes', 'Certificado actualizado, emitido por Coordinación de Carrera'], 'habilitantes'),
+    enablingCertificate,
   ],
   guide: {
     steps: [

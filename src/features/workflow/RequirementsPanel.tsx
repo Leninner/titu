@@ -6,7 +6,7 @@ import { EvidencePreview } from '../../components/EvidencePreview'
 import { InfoTip } from '../../components/InfoTip'
 import { errorMessage } from '../../components/download'
 import { multiFileCategories } from '../../domain/file-names'
-import { AnnexFormatButton } from './AnnexFormatButton'
+import { RequestButton } from './RequestButton'
 import type { DocumentVersion, Requirement, Workspace } from '../../domain/types'
 
 export type FileRequirement = Requirement & { category: string }
@@ -186,7 +186,7 @@ function Viewer({
         {requirement.detail && <InfoTip label={requirement.label} text={requirement.detail} />}
         <span className={`req-status is-${state.status}`}>{state.statusText}</span>
         {requirement.category === 'mensual' && <a href="#/anexos">Crear Anexo 5</a>}
-        {requirement.template && <AnnexFormatButton templateId={requirement.template} />}
+        {(requirement.template || requirement.requestEmail) && <RequestButton requirement={requirement} />}
       </div>
       {note && <p className="req-viewer-usage">{note}</p>}
       {focus ? (

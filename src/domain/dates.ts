@@ -3,6 +3,10 @@ import type { CalendarEvent, CatalogVersion, Workspace } from './types'
 export const ECUADOR_TIME_ZONE = 'America/Guayaquil'
 const dayMilliseconds = 86_400_000
 
+export const academicPeriodLabels: Record<string, string> = {
+  '2026-07-12': 'julio – diciembre 2026',
+}
+
 export const letterDate = (isoDate: string) =>
   /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate.split('-').reverse().join('/') : isoDate
 

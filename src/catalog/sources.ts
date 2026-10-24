@@ -191,6 +191,13 @@ export const sources: Source[] = [
     excerptUrl: '/sources/UT-27.txt',
   },
   {
+    id: 'EST-01',
+    name: 'Solicitud de requisitos habilitantes aportada por el estudiante (PDF)',
+    sha256: 'd91fc3896e92374d9481eb16e620647b338e84776e9429cabca930cf40825515',
+    version: '2026-10-24',
+    excerptUrl: '/sources/EST-01.txt',
+  },
+  {
     id: 'GUIDE-2026',
     name: 'Guia_titulacion_FISEI_2026.docx',
     sha256: '1f3f755da902d66d7f80799fbbfebeb41bdb6f81c4c34655ee83f81e08eade74',

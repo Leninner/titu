@@ -1,5 +1,6 @@
 import { templates } from '../catalog/templates'
 import { companyKeys } from './company-profile'
+import { academicPeriodLabels } from './dates'
 import type { AnnexDraft, StudentProfile } from './types'
 
 export interface AnnexValidation {
@@ -54,7 +55,8 @@ export function createRequestDraft(
       return value ? [[key, value]] : []
     }),
   )
-  return { ...draft, fields: { lugar: 'Ambato', fecha: today, ...contact } }
+  const cycle: Record<string, string> = declared.has('ciclo') ? { ciclo: academicPeriodLabels[profile.periodo] ?? '' } : {}
+  return { ...draft, fields: { lugar: 'Ambato', fecha: today, ...cycle, ...contact } }
 }
 export function withCurrentProfile(draft: AnnexDraft, profile: StudentProfile): AnnexDraft {
   const current = { ...draft.profileSnapshot, ...profile }

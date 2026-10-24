@@ -23,7 +23,7 @@ const report = [
   field('avance', 'Avance acumulado (%)', true, 'number'),
   field('observaciones', 'Observaciones del tutor', false, 'textarea'),
 ]
-const specs: [string, string, number, Modality[], TemplateField[], string, boolean?][] = [
+const specs: [string, string, number | keyof typeof content, Modality[], TemplateField[], string, boolean?][] = [
   [
     'anexo-1',
     'Anexo 1 · Selección de modalidad',
@@ -142,11 +142,26 @@ const specs: [string, string, number, Modality[], TemplateField[], string, boole
     [...letter, field('motivo', 'Motivo de recalificación', true, 'textarea')],
     'Estudiante',
   ],
+  [
+    'solicitud-habilitantes',
+    'Solicitud de requisitos habilitantes',
+    'EST-01',
+    all,
+    [
+      field('lugar', 'Lugar'),
+      date,
+      field('destinatario', 'Tratamiento y nombre del Coordinador de Carrera'),
+      field('nivel', 'Nivel que cursas'),
+      field('ciclo', 'Ciclo académico'),
+      field('celular', 'Teléfono celular', false),
+    ],
+    'Estudiante',
+  ],
 ]
 
 export const templates: TemplateDefinition[] = specs.map(
-  ([id, name, number, modalities, fields, role, companyOnly]) => {
-    const sourceId = `UT-${String(number).padStart(2, '0')}` as keyof typeof content
+  ([id, name, sourceRef, modalities, fields, role, companyOnly]) => {
+    const sourceId = typeof sourceRef === 'string' ? sourceRef : (`UT-${String(sourceRef).padStart(2, '0')}` as keyof typeof content)
     const source = content[sourceId]
     return {
       id,

@@ -189,6 +189,25 @@ Regla: los títulos y etiquetas describen **qué documento o acto es**, con su e
 - Etiquetas cortas para que quepan junto al botón: "Empresa al 100 %" y "Anexo 3 · Compromiso". En móvil, el botón "Formato" baja a una segunda línea.
 - **Fieles a los formatos UT-08 y UT-18:** el destinatario incluye "Carrera de …"; no llevan "De mi consideración"; el Anexo 3 no lleva "Presente"; la firma usa los teléfonos del representante, nunca los del estudiante.
 
+## Certificado de requisitos habilitantes (decidido por el usuario, 2026-10-24)
+
+- Sigue siendo un requisito (`habilitantes`), no un trámite: el documento se obtiene pidiéndolo por correo a la Coordinación de Carrera con una solicitud firmada. La tarjeta "Requisitos habilitantes" (propuesta, aptitud legal y cambio de modalidad) muestra el botón "Solicitar", que abre el correo listo para copiar (asunto y cuerpo) y la solicitud editable con descarga en Word y PDF, sin guardarla en Documentos.
+- La solicitud no es un anexo oficial: su fuente es el formato aportado por el estudiante (`EST-01`, 24/10/2026). El extracto público y el texto del catálogo no llevan datos personales: usan marcadores; del PDF aportado solo se guarda su hash. Va dirigida al Coordinador de la Carrera, con nivel y ciclo académico; el ciclo se llena desde el período del perfil. Firma sin rótulos: nombre, cédula, celular y correo.
+- Un requisito puede declarar su formato (`template`) y, si el documento se pide por correo, el correo de la solicitud (`requestEmail`: asunto y párrafos). El botón dice "Solicitar" cuando hay correo y "Formato" cuando no.
+- **Variantes de carta declarativas.** Cada plantilla declara su estilo de carta (línea de carrera, "Presente", "De mi consideración", cierre y tipo de firma) en el registro de plantillas, en lugar de condiciones por id dentro del modelo del documento.
+
+## Aval de revisión de informes (decidido por el usuario, 2026-10-24)
+
+- La tarjeta "Aval de revisión de informes" (calificadores de Proyecto y de Artículo) tiene el botón "Solicitar", que abre solo el correo: para titulacion_fisei@uta.edu.ec (Unidad de Titulación FISEI), asunto "Aval de revisión de informes (nombres del estudiante)", cuerpo con el pedido de aval de los informes mensuales e informe final bajo la tutoría del tutor del perfil, y cierre "Saludos" con el nombre del estudiante.
+- El correo de solicitud admite datos del perfil (`{{nombres}}`, `{{tutor}}`) en asunto y párrafos, y un cierre propio; sin el dato muestra un marcador. El botón "Solicitar" sirve con o sin carta: sin plantilla, el diálogo solo muestra el correo.
+
+## Formato del Anexo 15 y aptitud legal (decidido por el usuario, 2026-10-24)
+
+- La tarjeta del Anexo 15 tiene el botón "Formato"; la carta ya coincidía con UT-21 (Decano, modalidad obligatoria, firma con teléfonos y correo).
+- Requisitos contrastados con UT-21: cédula y papeleta actualizadas, a color, en un solo archivo legible y en tamaño real; récord con la excepción de pedirlo al Coordinador si los datos no están en el sistema; habilitantes con su contenido obligatorio (matrícula en noveno «En proceso», asignaturas aprobadas y por aprobar, fechas de inicio y fin, segunda lengua, cultura física, prácticas, servicio comunitario y modalidad); notas con promedio de 7 o más, pedidas en la Unidad de Titulación.
+- La solicitud de habilitantes se ingresa por informacion.fisei@uta.edu.ec: el correo de "Solicitar" muestra ese destinatario con botón para copiarlo.
+- La guía suma: no adeudar vigente hasta pedir día y hora; si falta un requisito se notifica para completar; consultas de notas en titulacion_fisei@uta.edu.ec.
+
 ## Formato del Anexo 14 (decidido por el usuario, 2026-10-24)
 
 - La tarjeta del Anexo 14 en "Solicitud de fecha de sustentación o incorporación" tiene el botón "Formato", con la variante de la modalidad (Proyecto, Artículo o complexivo).

@@ -175,6 +175,11 @@ El sistema SHALL preparar el Anexo 11 dentro del trámite con las fechas y activ
 - **WHEN** el trabajo se realiza en una empresa con sus datos en Ajustes y abre "Formato" en la tarjeta del cumplimiento empresarial
 - **THEN** la carta sale llena con la empresa y su representante, con los teléfonos del representante, y solo pide lugar, fecha y destinatario.
 
+#### Scenario: Solicitud de requisitos habilitantes
+
+- **WHEN** abre "Solicitar" en la tarjeta "Requisitos habilitantes"
+- **THEN** ve el correo para la Coordinación de Carrera listo para copiar y descarga la solicitud dirigida al Coordinador de la Carrera con su nivel y ciclo académico.
+
 #### Scenario: Carta exportada
 
 - **WHEN** exporta una solicitud del estudiante

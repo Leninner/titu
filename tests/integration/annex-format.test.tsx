@@ -171,3 +171,87 @@ it('fills the Anexo 14 of the student modality with address and institutional em
   expect(document.getByRole('textbox', { name: 'Dirección' }).textContent).toBe('Av. Los Chasquis, Ambato')
   expect(document.getByText(/Correo electrónico institucional/)).toBeTruthy()
 })
+
+it('requests the enabling requirements certificate with a ready email and letter', async () => {
+  await repository.saveProfile({
+    ...newProfile(),
+    nombres: 'María Muñoz Vásquez',
+    cedula: '1804567890',
+    email: 'mmunoz@uta.edu.ec',
+    carrera: 'Software',
+    tema: 'Accesibilidad web',
+  })
+  const writeText = vi.fn(async () => undefined)
+  Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+  window.history.replaceState(null, '', '#/proceso/aptitud-legal-research')
+  render(
+    <WorkspaceProvider>
+      <AppShell />
+    </WorkspaceProvider>,
+  )
+  await screen.findByRole('button', { name: 'Cómo se tramita' })
+  fireEvent.click(
+    within(screen.getByRole('article', { name: 'Requisitos habilitantes' })).getByRole('button', { name: 'Solicitar' }),
+  )
+  const dialog = within(await screen.findByRole('dialog', { name: 'Solicitud de requisitos habilitantes' }))
+  const email = within(dialog.getByRole('region', { name: 'Correo de la solicitud' }))
+  expect(email.getByText('Solicitud de certificado de requisitos habilitantes')).toBeTruthy()
+  expect(email.getByText('Para informacion.fisei@uta.edu.ec')).toBeTruthy()
+  fireEvent.click(email.getByRole('button', { name: 'Copiar mensaje' }))
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Atentamente,\nMaría Muñoz Vásquez')))
+  const document = within(dialog.getByRole('article', { name: 'Documento editable' }))
+  expect(document.getByText((_, element) =>
+    element?.tagName === 'P' && element.textContent?.toUpperCase() === 'COORDINADOR DE LA CARRERA DE SOFTWARE')).toBeTruthy()
+  expect(document.getByRole('textbox', { name: 'Ciclo académico' }).textContent).toBe('julio – diciembre 2026')
+})
+
+it('fills the Anexo 15 addressed to the dean with the student modality', async () => {
+  await repository.saveProfile({
+    ...newProfile(),
+    nombres: 'María Muñoz Vásquez',
+    cedula: '1804567890',
+    email: 'mmunoz@uta.edu.ec',
+    carrera: 'Software',
+    tema: 'Accesibilidad web',
+  })
+  window.history.replaceState(null, '', '#/proceso/aptitud-legal-research')
+  render(
+    <WorkspaceProvider>
+      <AppShell />
+    </WorkspaceProvider>,
+  )
+  await screen.findByRole('button', { name: 'Cómo se tramita' })
+  fireEvent.click(
+    within(screen.getByRole('article', { name: 'Anexo 15 · Solicitud' })).getByRole('button', { name: 'Formato' }),
+  )
+  const dialog = within(await screen.findByRole('dialog', { name: /Anexo 15/ }))
+  const document = within(dialog.getByRole('article', { name: 'Documento editable' }))
+  expect(document.getByText('DECANO')).toBeTruthy()
+  expect(document.getByText(/CERTIFICADO DE APTITUD LEGAL/)).toBeTruthy()
+  expect(document.getByText(/Proyecto de Investigación/)).toBeTruthy()
+})
+
+it('requests the review endorsement with only the email to the graduation unit', async () => {
+  await repository.saveProfile({
+    ...newProfile(),
+    nombres: 'Lenin Mazabanda',
+    tutor: 'Ing. Leonardo Torres Valverde Mg.',
+    carrera: 'Software',
+    tema: 'Accesibilidad web',
+  })
+  render(
+    <WorkspaceProvider>
+      <AppShell />
+    </WorkspaceProvider>,
+  )
+  await screen.findByRole('button', { name: 'Cómo se tramita' })
+  fireEvent.click(
+    within(screen.getByRole('article', { name: 'Aval de informes' })).getByRole('button', { name: 'Solicitar' }),
+  )
+  const dialog = within(await screen.findByRole('dialog', { name: 'Aval de informes' }))
+  const email = within(dialog.getByRole('region', { name: 'Correo de la solicitud' }))
+  expect(email.getByText('Para titulacion_fisei@uta.edu.ec')).toBeTruthy()
+  expect(email.getByText('Aval de revisión de informes Lenin Mazabanda')).toBeTruthy()
+  expect(email.getByText(/bajo la tutoría del Ing\. Leonardo Torres Valverde Mg\. Saludos/)).toBeTruthy()
+  expect(dialog.queryByRole('article', { name: 'Documento editable' })).toBeNull()
+})

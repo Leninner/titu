@@ -48,6 +48,9 @@
 - [x] 5.21 Datos de la empresa en el perfil (Ajustes) con migración desde los borradores, cartas de empresa fieles a UT-08 y UT-18 y botón "Formato" en el Anexo 3 y en el cumplimiento empresarial. Probar en unit e integración y verificar con `playwright-cli`.
 - [x] 5.22 Quitar el pie de página y el encabezado repetido de la tabla de las actividades leídas de los Anexo 5 y al armar el Anexo 11. Probar en `tests/unit/monthly-report.test.ts`.
 - [x] 5.23 Botón "Formato" del Anexo 14 por modalidad y firma con dirección y correo institucional según los formatos. Probar en unit e integración y verificar con `playwright-cli`.
+- [x] 5.24 Botón "Solicitar" en "Requisitos habilitantes" con el correo listo para copiar y la solicitud (fuente `EST-01`); estilos de carta declarativos. Probar en unit e integración y verificar con `playwright-cli`.
+- [x] 5.25 Botón "Formato" del Anexo 15, requisitos de aptitud legal contrastados con UT-21 y destinatario del correo de habilitantes. Probar en unit e integración y verificar con `playwright-cli`.
+- [x] 5.26 Botón "Solicitar" del aval de revisión de informes con solo el correo a la Unidad de Titulación, con datos del perfil y cierre propio. Probar en unit e integración y verificar con `playwright-cli`.
 
 ## 6. Cierre
 

@@ -84,3 +84,9 @@ it('refreshes a request draft with the current profile only when it changed', ()
   expect(refreshed.profileSnapshot).toMatchObject({ representante: 'Nuevo Gerente', celularRepresentante: '0998887776' })
   expect(refreshed.fields).toEqual(draft.fields)
 })
+
+it('fills the academic cycle of a request from the profile period', () => {
+  const profile = annexFixture('anexo-1').profileSnapshot
+  expect(createRequestDraft('solicitud-habilitantes', profile, '2026-10-24').fields.ciclo).toBe('julio – diciembre 2026')
+  expect(createRequestDraft('anexo-10-research', profile, '2026-10-24').fields.ciclo).toBeUndefined()
+})

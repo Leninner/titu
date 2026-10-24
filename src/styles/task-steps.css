@@ -706,3 +706,46 @@
     min-height: auto;
   }
 }
+.request-email {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border: 1px solid #e4dcef;
+  border-radius: 12px;
+  background: #faf8fc;
+}
+.request-email-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.request-email-head strong {
+  flex: 1;
+  min-width: 180px;
+  font-size: 0.88rem;
+}
+.request-email-head button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.request-email-body {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.request-email-to {
+  flex: 1;
+  min-width: 180px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}

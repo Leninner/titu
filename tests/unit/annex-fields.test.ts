@@ -28,7 +28,7 @@ function printedValue(templateId: string, type: string | undefined, value = '') 
   return letterDate ? value.split('-').reverse().join('/') : value
 }
 
-describe('all 16 template field contracts', () => {
+describe('all 17 template field contracts', () => {
   for (const template of templates.filter((item) => item.kind === 'editable')) {
     it(`${template.id}: every declared field prints and required blanks block export`, () => {
       const { draft, text } = documentText(template.id)
@@ -143,4 +143,23 @@ it('signs the Anexo 14 with the address before the email, as each modality forma
     'Correo electrónico: estudiante@example.test',
   ])
   expect(signer('anexo-10-research').join(' ')).not.toContain('Dirección')
+})
+
+it('writes the enabling requirements request to the career coordinator with a plain signature', () => {
+  const draft = annexFixture('solicitud-habilitantes')
+  draft.fields = { ...draft.fields, nivel: 'noveno', ciclo: 'julio – diciembre 2026', celular: '0991234567' }
+  const model = buildDocumentModel(draft)
+  const letter = model.paragraphs.map((item) => item.text)
+  expect(letter).toContain('COORDINADOR DE LA CARRERA DE SOFTWARE')
+  expect(letter).toContain('Presente. -')
+  expect(letter).not.toContain('De mi consideración:')
+  expect(letter.join(' ')).toContain(
+    'estudiante del noveno nivel de la carrera de Software en el ciclo académico julio – diciembre 2026',
+  )
+  expect(model.signature.slice(2).map((item) => item.text)).toEqual([
+    'María Muñoz Vásquez',
+    '0000000000',
+    '0991234567',
+    'estudiante@example.test',
+  ])
 })

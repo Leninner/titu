@@ -3,8 +3,8 @@ import { existsSync } from 'node:fs'
 import { catalog, sources } from '../../src/catalog'
 
 describe('institutional catalog', () => {
-  it('has 16 distinct editable variants and resolvable source extracts', () => {
-    expect(catalog.templates.filter((template) => template.kind === 'editable')).toHaveLength(16)
+  it('has 17 distinct editable variants and resolvable source extracts', () => {
+    expect(catalog.templates.filter((template) => template.kind === 'editable')).toHaveLength(17)
     for (const list of [
       catalog.templates,
       catalog.workflowDefinitions,
@@ -100,5 +100,24 @@ describe('institutional catalog', () => {
       [['article'], 'anexo-14-article'],
       [['complexivo'], 'anexo-14-complexivo'],
     ])
+  })
+  it('asks for the enabling requirements certificate with its request letter and email', () => {
+    const enabling = catalog.workflowDefinitions.flatMap((definition) =>
+      definition.requirements.filter((requirement) => requirement.category === 'habilitantes'))
+    expect(enabling.length).toBeGreaterThanOrEqual(3)
+    for (const requirement of enabling) {
+      expect(requirement.template).toBe('solicitud-habilitantes')
+      expect(requirement.requestEmail?.subject).toBe('Solicitud de certificado de requisitos habilitantes')
+    }
+  })
+  it('follows the Anexo 15 attachments for the legal aptitude certificate', () => {
+    const aptitude = catalog.workflowDefinitions.find((item) => item.id === 'aptitud-legal-research')!
+    const requirement = (id: string) => aptitude.requirements.find((item) => item.id === id)!
+    expect(requirement('solicitud-aptitud').template).toBe('anexo-15')
+    expect(requirement('personal').detail).toContain('a color')
+    expect(requirement('record').detail).toContain('Coordinador de Carrera')
+    expect(requirement('habilitantes').detail).toContain('segunda lengua')
+    expect(requirement('habilitantes').requestEmail?.to).toBe('informacion.fisei@uta.edu.ec')
+    expect(requirement('notas').detail).toContain('promedio de 7')
   })
 })
