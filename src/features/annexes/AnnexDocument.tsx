@@ -4,11 +4,15 @@ import { catalog } from '../../catalog'
 import { buildDocumentModel, type DocumentParagraph } from '../../export/document-model'
 import { ActivityTable } from './ActivityTable'
 import { InfoTip } from '../../components/InfoTip'
+import { isoFromLetterDate, letterDate } from '../../domain/dates'
 
 const profileLabels: Record<string, string> = {
   nombres: 'Estudiante', cedula: 'Cédula', email: 'Correo', direccion: 'Dirección',
   carrera: 'Carrera', facultad: 'Facultad', titulo: 'Título a obtener', tema: 'Tema aprobado',
   aprobacionFecha: 'Fecha de aprobación', aprobacionResolucion: 'Resolución de aprobación', tutor: 'Tutor',
+  empresa: 'Empresa', representante: 'Representante de la empresa', cargoRepresentante: 'Cargo del representante',
+  cedulaRepresentante: 'Cédula del representante', emailRepresentante: 'Correo del representante',
+  telefonoRepresentante: 'Teléfono convencional del representante', celularRepresentante: 'Celular del representante',
 }
 
 function EditableText({ value, label, error, readOnly, hint, onChange }: {
@@ -53,20 +57,23 @@ export function AnnexDocument({ draft, onChange, errors = {}, readOnly = false }
     if (field.key !== 'mensualesRevisados') marked.fields[field.key] = marker(field.key, false, field.label)
   }
   const model = buildDocumentModel(marked)
+  const dateKeys = new Set(template.fields.filter((field) => field.type === 'date').map((field) => field.key))
   const paragraph = (item: DocumentParagraph, index: number) => <p key={index}
-    style={{ textAlign: item.center ? 'center' : undefined, fontWeight: item.bold ? 700 : undefined,
+    style={{ textAlign: item.align, fontWeight: item.bold ? 700 : undefined,
+      marginTop: item.spaceBefore ? `${item.spaceBefore}pt` : undefined,
       marginBottom: `${item.spaceAfter ?? 8}pt`, fontSize: `${item.size ?? 12}pt` }}>
     {item.text.split(/(⟦[PF]_[A-Z]+⟧)/g).map((part, partIndex) => {
       const binding = bindings.get(part)
       if (!binding) return part
       const { key, profile, label } = binding
       const value = profile ? String(draft.profileSnapshot[key as keyof StudentProfile] ?? '') : draft.fields[key] ?? ''
-      return <EditableText key={partIndex} value={value} label={label}
+      const datedLetter = !profile && !model.report && dateKeys.has(key)
+      return <EditableText key={partIndex} value={datedLetter ? letterDate(value) : value} label={label}
         error={errors[profile ? `profile.${key}` : key]} readOnly={readOnly || (profile && key === 'tema')}
         hint={!readOnly && profile && key === 'tema' ? 'Se actualiza desde Ajustes' : undefined}
         onChange={(next) => onChange(profile
           ? { ...draft, profileSnapshot: { ...draft.profileSnapshot, [key]: next } }
-          : { ...draft, fields: { ...draft.fields, [key]: next } })} />
+          : { ...draft, fields: { ...draft.fields, [key]: datedLetter ? isoFromLetterDate(next) : next } })} />
     })}
   </p>
   return <article className="annex-paper" aria-label={readOnly ? 'Documento' : 'Documento editable'}>
@@ -82,7 +89,6 @@ export function AnnexDocument({ draft, onChange, errors = {}, readOnly = false }
       onChange={(activities) => onChange({ ...draft, activities })} />}
     <div>{model.afterTable.map(paragraph)}</div>
     <div className="annex-signature">{model.signature.map(paragraph)}</div>
-    {model.notes.length > 0 && <aside className="annex-notes">{model.notes.map((note, index) => <p key={index}>{note}</p>)}</aside>}
     <footer className="annex-paper-footer">{model.footer}</footer>
   </article>
 }

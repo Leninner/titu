@@ -58,6 +58,19 @@ function isoDate(match: RegExpMatchArray) {
   return monthOf(y, m) && d >= 1 && d <= 31 ? `${y}-${pad(m)}-${pad(d)}` : undefined
 }
 
+const pageFurniture = [
+  /INSTRUCTIVO DEL REGLAMENTO PARA LA TITULACI[OÓ]N DE GRADO EN LA UNIVERSIDAD T[EÉ]CNICA DE AMBATO/gi,
+  /P[aá]gina\s+\d+\s+de\s+\d+/gi,
+  /\bFecha\s+Actividad\b\.?/gi,
+]
+
+export function withoutPageFurniture(text: string) {
+  return pageFurniture
+    .reduce((clean, pattern) => clean.replace(pattern, ' '), text)
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 export function reportedActivities(rawText: string): ReportedActivity[] {
   const start = rawText.search(/porcentaje[^:]*:\s*[\d.,]*\s*%?\.?/i)
   const table = rawText.slice(Math.max(0, start)).split(/observaciones/i)[0]
@@ -66,9 +79,7 @@ export function reportedActivities(rawText: string): ReportedActivity[] {
   return matches.flatMap((match, index) => {
     const date = isoDate(match)
     const end = matches[index + 1]?.index ?? body.length
-    const description = body
-      .slice(match.index! + match[0].length, end)
-      .replace(/\s+/g, ' ')
+    const description = withoutPageFurniture(body.slice(match.index! + match[0].length, end))
       .replace(/^[\s|:.,;-]+|[\s|]+$/g, '')
       .trim()
     return date && description ? [{ date, description }] : []

@@ -79,4 +79,26 @@ describe('institutional catalog', () => {
         expect(requirement.label.length, requirement.label).toBeLessThanOrEqual(40)
     }
   })
+  it('offers the Anexo 10 format and the grader rules of the source', () => {
+    const research = catalog.workflowDefinitions.find((item) => item.id === 'calificadores-research')!
+    const article = catalog.workflowDefinitions.find((item) => item.id === 'calificadores-article')!
+    expect(research.requirements[0].template).toBe('anexo-10-research')
+    expect(article.requirements[0].template).toBe('anexo-10-article')
+    const detail = (id: string) => research.requirements.find((item) => item.id === id)!.detail
+    expect(detail('personal')).toContain('Actualizadas')
+    expect(detail('matricula')).toContain('Coordinador de Carrera')
+    const guide = [...research.guide!.steps.map((step) => step.text), ...research.guide!.notes].join(' ')
+    for (const rule of ['suplentes', 'calendario académico', 'Art. 142', '5 días término', 'titulacion_fisei@uta.edu.ec'])
+      expect(guide).toContain(rule)
+  })
+  it('offers the Anexo 14 format of each modality', () => {
+    const request = catalog.workflowDefinitions
+      .find((item) => item.id === 'dia-hora')!
+      .requirements.filter((item) => item.id === 'solicitud-sustentacion')
+    expect(request.map((item) => [item.modalities, item.template])).toEqual([
+      [['research'], 'anexo-14-research'],
+      [['article'], 'anexo-14-article'],
+      [['complexivo'], 'anexo-14-complexivo'],
+    ])
+  })
 })

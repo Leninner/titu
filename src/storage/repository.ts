@@ -8,6 +8,7 @@ import type {
   Workspace,
   WorkspaceSnapshot,
 } from '../domain/types'
+import { draftWithCompanySnapshot, profileWithCompany } from '../domain/company-profile'
 import {
   draftSchema,
   eventSchema,
@@ -54,16 +55,20 @@ export class WorkspaceRepository {
     this.db = new WorkspaceDatabase(name)
   }
   async loadWorkspace(): Promise<Workspace> {
-    return this.db.transaction('r', this.db.tables, async () => ({
-      profile: (await this.db.profile.toArray())[0] ?? null,
+    return this.db.transaction('r', this.db.tables, async () => {
+      const drafts = (await this.db.drafts.toArray()).map(draftWithCompanySnapshot)
+      const profile = (await this.db.profile.toArray())[0]
+      return {
+      profile: profile ? profileWithCompany(profile, drafts) : null,
       tasks: await this.db.tasks.toArray(),
       documents: await this.db.documents.toArray(),
       versions: await this.db.versions.toArray(),
-      drafts: await this.db.drafts.toArray(),
+      drafts,
       submissions: await this.db.submissions.toArray(),
       personalEvents: await this.db.personalEvents.toArray(),
       settings: Object.fromEntries((await this.db.settings.toArray()).map((x) => [x.id, x.value])),
-    }))
+      }
+    })
   }
   async snapshot(): Promise<WorkspaceSnapshot & { draftHistory: AnnexDraft[] }> {
     return this.db.transaction('r', this.db.tables, async () => ({

@@ -86,3 +86,35 @@ it('exports final report only with exact monthly provenance and explicit 100%', 
   final.activities[0].description = 'Una actividad inventada'
   await expect(renderAnnex(final, 'pdf')).rejects.toThrow('Revisa los campos')
 })
+it('reserves room above the signature line in reports and letters', async () => {
+  const { buildFinalReport } = await import('../../src/domain/final-report')
+  const final = buildFinalReport([annexFixture()])
+  final.fields = { ...final.fields, fecha: '2026-10-22', avance: '100', mensualesRevisados: 'true' }
+  for (const draft of [annexFixture(), final, annexFixture('anexo-10-research')]) {
+    const model = buildDocumentModel(draft)
+    const line = model.signature.find((item) => item.text.startsWith('___'))!
+    expect(line.spaceBefore).toBeGreaterThanOrEqual(85)
+    expect(line.text.length * 5).toBeGreaterThanOrEqual(255)
+    expect(model.signature.map((item) => item.text)).not.toContain('NOMBRE Y FIRMA')
+    const blob = await renderAnnex(draft, 'docx')
+    const xml = strFromU8(unzipSync(new Uint8Array(await blob.arrayBuffer()))['word/document.xml'])
+    expect(xml).toContain(`w:before="${line.spaceBefore! * 20}"`)
+  }
+})
+it('exports a request as a single dated letter with the format notes kept out', async () => {
+  const draft = annexFixture('anexo-10-research')
+  draft.fields.fecha = '2026-10-22'
+  const model = buildDocumentModel(draft)
+  expect(model.paragraphs[0].text).toMatch(/, 22\/10\/2026$/)
+  expect(model.guidance.join(' ')).toContain('ADJUNTAR')
+  expect(model.guidance.join(' ')).not.toContain('HYPERLINK')
+  const blob = await renderAnnex(draft, 'pdf')
+  const { getDocument } = await import('pdfjs-dist/legacy/build/pdf.mjs')
+  const pdf = await getDocument({ data: new Uint8Array(await blob.arrayBuffer()), useSystemFonts: true, isEvalSupported: false }).promise
+  expect(pdf.numPages).toBe(1)
+  const content = await (await pdf.getPage(1)).getTextContent()
+  const text = content.items.map((item) => ('str' in item ? item.str : '')).join(' ')
+  expect(text).not.toContain('ADJUNTAR')
+  writeFileSync('/private/tmp/graduation-export-qa/anexo-10-research.pdf', new Uint8Array(await blob.arrayBuffer()))
+  await pdf.destroy()
+}, 30000)

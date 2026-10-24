@@ -4,16 +4,15 @@ import {
   CalendarClock,
   Circle,
   CircleCheck,
-  CircleDot,
   FileText,
-  Hourglass,
   ListChecks,
   Lock,
   X,
 } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
+import { statusIcons, statusText } from './workflow-icons'
 import { catalog } from '../../catalog'
-import { processFolders, processMap, type NodeStatus, type ProcessNode } from '../../domain/process-map'
+import { processFolders, processMap, type ProcessNode } from '../../domain/process-map'
 import { evidenceIdsForTask } from '../../domain/task-evidence'
 import { unavailableAsOutput } from '../../domain/output-chain'
 import type { DocumentVersion, TaskRecord, Workspace } from '../../domain/types'
@@ -27,6 +26,7 @@ import { MonthlyReportCards } from './MonthlyReportCards'
 import { persistTask } from './task-persistence'
 import { taskFor } from './task-record'
 import { ReportGuideLinks } from './ReportGuide'
+import { shortDate } from '../calendar/short-date'
 
 const NODE_WIDTH = 228
 const NODE_HEIGHT = 148
@@ -35,13 +35,6 @@ const GAP_Y = 24
 const PADDING = 28
 const LANE_GAP = 56
 
-const statusText: Record<NodeStatus, string> = {
-  done: 'Completado',
-  waiting: 'En trámite',
-  active: 'Disponible',
-  blocked: 'Bloqueado',
-}
-const StatusIcon = { done: CircleCheck, waiting: Hourglass, active: CircleDot, blocked: Lock }
 const edgeStates = ['is-done', 'is-ready', 'is-pending'] as const
 const folderShort = { trabajo: 'Trabajo', calificadores: 'Calificadores', sustentacion: 'Sustentación' }
 
@@ -55,12 +48,6 @@ function useCompact(query = '(max-width: 760px)') {
     return () => media.removeEventListener('change', change)
   }, [query])
   return compact
-}
-
-function shortDate(date: string) {
-  return new Intl.DateTimeFormat('es-EC', { day: 'numeric', month: 'short', timeZone: 'UTC' })
-    .format(new Date(`${date}T12:00:00Z`))
-    .replace('.', '')
 }
 
 function dateLabel(node: ProcessNode) {
@@ -100,7 +87,7 @@ function nodeLabel(node: ProcessNode) {
 }
 
 function NodeContent({ node }: { node: ProcessNode }) {
-  const Icon = StatusIcon[node.status]
+  const Icon = statusIcons[node.status]
   const total = node.documents.total + node.checks.total
   const done = node.documents.done + node.checks.done
   return (
@@ -217,7 +204,7 @@ function ProcessDialog({
   const monthly = documents.find((requirement) => requirement.category === 'mensual')
   const annex = result ? undefined : requirements.find((requirement) => requirement.annex)
 
-  const Icon = StatusIcon[node.status]
+  const Icon = statusIcons[node.status]
   return (
     // Clicking the backdrop closes the dialog; Escape is handled by onCancel.
     // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
@@ -392,7 +379,7 @@ export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNo
         {viewToggle}
         <ul className="process-legend" aria-label="Estados">
           {(['done', 'active', 'waiting', 'blocked'] as const).map((status) => {
-            const Icon = StatusIcon[status]
+            const Icon = statusIcons[status]
             return (
               <li key={status} className={`is-${status}`}>
                 <Icon size={14} aria-hidden="true" /> {statusText[status]}

@@ -1,4 +1,5 @@
 import { templates } from '../catalog/templates'
+import { companyKeys } from './company-profile'
 import type { AnnexDraft, StudentProfile } from './types'
 
 export interface AnnexValidation {
@@ -33,6 +34,36 @@ export function createDraft(
     updatedAt: new Date().toISOString(),
   }
 }
+const contactFields = ['telefono', 'celular'] as const
+const requiredCompanyKeys = companyKeys.filter(
+  (key) => !['telefonoRepresentante', 'celularRepresentante'].includes(key),
+)
+
+export function createRequestDraft(
+  templateId: string,
+  profile: StudentProfile,
+  today: string,
+  previousDrafts: AnnexDraft[] = [],
+): AnnexDraft {
+  const draft = createDraft(templateId, profile)
+  const latest = [...previousDrafts].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  const declared = new Set(templates.find((item) => item.id === templateId)?.fields.map((field) => field.key))
+  const contact = Object.fromEntries(
+    contactFields.filter((key) => declared.has(key)).flatMap((key) => {
+      const value = latest.find((item) => item.fields[key])?.fields[key]
+      return value ? [[key, value]] : []
+    }),
+  )
+  return { ...draft, fields: { lugar: 'Ambato', fecha: today, ...contact } }
+}
+export function withCurrentProfile(draft: AnnexDraft, profile: StudentProfile): AnnexDraft {
+  const current = { ...draft.profileSnapshot, ...profile }
+  const changed = Object.entries(current).some(
+    ([key, value]) => draft.profileSnapshot[key as keyof StudentProfile] !== value,
+  )
+  return changed ? { ...draft, profileSnapshot: current } : draft
+}
+
 export function validateAnnex(draft: AnnexDraft, previousMonthly?: AnnexDraft): AnnexValidation {
   const errors: Record<string, string> = {}
   const warnings: Record<string, string> = {}
@@ -45,14 +76,14 @@ export function validateAnnex(draft: AnnexDraft, previousMonthly?: AnnexDraft): 
     errors.modalidad = 'La plantilla no corresponde a la modalidad del perfil'
   if (template.companyOnly && !draft.profileSnapshot.aplicaEmpresa)
     errors.empresa = 'Esta plantilla solo aplica a trabajos en empresa o institución'
+  const report = ['anexo-5', 'anexo-11'].includes(draft.templateId)
   for (const field of template.fields) {
     const value = draft.fields[field.key]?.trim() ?? ''
     if (field.required && !value) errors[field.key] = 'Campo obligatorio'
     else if (value && field.type === 'date' && !validDate(value))
-      errors[field.key] = 'Fecha inválida'
+      errors[field.key] = report ? 'Fecha inválida' : 'Fecha inválida: usa dd/mm/aaaa'
   }
   const profile = draft.profileSnapshot
-  const report = ['anexo-5', 'anexo-11'].includes(draft.templateId)
   const required: (keyof StudentProfile)[] = ['nombres', 'carrera', 'facultad']
   if (!report) required.push('cedula')
   if (!report && !template.companyOnly) required.push('email')
@@ -62,8 +93,9 @@ export function validateAnnex(draft: AnnexDraft, previousMonthly?: AnnexDraft): 
   if (draft.templateId.startsWith('anexo-14')) required.push('direccion', 'titulo')
   if (draft.templateId === 'anexo-21') required.push('titulo')
   if (draft.templateId === 'anexo-4') required.push('aprobacionResolucion')
+  if (template.companyOnly) required.push(...requiredCompanyKeys)
   for (const key of required)
-    if (!String(profile[key]).trim()) errors[`profile.${key}`] = 'Completar este dato del perfil'
+    if (!String(profile[key] ?? '').trim()) errors[`profile.${key}`] = 'Completar este dato del perfil'
   if (profile.aprobacionFecha && !validDate(profile.aprobacionFecha))
     errors['profile.aprobacionFecha'] = 'Fecha de aprobación inválida'
   if (draft.fields.tema !== undefined && draft.fields.tema !== profile.tema)

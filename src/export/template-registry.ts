@@ -63,6 +63,7 @@ export function getTemplateLayout(templateId: string) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
+  const withoutFieldCodes = (text: string) => text.replace(/\s*HYPERLINK "[^"]*"\s*/g, ' ')
   const noteIndex = template.fixedText.search(/(?:ADJUNTAR|Adjuntar|Adj:|NOTA:|NOTA\n)/)
   let notes =
     noteIndex < 0
@@ -70,7 +71,7 @@ export function getTemplateLayout(templateId: string) {
       : template.fixedText
           .slice(noteIndex)
           .split(/\n\s*\n/)
-          .map((text) => text.trim())
+          .map((text) => withoutFieldCodes(text).trim())
           .filter(Boolean)
   if (templateId === 'anexo-15') {
     const index = template.fixedText.indexOf('Enviar la solicitud')
@@ -78,20 +79,14 @@ export function getTemplateLayout(templateId: string) {
       notes = template.fixedText
         .slice(index)
         .split(/\n\s*\n/)
-        .map((text) => text.trim())
+        .map((text) => withoutFieldCodes(text).trim())
         .filter(Boolean)
   }
   return {
     template,
     geometry: source.geometry,
     report,
-    headings: report
-      ? lines.slice(0, 2)
-      : template.fixedText
-          .split(/Lugar,?/)[0]
-          .split('\n')
-          .map((line) => line.trim())
-          .filter((line) => line && line !== 'FORMATO SOLICITUD'),
+    headings: report ? lines.slice(0, 2) : [],
     body: bodies[templateId] ?? [],
     notes,
     recipientRole: /anexo-10|anexo-14|recalificacion-research/.test(templateId)

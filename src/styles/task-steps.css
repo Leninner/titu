@@ -182,7 +182,7 @@
   border-radius: 7px;
   font-weight: 550;
 }
-.task-section-dialog {
+.app-dialog {
   width: min(640px, calc(100vw - 32px));
   max-height: min(80vh, 720px);
   padding: 0;
@@ -192,10 +192,10 @@
   box-shadow: 0 18px 55px #2d293833;
   color: var(--text);
 }
-.task-section-dialog::backdrop {
+.app-dialog::backdrop {
   background: #211a2a66;
 }
-.task-section-dialog-head {
+.app-dialog-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -203,11 +203,11 @@
   padding: 14px 18px;
   border-bottom: 1px solid #eee9f3;
 }
-.task-section-dialog-head h2 {
+.app-dialog-head h2 {
   margin: 0;
   font-size: 1.05rem;
 }
-.task-section-dialog-body {
+.app-dialog-body {
   padding: 16px 18px 20px;
   overflow-y: auto;
   font-size: 0.88rem;
@@ -416,7 +416,17 @@
   white-space: nowrap;
 }
 .info-tip-text {
+  top: 100%;
+  border-top: 6px solid transparent;
+  background-clip: padding-box;
+  max-height: min(50vh, 360px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   white-space: pre-line;
+}
+.info-tip:hover .info-tip-text,
+.info-tip:focus-within .info-tip-text {
+  pointer-events: auto;
 }
 .annex-guidance {
   display: flex;
@@ -428,21 +438,21 @@
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.75rem;
 }
-.final-report {
+.annex-draft-editor {
   display: grid;
   gap: 12px;
 }
-.final-report-bar {
+.annex-draft-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
 }
-.final-report-bar output {
+.annex-draft-bar output {
   color: var(--muted);
   font-size: 0.8rem;
 }
-.final-report-warning {
+.annex-draft-warning {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -453,13 +463,15 @@
   font-size: 0.76rem;
   font-weight: 550;
 }
-.final-report-actions {
+.annex-draft-actions {
   display: flex;
   gap: 4px;
   margin-left: auto;
 }
-.final-report-actions button {
+.annex-draft-actions button {
+  flex: none;
   gap: 6px;
+  white-space: nowrap;
   min-height: 32px;
   padding: 5px 12px;
   border-radius: 8px;
@@ -565,7 +577,7 @@
   .topbar-task-slot .task-role {
     display: none;
   }
-  .final-report-warning {
+  .annex-draft-warning {
     order: 3;
   }
 }
@@ -648,11 +660,49 @@
     align-items: flex-start;
   }
 }
-.task-section-dialog[open] {
+.app-dialog[open] {
   display: flex;
   flex-direction: column;
 }
-.task-section-dialog-body {
+.app-dialog-body {
   flex: 1;
   min-height: 0;
+}
+.app-dialog.is-wide {
+  width: min(920px, calc(100vw - 32px));
+  max-height: min(92vh, 1000px);
+}
+.req-format-button {
+  display: inline-flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.app-dialog-body .annex-draft-bar {
+  position: sticky;
+  top: -16px;
+  z-index: 1;
+  margin-top: -16px;
+  padding: 10px 0;
+  background: #fff;
+}
+@media (max-width: 600px) {
+  .req-viewer-head:has(.req-format-button) {
+    flex-wrap: wrap;
+  }
+  .req-viewer-head:has(.req-format-button)::after {
+    content: '';
+    flex-basis: 100%;
+  }
+  .req-viewer-head .req-format-button {
+    order: 1;
+  }
+  .req-cards .req-viewer-head:has(.req-format-button) h4 {
+    min-height: auto;
+  }
 }

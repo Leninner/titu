@@ -23,13 +23,18 @@ function documentText(templateId: string) {
   }
 }
 
+function printedValue(templateId: string, type: string | undefined, value = '') {
+  const letterDate = type === 'date' && !['anexo-5', 'anexo-11'].includes(templateId)
+  return letterDate ? value.split('-').reverse().join('/') : value
+}
+
 describe('all 16 template field contracts', () => {
   for (const template of templates.filter((item) => item.kind === 'editable')) {
     it(`${template.id}: every declared field prints and required blanks block export`, () => {
       const { draft, text } = documentText(template.id)
       expect(validateAnnex(draft).valid).toBe(true)
       for (const field of template.fields) {
-        const value = draft.fields[field.key]
+        const value = printedValue(template.id, field.type, draft.fields[field.key])
         if (value)
           expect(text, `Missing rendered field ${template.id}.${field.key}`).toContain(value)
         if (field.required) {
@@ -51,8 +56,20 @@ it('validates the person who actually signs a company letter', () => {
   const draft = annexFixture('anexo-3')
   draft.profileSnapshot.email = ''
   expect(validateAnnex(draft).valid).toBe(true)
-  draft.fields.emailRepresentante = ''
-  expect(validateAnnex(draft).errors.emailRepresentante).toBeDefined()
+  draft.profileSnapshot.emailRepresentante = ''
+  expect(validateAnnex(draft).errors['profile.emailRepresentante']).toBeDefined()
+})
+
+it('signs company letters with the representative contact, following UT-08 and UT-18', () => {
+  for (const templateId of ['anexo-3', 'cumplimiento-empresarial']) {
+    const model = buildDocumentModel(annexFixture(templateId))
+    const letter = [...model.paragraphs, ...model.signature].map((item) => item.text).join('\n')
+    expect(letter).toContain('Carrera de Software')
+    expect(letter).toContain('Empresa Sintética S.A.')
+    expect(letter).toContain('No teléfono celular: 0993333333')
+    expect(letter).not.toContain('De mi consideración')
+    expect(letter.includes('Presente')).toBe(templateId === 'cumplimiento-empresarial')
+  }
 })
 
 it('requires tutor for Anexo 8 and address/title for all Anexo 14 variants', () => {
@@ -98,13 +115,32 @@ it('maps generated evidence without calling a request a received certificate', (
   expect(() => templateEvidenceCategory('anexo-12')).toThrow()
 })
 
-it('preserves source modality and conditional headings despite source line breaks', () => {
-  const project = buildDocumentModel(annexFixture('anexo-14-research'))
-  expect(project.headings.map((item) => item.text).join(' ')).toContain(
-    'MODALIDAD PROYECTO DE INVESTIGACIÓN',
-  )
-  const revised = buildDocumentModel(annexFixture('recalificacion-research'))
-  expect(revised.headings.map((item) => item.text).join(' ')).toContain(
-    'inferior a 7.00/10.00 puntos',
-  )
+it('starts letters at the date, without the annex heading, and spaces their blocks', () => {
+  const letter = buildDocumentModel(annexFixture('anexo-10-research'))
+  expect(letter.headings).toEqual([])
+  const [date, recipient, role, faculty, greeting, salutation] = letter.paragraphs
+  expect(date.text).toMatch(/^.+, \d{2}\/\d{2}\/\d{4}$/)
+  expect(date.spaceAfter).toBeGreaterThanOrEqual(24)
+  expect(date.align).toBe('right')
+  expect([recipient, role, faculty].map((item) => item.spaceAfter)).toEqual([0, 0, 0])
+  expect(greeting.spaceAfter).toBeGreaterThanOrEqual(24)
+  expect(salutation.text).toBe('De mi consideración:')
+  expect(salutation.spaceAfter).toBeGreaterThanOrEqual(12)
+  const report = buildDocumentModel(annexFixture('anexo-5'))
+  expect(report.headings.map((item) => item.text).join(' ')).toContain('ANEXO 5')
+})
+
+it('signs the Anexo 14 with the address before the email, as each modality format does', () => {
+  const signer = (templateId: string) =>
+    buildDocumentModel(annexFixture(templateId)).signature.map((item) => item.text)
+  for (const templateId of ['anexo-14-research', 'anexo-14-article']) {
+    const lines = signer(templateId)
+    expect(lines.at(-2)).toBe('Dirección: Dirección de prueba')
+    expect(lines.at(-1)).toBe('Correo electrónico institucional: estudiante@example.test')
+  }
+  expect(signer('anexo-14-complexivo').slice(-2)).toEqual([
+    'Dirección: Dirección de prueba',
+    'Correo electrónico: estudiante@example.test',
+  ])
+  expect(signer('anexo-10-research').join(' ')).not.toContain('Dirección')
 })

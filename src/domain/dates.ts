@@ -3,6 +3,12 @@ import type { CalendarEvent, CatalogVersion, Workspace } from './types'
 export const ECUADOR_TIME_ZONE = 'America/Guayaquil'
 const dayMilliseconds = 86_400_000
 
+export const letterDate = (isoDate: string) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(isoDate) ? isoDate.split('-').reverse().join('/') : isoDate
+
+export const isoFromLetterDate = (text: string) =>
+  /^\d{2}\/\d{2}\/\d{4}$/.test(text.trim()) ? text.trim().split('/').reverse().join('-') : text
+
 export function ecuadorDate(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: ECUADOR_TIME_ZONE,

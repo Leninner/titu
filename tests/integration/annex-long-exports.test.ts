@@ -84,8 +84,6 @@ it('exports every short and long variant without losing text or entering the foo
           expect(extracted, `${template.id}/${length}: missing activity`).toContain(
             normalize(row.description),
           )
-        for (const note of model.notes)
-          expect(extracted, `${template.id}/${length}: missing note`).toContain(normalize(note))
         inventory.push({ id: template.id, length, pages: document.numPages })
         await document.destroy()
       }

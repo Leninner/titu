@@ -22,6 +22,15 @@ export function ProfileSettings() {
     aprobacionResolucion: 'Resolución de aprobación o cambio',
     tutor: 'Tutor',
   } as const
+  const companyFields = {
+    empresa: 'Empresa o institución',
+    representante: 'Representante',
+    cargoRepresentante: 'Cargo del representante',
+    cedulaRepresentante: 'Cédula del representante',
+    emailRepresentante: 'Correo del representante',
+    telefonoRepresentante: 'Teléfono convencional del representante',
+    celularRepresentante: 'Celular del representante',
+  } as const
   return (
     <div className="page narrow">
       <h1>Tu expediente</h1>
@@ -80,6 +89,26 @@ export function ProfileSettings() {
           />{' '}
           El trabajo se realiza en una empresa
         </label>
+        {profile.aplicaEmpresa && (
+          <fieldset className="profile-company">
+            <legend>Empresa</legend>
+            <div className="form-grid">
+              {Object.entries(companyFields).map(([key, label]) => (
+                <Field
+                  key={key}
+                  name={key}
+                  label={label}
+                  type={key === 'emailRepresentante' ? 'email' : 'text'}
+                  value={profile[key as keyof typeof companyFields]}
+                  onChange={(event) => {
+                    setSaved(false)
+                    setProfile({ ...profile, [key]: event.target.value })
+                  }}
+                />
+              ))}
+            </div>
+          </fieldset>
+        )}
         <p className="hint">
           Cambiar de modalidad o período conserva tus archivos y envíos. Revisa los borradores
           afectados antes de exportarlos.

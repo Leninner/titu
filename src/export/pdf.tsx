@@ -24,7 +24,7 @@ function Paragraph({ item }: { item: DocumentParagraph }) {
       style={{
         fontSize: item.size ?? 10,
         fontWeight: item.bold ? 700 : 400,
-        textAlign: item.center ? 'center' : 'left',
+        textAlign: item.align ?? 'left',
         marginBottom: item.spaceAfter ?? 6,
         lineHeight: 1.15,
       }}
@@ -85,7 +85,8 @@ export function AnnexPdf({ model }: { model: DocumentModel }) {
               style={{
                 fontSize: item.size ?? 10,
                 fontWeight: item.bold ? 700 : 400,
-                textAlign: model.report ? 'center' : 'left',
+                textAlign: item.align ?? 'left',
+                marginTop: item.spaceBefore ?? 0,
                 marginBottom: 2,
               }}
             >
@@ -93,11 +94,6 @@ export function AnnexPdf({ model }: { model: DocumentModel }) {
             </Text>
           ))}
         </View>
-        {model.notes.map((note, index) => (
-          <Text key={`n${index}`} style={{ fontSize: 9, lineHeight: 1.15, marginBottom: 7 }}>
-            {note}
-          </Text>
-        ))}
         <View
           fixed
           style={{

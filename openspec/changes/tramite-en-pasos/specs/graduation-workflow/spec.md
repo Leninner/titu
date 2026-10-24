@@ -164,6 +164,28 @@ El sistema SHALL preparar el Anexo 11 dentro del trámite con las fechas y activ
 - **WHEN** edita o exporta un Anexo 5 u 11
 - **THEN** las notas del formato no forman parte del documento y se consultan en un tooltip.
 
+#### Scenario: Formato del Anexo 10 en el trámite
+
+- **WHEN** abre "Formato" en la tarjeta del Anexo 10 de la designación de calificadores
+- **THEN** ve la solicitud llena con su perfil, edita lugar, fecha, destinatario y teléfonos y la descarga en Word o PDF sin que se guarde en Documentos
+- **AND** la tarjeta sigue pidiendo el Anexo 10 firmado.
+
+#### Scenario: Formato del cumplimiento empresarial
+
+- **WHEN** el trabajo se realiza en una empresa con sus datos en Ajustes y abre "Formato" en la tarjeta del cumplimiento empresarial
+- **THEN** la carta sale llena con la empresa y su representante, con los teléfonos del representante, y solo pide lugar, fecha y destinatario.
+
+#### Scenario: Carta exportada
+
+- **WHEN** exporta una solicitud del estudiante
+- **THEN** el documento contiene solo la carta, empieza en la fecha sin el encabezado del anexo, separa sus bloques con espacios, lleva la fecha en dd/mm/aaaa y 3 cm libres sobre la línea de firma, y las notas del formato se consultan en un tooltip.
+
+#### Scenario: Espacio para la firma del tutor
+
+- **WHEN** exporta un Anexo 5 u 11 en PDF o Word
+- **THEN** sobre la línea de firma del tutor quedan al menos 3 cm libres y la línea mide al menos 9 cm, suficiente para un sello de firma electrónica o una firma manual.
+- **AND** bajo la línea van solo el nombre del tutor y "TUTOR TRABAJO TITULACIÓN", sin la etiqueta "NOMBRE Y FIRMA".
+
 ### Requirement: Textos del proceso
 
 El sistema SHALL nombrar trámites y requisitos por el documento o acto, su emisor y destinatario cuando importan, y SHALL omitir textos que expliquen cómo usar la interfaz.

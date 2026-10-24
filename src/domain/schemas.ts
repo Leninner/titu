@@ -27,6 +27,13 @@ export const profileSchema = z.object({
   tutor: text,
   aplicaEmpresa: z.boolean(),
   initialStage: text,
+  empresa: text.default(''),
+  representante: text.default(''),
+  cargoRepresentante: text.default(''),
+  cedulaRepresentante: text.default(''),
+  emailRepresentante: text.default(''),
+  telefonoRepresentante: text.default(''),
+  celularRepresentante: text.default(''),
 })
 export const draftSchema = z.object({
   id,

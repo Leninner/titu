@@ -41,6 +41,13 @@
 - [x] 5.14 Anexo 11 en solo lectura en el modal del mapa. Probar en integración y verificar con `playwright-cli`.
 - [x] 5.15 Encabezado compacto: título en el breadcrumb con responsable y menú, pasos más bajos y acciones del Anexo 11 como íconos.
 - [x] 5.16 "Cómo se tramita" como línea de tiempo con íconos y responsables, botón a la derecha del resumen.
+- [x] 5.17 Espacio de firma del tutor en los Anexos 5 y 11: 3 cm libres sobre una línea de 9,7 cm en PDF y Word, sin la etiqueta "NOMBRE Y FIRMA". Probar en `tests/integration/annex-exports.test.ts` y revisar los archivos exportados.
+- [x] 5.18 Catálogo de calificadores del Proyecto contrastado con el Anexo 10: detalle de cédula y matrícula, guía con suplentes, calendario, orden cronológico, plazos del promedio menor a 7 y contacto. Probar en `tests/unit/catalog.test.ts`.
+- [x] 5.19 Cartas exportadas solo como carta, desde la fecha y con bloques espaciados, con fecha dd/mm/aaaa, 3 cm para la firma y notas del formato en el tooltip sin restos `HYPERLINK`. Probar en `tests/integration/annex-exports.test.ts`.
+- [x] 5.20 Botón "Formato" en las tarjetas con plantilla (Anexo 10) con diálogo editable y descarga Word y PDF sin guardar en Documentos. Probar en integración y verificar con `playwright-cli` en escritorio y móvil.
+- [x] 5.21 Datos de la empresa en el perfil (Ajustes) con migración desde los borradores, cartas de empresa fieles a UT-08 y UT-18 y botón "Formato" en el Anexo 3 y en el cumplimiento empresarial. Probar en unit e integración y verificar con `playwright-cli`.
+- [x] 5.22 Quitar el pie de página y el encabezado repetido de la tabla de las actividades leídas de los Anexo 5 y al armar el Anexo 11. Probar en `tests/unit/monthly-report.test.ts`.
+- [x] 5.23 Botón "Formato" del Anexo 14 por modalidad y firma con dirección y correo institucional según los formatos. Probar en unit e integración y verificar con `playwright-cli`.
 
 ## 6. Cierre
 

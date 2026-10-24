@@ -1,5 +1,6 @@
 import type { AnnexDraft, MonthlyReportAnalysis, StudentProfile } from './types'
 import { createDraft, validateAnnex } from './annex'
+import { withoutPageFurniture } from './monthly-report'
 
 export function buildFinalReport(monthlyRevisions: AnnexDraft[]): AnnexDraft {
   if (!monthlyRevisions.length) throw new Error('Seleccionar al menos un informe mensual')
@@ -85,7 +86,11 @@ export function finalReportActivities(reports: UploadedMonthlyReport[]) {
   return [...reports]
     .sort((a, b) => a.month.localeCompare(b.month))
     .flatMap((report) => report.analysis.activities ?? [])
-    .map((activity) => ({ id: crypto.randomUUID(), ...activity }))
+    .map((activity) => ({
+      id: crypto.randomUUID(),
+      date: activity.date,
+      description: withoutPageFurniture(activity.description),
+    }))
     .sort((a, b) => a.date.localeCompare(b.date))
 }
 

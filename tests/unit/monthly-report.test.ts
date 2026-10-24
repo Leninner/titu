@@ -7,6 +7,7 @@ import {
   monthlyGaps,
   progressByMonth,
 } from '../../src/domain/monthly-report'
+import { finalReportActivities } from '../../src/domain/final-report'
 import { emptyWorkspace, newProfile } from '../../src/domain/types'
 import type { DocumentVersion, MonthlyReportAnalysis, Workspace } from '../../src/domain/types'
 
@@ -135,4 +136,31 @@ it('follows the progress declared by each included report and its change from th
   ])
   expect(progress.current).toEqual({ month: '2026-11', progress: 40, delta: -5 })
   expect(progressByMonth(monthlyCoverage([], workspace(), catalog, true)).current).toBeUndefined()
+})
+
+it('keeps the page footer and the repeated table heading out of the activities', () => {
+  const text = 'ANEXO 5 INFORME MENSUAL DEL AVANCE PORCENTAJE DE AVANCE DE ACUERDO AL CRONOGRAMA: 65 %. ' +
+    'Fecha Actividad. 2026-09-17 Se probó la plataforma con solicitudes reales del experimento. ' +
+    'INSTRUCTIVO DEL REGLAMENTO PARA LA TITULACIÓN DE GRADO EN LA UNIVERSIDAD TÉCNICA DE AMBATO Página 1 de 2 ' +
+    'Fecha Actividad. 2026-09-18 Ajuste de la política de tamaño. ' +
+    'INSTRUCTIVO DEL REGLAMENTO PARA LA TITULACION DE GRADO EN LA UNIVERSIDAD TECNICA DE AMBATO Pagina 2 de 2'
+  expect(analyzeMonthlyReport(text).activities).toEqual([
+    { date: '2026-09-17', description: 'Se probó la plataforma con solicitudes reales del experimento.' },
+    { date: '2026-09-18', description: 'Ajuste de la política de tamaño.' },
+  ])
+})
+
+it('cleans activities read before the page footer was filtered', () => {
+  const activities = finalReportActivities([{
+    versionId: 'v1',
+    month: '2026-10',
+    analysis: {
+      recognized: true,
+      activities: [{
+        date: '2026-10-23',
+        description: 'Se prepararon los documentos. INSTRUCTIVO DEL REGLAMENTO PARA LA TITULACIÓN DE GRADO EN LA UNIVERSIDAD TÉCNICA DE AMBATO Página 1 de 2',
+      }],
+    },
+  }])
+  expect(activities.map((activity) => activity.description)).toEqual(['Se prepararon los documentos.'])
 })

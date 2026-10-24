@@ -38,10 +38,11 @@ const thesis = doc(
 const business = {
   ...doc(
     'empresa',
-    ['Cumplimiento empresarial', 'Informe de cumplimiento al 100 %, firmado por el coordinador de la empresa'],
+    ['Empresa al 100 %', 'Informe de cumplimiento empresarial al 100 %, firmado por el representante de la empresa'],
     'empresa',
   ),
   companyOnly: true,
+  template: 'cumplimiento-empresarial',
 }
 const noDebt = doc('no-adeudar', ['Formulario de no adeudar', 'Vigente: vale 30 días desde su emisión'], 'no-adeudar')
 const legalCertificate = doc(
@@ -119,11 +120,12 @@ add({
     {
       ...doc(
         'compromiso',
-        ['Anexo 3 · Carta de compromiso', 'Firmada por el representante de la institución contraparte, con el alcance del trabajo'],
+        ['Anexo 3 · Compromiso', 'Firmada por el representante de la institución contraparte, con el alcance del trabajo'],
         'compromiso',
       ),
       companyOnly: true,
       modalities: work,
+      template: 'anexo-3',
     },
     {
       ...doc(
@@ -234,7 +236,11 @@ const reviewEndorsement = doc(
   ['Aval de revisión de informes', 'Emitido por la secretaría de la Unidad de Titulación (titulacion_fisei@uta.edu.ec)'],
   'aval-informes',
 )
-const enrollment = doc('matricula', ['Folio y matrícula', 'Certificado de folio y matrícula del período actual'], 'matricula')
+const enrollment = doc(
+  'matricula',
+  ['Folio y matrícula', 'Certificado de folio y matrícula del período actual, obtenido del sistema. Si tus datos no están en el sistema, se pide al Coordinador de Carrera'],
+  'matricula',
+)
 const graderOutputs = [designation, gradeReports, ...grades]
 add({
   id: 'calificadores-research',
@@ -245,8 +251,11 @@ add({
   sourceIds: ['UT-16', 'UT-17', 'UT-21'],
   dependsOn: ['informe-final'],
   requirements: [
-    request('solicitud-calificadores', ['Anexo 10 · Solicitud de calificadores', 'Solicitud de designación de calificadores del Proyecto, dirigida al Presidente del Consejo Directivo']),
-    { ...personal, ...labelled(['Cédula y papeleta de votación', 'Legibles y en tamaño real']) },
+    {
+      ...request('solicitud-calificadores', ['Anexo 10 · Solicitud', 'Solicitud de designación de calificadores del Proyecto, dirigida al Presidente del Consejo Directivo']),
+      template: 'anexo-10-research',
+    },
+    { ...personal, ...labelled(['Cédula y papeleta de votación', 'Actualizadas, legibles y en tamaño real']) },
     business,
     final,
     monthly,
@@ -261,14 +270,16 @@ add({
   guide: {
     steps: [
       step('prepare', 'Estudiante', 'Reúne los documentos en PDF con OCR y llena el Anexo 10 dirigido al Presidente del Consejo Directivo.'),
-      step('send', 'Tutor', 'Envía el informe de similitud (máximo 10 %) al Consejo Directivo por Quipux.'),
-      step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec.'),
-      step('council', 'Consejo Directivo', 'Designa a dos calificadores y te notifica.'),
+      step('send', 'Tutor', 'Envía el informe de similitud (máximo 10 %) al Consejo Directivo por Quipux y a tu correo.'),
+      step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec dentro de las fechas del calendario académico.'),
+      step('council', 'Consejo Directivo', 'Designa el par calificador y sus suplentes, al menos uno con pertinencia en el tema, y te notifica.'),
       step('grade', 'Calificadores', 'Cada uno consigna su nota en el Anexo 12 dentro de 8 días término.'),
     ],
     notes: [
       ...sendRules,
-      'El promedio mínimo es 7; con un promedio inferior procede la recalificación.',
+      'Los trámites se atienden en orden de llegada (Art. 142 del Código Orgánico Administrativo).',
+      'Con un promedio menor a 7, la Unidad de Titulación convoca en 5 días término a calificadores, tutor y estudiante; entregas el trabajo corregido en 8 días término y se califica en 5. Si no lo entregas, repruebas la titulación.',
+      'Consultas: secretaría de la Unidad de Titulación, titulacion_fisei@uta.edu.ec.',
     ],
   },
   role: 'Estudiante, Consejo Directivo y calificadores',
@@ -282,7 +293,10 @@ add({
   sourceIds: ['UT-15', 'UT-17', 'UT-21'],
   dependsOn: ['informe-final'],
   requirements: [
-    request('solicitud-calificadores', ['Anexo 10 · Solicitud de calificadores', 'Solicitud de designación de calificadores del Artículo, dirigida al Presidente del Consejo Directivo']),
+    {
+      ...request('solicitud-calificadores', ['Anexo 10 · Solicitud', 'Solicitud de designación de calificadores del Artículo, dirigida al Presidente del Consejo Directivo']),
+      template: 'anexo-10-article',
+    },
     personal,
     doc('publicacion', ['Publicación o aceptación', 'Constancia de publicación o carta de aceptación de la revista'], 'publicacion'),
     monthly,
@@ -502,7 +516,11 @@ add({
     'biblioteca-decanato',
   ],
   requirements: [
-    request('solicitud-sustentacion', ['Anexo 14 · Solicitud de sustentación', 'Solicitud de lugar, fecha y hora, dirigida al Presidente del Consejo Directivo, con la dirección del estudiante']),
+    ...all.map((modality) => ({
+      ...request('solicitud-sustentacion', ['Anexo 14 · Solicitud', 'Solicitud de lugar, fecha y hora, dirigida al Presidente del Consejo Directivo, con la dirección del estudiante']),
+      modalities: [modality],
+      template: `anexo-14-${modality}`,
+    })),
     { ...legalCertificate, ...labelled(['Certificado de aptitud legal', 'Con los mismos anexos presentados para obtenerlo']) },
     { ...noDebt, ...labelled(['Formulario de no adeudar', 'Vigente a la fecha de ingreso de la solicitud']) },
     doc('bachiller', ['Título de bachiller', 'Certificado de registro descargado del sitio del Ministerio de Educación, no el acta de grado del colegio'], 'bachiller'),
@@ -510,7 +528,7 @@ add({
     { ...designation, label: 'Notificación de calificadores designados', modalities: work },
     {
       ...business,
-      ...labelled(['Conclusión empresarial al 100 %', 'Carta de compromiso empresarial de haber concluido el trabajo al 100 %']),
+      ...labelled(['Empresa al 100 %', 'Carta de la empresa de haber concluido el trabajo al 100 %, con el tema aprobado o su modificación']),
       modalities: work,
     },
     {

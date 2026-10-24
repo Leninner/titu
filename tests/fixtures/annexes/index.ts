@@ -19,6 +19,13 @@ export function annexFixture(templateId = 'anexo-5', count = 2) {
     aprobacionFecha: '2026-07-01',
     aprobacionResolucion: 'RES-SINTETICA',
     aplicaEmpresa: true,
+    empresa: 'Empresa Sintética S.A.',
+    representante: 'Ana Representante',
+    cargoRepresentante: 'Gerente General',
+    cedulaRepresentante: '1111111111',
+    emailRepresentante: 'gerencia@empresa.test',
+    telefonoRepresentante: '032222222',
+    celularRepresentante: '0993333333',
   }
   const draft = createDraft(templateId, profile, templateId === 'anexo-5' ? '2026-10' : '')
   for (const field of template.fields)

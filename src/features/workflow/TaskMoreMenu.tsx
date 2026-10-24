@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Award,
   BookOpen,
@@ -15,10 +15,10 @@ import {
   SearchCheck,
   Send,
   TriangleAlert,
-  X,
   type LucideIcon,
 } from 'lucide-react'
 import type { GuideIcon, TaskRecord, WorkflowDefinition } from '../../domain/types'
+import { Dialog } from '../../components/Dialog'
 import { SourceCriteria } from './SourceCriteria'
 import { statusLabels } from './task-record'
 
@@ -99,37 +99,6 @@ function HistoryList({ task }: { task: TaskRecord }) {
   )
 }
 
-function SectionDialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
-  const dialog = useRef<HTMLDialogElement>(null)
-  useEffect(() => {
-    const element = dialog.current
-    if (!element) return
-    if (typeof element.showModal === 'function' && !element.open) element.showModal()
-    else element.setAttribute('open', '')
-    return () => {
-      if (typeof element.close === 'function' && element.open) element.close()
-    }
-  }, [])
-  return (
-    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
-    <dialog
-      ref={dialog}
-      className="task-section-dialog"
-      aria-labelledby="task-section-dialog-title"
-      onCancel={(event) => { event.preventDefault(); onClose() }}
-      onClick={(event) => { if (event.target === event.currentTarget) onClose() }}
-    >
-      <div className="task-section-dialog-head">
-        <h2 id="task-section-dialog-title">{title}</h2>
-        <button type="button" className="icon-button" aria-label="Cerrar" onClick={onClose}>
-          <X size={18} aria-hidden="true" />
-        </button>
-      </div>
-      <div className="task-section-dialog-body">{children}</div>
-    </dialog>
-  )
-}
-
 export function TaskSectionDialog({
   section,
   task,
@@ -147,9 +116,9 @@ export function TaskSectionDialog({
     sources: () => <SourceCriteria sourceIds={definition.sourceIds} />,
   }
   return (
-    <SectionDialog title={sectionTitles[section]} onClose={onClose}>
+    <Dialog title={sectionTitles[section]} onClose={onClose}>
       {content[section]()}
-    </SectionDialog>
+    </Dialog>
   )
 }
 

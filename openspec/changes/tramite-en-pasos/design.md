@@ -163,7 +163,7 @@ Regla: los títulos y etiquetas describen **qué documento o acto es**, con su e
 - **Trámite de completado automático.** "Informes mensuales de avance" no tiene pasos, correo ni envío (el tutor los envía por Quipux): muestra solo las tarjetas por mes y queda `completed` en cuanto todos los meses del rango tienen su Anexo 5 firmado con el tema aprobado; vuelve a `preparing` si deja de cumplirse.
 - **Informe final con editor del Anexo 11.** Preparar muestra el editor del Anexo 11 dentro del trámite. Se crea con las actividades (fecha y descripción) leídas de los Anexo 5 subidos en los informes mensuales, ordenadas por fecha, con 100 % de avance; las filas se pueden corregir y volver a importar. Descargar el PDF o Word solo entrega el archivo: el Anexo 11 sin firmar no se guarda en Documentos ni se vincula al trámite. Las tarjetas de Resultado nunca ofrecen versiones generadas desde un borrador, porque una salida siempre es un documento recibido. Enviar es el correo al tutor; Resultado pide el Anexo 11 firmado (`final`), que se encadena a la designación de calificadores y a aptitud legal. Desaparece el checkbox de coincidencia: la importación garantiza que las actividades vienen de los mensuales. Migración: las versiones `final` ya vinculadas a ese trámite pasan a salidas.
 - **"Cómo se tramita" como línea de tiempo.** Las instrucciones del catálogo pasan a una guía estructurada: pasos en orden, cada uno con ícono y responsable, y notas "Ten en cuenta". El botón va a la derecha del resumen.
-- **Encabezado compacto del trámite.** El título vive solo en el header de breadcrumbs (como en "Mi proceso"), junto con el responsable y el menú "⋯". La página empieza con el resumen y los pasos, más bajos. En el editor del Anexo 11, volver a importar, Word y PDF son botones de ícono con nombre accesible en una barra fina sobre el documento, y el aviso de avance es una etiqueta pequeña; no van al header porque solo aplican a Preparar.
+- **Encabezado compacto del trámite.** El título vive solo en el header de breadcrumbs (como en "Mi proceso"), junto con el responsable y el menú "⋯". La página empieza con el resumen y los pasos, más bajos. En el editor del Anexo 11, "Reimportar actividades", "Word" y "PDF" son botones pequeños con ícono y texto en una barra fina sobre el documento, y el aviso de avance es una etiqueta pequeña; no van al header porque solo aplican a Preparar.
 - **Anexo 11 en el modal del mapa.** El modal muestra el Anexo 11 generado en solo lectura; se edita en el trámite completo. Si aún no existe, lo indica.
 - **Notas de los formatos de informe como tooltip.** En los Anexos 5 y 11, el bloque "NOTA" del formato no se muestra en el documento ni se exporta; se consulta en un tooltip "Notas del formato" del editor.
 - **Flechas en el mapa.** Cada conexión del mapa termina en una punta de flecha hacia el trámite siguiente, con el color de su estado.
@@ -179,6 +179,43 @@ Regla: los títulos y etiquetas describen **qué documento o acto es**, con su e
 - No adeudar: lo tramita la Secretaría de Facultad y las dependencias; la vigencia de 30 días es firme.
 - Trámites excepcionales con requisitos propios según los Anexos 4, 8, 9, 21 y la solicitud de recalificación; los Anexos 6 y 7 los presenta el tutor y no se modelan como trámites del estudiante.
 - Desarrollo e informe final: el tutor envía por Quipux a la secretaría de la Unidad de Titulación, con copia al docente responsable.
+
+## Cartas de la empresa (decidido por el usuario, 2026-10-23)
+
+- **Datos de la empresa en Ajustes.** El perfil guarda empresa, representante, cargo, cédula, correo, teléfono convencional y celular del representante; se muestran cuando el trabajo se realiza en una empresa. El Anexo 3 y el informe de cumplimiento empresarial los toman del perfil y solo piden lugar, fecha y destinatario. Al abrir la app, un perfil sin esos datos se completa con los del último borrador de empresa.
+- **Botón "Formato"** en la tarjeta del cumplimiento empresarial (designación de calificadores y día y hora) y en la del Anexo 3 (propuesta).
+- **Ajustes manda.** Al abrir "Formato", el borrador toma el perfil actual (datos personales y de la empresa); un borrador creado antes de llenar Ajustes ya no queda con los datos vacíos.
+- **Lugar y fecha a la derecha** en todas las cartas, como en los formatos. Los párrafos del modelo declaran su alineación (izquierda, centro o derecha) y el editor, el PDF y el Word la respetan.
+- Etiquetas cortas para que quepan junto al botón: "Empresa al 100 %" y "Anexo 3 · Compromiso". En móvil, el botón "Formato" baja a una segunda línea.
+- **Fieles a los formatos UT-08 y UT-18:** el destinatario incluye "Carrera de …"; no llevan "De mi consideración"; el Anexo 3 no lleva "Presente"; la firma usa los teléfonos del representante, nunca los del estudiante.
+
+## Formato del Anexo 14 (decidido por el usuario, 2026-10-24)
+
+- La tarjeta del Anexo 14 en "Solicitud de fecha de sustentación o incorporación" tiene el botón "Formato", con la variante de la modalidad (Proyecto, Artículo o complexivo).
+- Firma según UT-22, UT-23 y UT-24: dirección antes del correo; "Correo electrónico institucional" en Proyecto y Artículo, "Correo electrónico" en complexivo.
+- Los requisitos ya coincidían con el anexo; no cambian. Las etiquetas pasan a "Anexo 14 · Solicitud" y "Empresa al 100 %" para que quepan junto al botón.
+
+## Actividades del Anexo 11 sin texto del formato (decidido por el usuario, 2026-10-23)
+
+- Al leer un Anexo 5, una actividad que cruza de página arrastraba el pie ("INSTRUCTIVO DEL REGLAMENTO… Página 1 de 2") y el encabezado repetido de la tabla ("Fecha Actividad"). Ese texto se quita de cada descripción al analizar el Anexo 5 y otra vez al armar el Anexo 11, para limpiar los análisis ya guardados. Un Anexo 11 ya creado se corrige con "Reimportar actividades".
+
+## Firma del tutor en los informes (decidido por el usuario, 2026-10-23)
+
+- El Anexo 11 exportado dejaba unos 20 pt sobre la línea de firma: no cabía el sello de firma electrónica (FirmaEC) ni una firma manual.
+- Los informes (Anexos 5 y 11) reservan 85 pt (3 cm) sobre la línea y la línea pasa de 41 a 55 guiones bajos (unos 9,7 cm). El bloque de firma no se parte entre páginas.
+- Bajo la línea van el nombre del tutor y "TUTOR TRABAJO TITULACIÓN". Se quita "NOMBRE Y FIRMA": el nombre ya está impreso.
+- El espacio sale del modelo (`signatureSpace`) y lo aplican igual el PDF y el Word. Las cartas mantienen sus 20 pt.
+
+## Designación de calificadores y formatos de solicitud (decidido por el usuario, 2026-10-23)
+
+- **Catálogo contra el Anexo 10 de Proyecto.** Cédula y papeleta "actualizadas, legibles y en tamaño real". Folio y matrícula con la excepción: si los datos no están en el sistema, se pide al Coordinador de Carrera. La guía nombra el par calificador con suplentes (al menos uno con pertinencia en el tema), la entrega según el calendario académico, el orden cronológico de atención (Art. 142 del COA), los plazos del promedio menor a 7 (convocatoria en 5 días término, trabajo corregido en 8 y nueva calificación en 5; sin entrega se reprueba la titulación) y el contacto de la secretaría de la Unidad de Titulación.
+- **Las cartas se exportan solo como carta.** Los adjuntos ya son los requisitos de Preparar; ADJUNTAR, procedimiento, normativa y contactos del formato no se exportan y se consultan en el tooltip "Notas del formato", como en los Anexos 5 y 11. Se limpian los restos `HYPERLINK "…"` del texto fuente.
+- **La carta empieza en la fecha.** Sin el encabezado del anexo (número, título del formato y modalidad), que solo conservan los informes. Bloques separados para leerla fácil: 24 pt después de la fecha y de "Presente. -", destinatario, cargo y facultad juntos, y 12 pt entre los párrafos del cuerpo.
+- **Fecha de las cartas en dd/mm/aaaa**, como pide el formato ("Lugar, dd/mm/aa"), tanto en el documento exportado como en el editor; se guarda en ISO. Los informes conservan su fecha.
+- **Firma del estudiante con 3 cm libres** en todas las cartas, igual que la del tutor (`signatureSpace` de 85 pt para todos los documentos).
+- **Formato dentro del trámite.** Un requisito de archivo puede declarar su formato (`template`). Su tarjeta muestra el botón "Formato", que abre un diálogo con el documento editable, lleno con el perfil (lugar Ambato y fecha de hoy al crearlo) y botones Word y PDF. Como el Anexo 11, la descarga no se guarda en Documentos; la tarjeta sigue pidiendo el PDF firmado. Se aplica al Anexo 10 de Proyecto y de Artículo. El Anexo 10 no tiene hora: solo lugar, fecha, destinatario y teléfonos; los teléfonos se copian de la última carta que los tenga. La etiqueta pasa a "Anexo 10 · Solicitud" para que quepa junto al botón; el detalle sigue en el tooltip. El diálogo y el editor son componentes compartidos (`Dialog`, `AnnexDraftEditor`) que también usan el menú "⋯" y el Anexo 11.
+- Los tooltips tienen alto máximo con scroll propio: el de "Notas del formato" medía unos 3000 px oculto y alargaba el scroll del diálogo.
+- El contacto de la guía es solo el correo institucional de la secretaría; los teléfonos personales del anexo no se incluyen.
 
 ## Verificación
 

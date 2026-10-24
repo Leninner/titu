@@ -6,19 +6,27 @@ import {
   effectiveEvent,
   eventReminder,
 } from '../../domain/dates'
-import type { Workspace } from '../../domain/types'
+import { workflowForEvent } from '../../domain/home-overview'
+import type { CalendarEvent, Workspace } from '../../domain/types'
 import { catalog } from '../../catalog'
+import { eventIcons } from '../workflow/workflow-icons'
+import { shortDate } from './short-date'
 
-function shortDate(date: string) {
-  return new Intl.DateTimeFormat('es-EC', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(`${date}T12:00:00Z`))
+function EventNode({ event }: { event: CalendarEvent }) {
+  const Icon = eventIcons[event.kind]
+  return (
+    <span className={`timeline-node has-icon is-${event.kind}`}>
+      <Icon size={12} aria-hidden="true" />
+    </span>
+  )
 }
 
 export function Timeline({ workspace, now }: { workspace: Workspace; now: Date }) {
   const today = ecuadorDate(now)
+  const hrefFor = (event: CalendarEvent) => {
+    const definition = workflowForEvent(event.id, workspace, catalog)
+    return definition ? `#/proceso/${definition.id}` : '#/fechas'
+  }
   const events = calendarForWorkspace(workspace, catalog).map(effectiveEvent)
   const expired = events.filter((event) => eventReminder(event, now).expired)
   const upcoming = events
@@ -39,11 +47,11 @@ export function Timeline({ workspace, now }: { workspace: Workspace; now: Date }
       <ol className="timeline-list">
         {recent.map((event) => (
           <li className="timeline-item past" key={event.id}>
-            <span className="timeline-node" />
+            <EventNode event={event} />
             <div className="timeline-date">
               {shortDate(event.endDate ?? event.startDate)} <span>Plazo pasado</span>
             </div>
-            <a href="#/fechas">{event.title}</a>
+            <a href={hrefFor(event)}>{event.title}</a>
           </li>
         ))}
         <li className="timeline-today">
@@ -57,7 +65,7 @@ export function Timeline({ workspace, now }: { workspace: Workspace; now: Date }
           const active = event.kind === 'window' && event.startDate <= today
           return (
             <li className={`timeline-item ${remaining <= 3 ? 'near' : ''}`} key={event.id}>
-              <span className="timeline-node" />
+              <EventNode event={event} />
               <div className="timeline-date">
                 <time dateTime={event.startDate}>
                   {shortDate(event.startDate)}
@@ -75,7 +83,7 @@ export function Timeline({ workspace, now }: { workspace: Workspace; now: Date }
                           : `En ${remaining} días`}
                 </span>
               </div>
-              <a href="#/fechas">{event.title}</a>
+              <a href={hrefFor(event)}>{event.title}</a>
               <small>
                 {event.localTime ? (
                   <>

@@ -1,9 +1,6 @@
-import { useState } from 'react'
-import { CircleAlert, FileDown, FileText, RefreshCw } from 'lucide-react'
+import { FileText, RefreshCw } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
-import { errorMessage } from '../../components/download'
-import { validateAnnex } from '../../domain/annex'
 import { ecuadorDate } from '../../domain/dates'
 import {
   buildFinalReportFromUploads,
@@ -14,12 +11,10 @@ import {
 import { analyzeMonthlyReport, reportMonth } from '../../domain/monthly-report'
 import { evidenceIdsForTask } from '../../domain/task-evidence'
 import { taskFor } from '../../domain/task-record'
-import type { AnnexDraft, DocumentVersion, Workspace } from '../../domain/types'
+import type { DocumentVersion, Workspace } from '../../domain/types'
 import { latestDraft } from '../../domain/workflow'
 import { repository } from '../../storage/repository'
-import { AnnexDocument } from '../annexes/AnnexDocument'
-import { downloadAnnex } from '../annexes/export-annex'
-import { useDraftAutosave } from '../annexes/useDraftAutosave'
+import { AnnexDraftEditor, type DraftActions } from '../annexes/AnnexDraftEditor'
 
 function monthlySources(workspace: Workspace) {
   const definition = catalog.workflowDefinitions.find((item) => item.id === 'desarrollo')!
@@ -51,27 +46,8 @@ async function readReports(workspace: Workspace): Promise<UploadedMonthlyReport[
   return reports.filter((report) => report.month)
 }
 
-function DraftEditor({ initial }: { initial: AnnexDraft }) {
+function ReimportButton({ draft, update, working, act }: DraftActions) {
   const { workspace } = useWorkspace()
-  const { draft, update, flush, status } = useDraftAutosave(initial)
-  const [error, setError] = useState('')
-  const [working, setWorking] = useState(false)
-  const [showErrors, setShowErrors] = useState(false)
-  const validation = validateAnnex(draft)
-  const warnings = Object.values(validation.warnings)
-
-  async function act(action: () => Promise<void>) {
-    setWorking(true)
-    setError('')
-    try {
-      await action()
-    } catch (failure) {
-      setError(errorMessage(failure))
-    } finally {
-      setWorking(false)
-    }
-  }
-
   const reimport = () =>
     act(async () => {
       const reports = await readReports(workspace)
@@ -81,58 +57,15 @@ function DraftEditor({ initial }: { initial: AnnexDraft }) {
         fields: { ...draft.fields, ...finalReportFields(reports, draft.fields.fecha || ecuadorDate()) },
       })
     })
-
-  const download = (format: 'pdf' | 'docx') =>
-    act(async () => {
-      setShowErrors(true)
-      if (!validation.valid) throw new Error('Completa los campos marcados antes de descargar.')
-      await downloadAnnex(await flush(), format)
-    })
-
   return (
-    <section className="final-report" aria-label="Anexo 11 · Informe final">
-      <div className="final-report-bar">
-        <output className="save-status">{status}</output>
-        {warnings.map((warning) => (
-          <span key={warning} className="final-report-warning">
-            <CircleAlert size={14} aria-hidden="true" /> {warning}
-          </span>
-        ))}
-        <div className="final-report-actions">
-          <button
-            type="button"
-            disabled={working}
-            title="Vuelve a leer las actividades de los Anexo 5"
-            onClick={() => void reimport()}
-          >
-            <RefreshCw size={15} aria-hidden="true" /> Reimportar actividades
-          </button>
-          <button type="button" disabled={working} aria-label="Descargar Word" onClick={() => void download('docx')}>
-            <FileDown size={15} aria-hidden="true" /> Word
-          </button>
-          <button
-            type="button"
-            className="primary"
-            disabled={working}
-            aria-label="Descargar PDF"
-            onClick={() => void download('pdf')}
-          >
-            <FileDown size={15} aria-hidden="true" /> PDF
-          </button>
-        </div>
-      </div>
-      {showErrors && !validation.valid && (
-        <div className="notice error" role="alert">
-          <ul>
-            {[...new Set(Object.values(validation.errors))].map((message) => <li key={message}>{message}</li>)}
-          </ul>
-        </div>
-      )}
-      {error && <p className="error" role="alert">{error}</p>}
-      <div className="document-canvas">
-        <AnnexDocument draft={draft} onChange={update} errors={showErrors ? validation.errors : {}} />
-      </div>
-    </section>
+    <button
+      type="button"
+      disabled={working}
+      title="Vuelve a leer las actividades de los Anexo 5"
+      onClick={() => void reimport()}
+    >
+      <RefreshCw size={15} aria-hidden="true" /> Reimportar actividades
+    </button>
   )
 }
 
@@ -140,7 +73,15 @@ export function FinalReportEditor() {
   const { workspace, run } = useWorkspace()
   const draft = latestDraft(workspace, 'anexo-11')
   const sources = monthlySources(workspace)
-  if (draft) return <DraftEditor key={draft.id} initial={draft} />
+  if (draft)
+    return (
+      <AnnexDraftEditor
+        key={draft.id}
+        initial={draft}
+        label="Anexo 11 · Informe final"
+        extraActions={(actions) => <ReimportButton {...actions} />}
+      />
+    )
   return (
     <section className="final-report-start" aria-label="Anexo 11 · Informe final">
       <FileText size={24} aria-hidden="true" />

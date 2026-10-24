@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { copyToNextMonth, validateAnnex } from '../../src/domain/annex'
+import { copyToNextMonth, createRequestDraft, validateAnnex, withCurrentProfile } from '../../src/domain/annex'
 import { buildFinalReport, compareFinalReport } from '../../src/domain/final-report'
 import { annexFixture } from '../fixtures/annexes'
 
@@ -59,4 +59,28 @@ it('rejects progress below the previous report, allowing equal progress', () => 
   expect(validateAnnex(current, previous).errors.avance).toContain('65%')
   current.fields.avance = '65'
   expect(validateAnnex(current, previous).errors.avance).toBeUndefined()
+})
+
+it('creates a request draft dated today in Ambato with the latest phone numbers', () => {
+  const older = { ...annexFixture('anexo-1'), updatedAt: '2026-08-01T00:00:00Z' }
+  older.fields = { ...older.fields, telefono: '032000000', celular: '0990000000' }
+  const newer = { ...annexFixture('anexo-15'), updatedAt: '2026-09-01T00:00:00Z' }
+  newer.fields = { ...newer.fields, telefono: '', celular: '0991111111' }
+  const draft = createRequestDraft('anexo-10-research', older.profileSnapshot, '2026-10-23', [older, newer])
+  expect(draft.templateId).toBe('anexo-10-research')
+  expect(draft.fields).toEqual({
+    lugar: 'Ambato',
+    fecha: '2026-10-23',
+    telefono: '032000000',
+    celular: '0991111111',
+  })
+})
+
+it('refreshes a request draft with the current profile only when it changed', () => {
+  const draft = annexFixture('cumplimiento-empresarial')
+  expect(withCurrentProfile(draft, draft.profileSnapshot)).toBe(draft)
+  const profile = { ...draft.profileSnapshot, representante: 'Nuevo Gerente', celularRepresentante: '0998887776' }
+  const refreshed = withCurrentProfile(draft, profile)
+  expect(refreshed.profileSnapshot).toMatchObject({ representante: 'Nuevo Gerente', celularRepresentante: '0998887776' })
+  expect(refreshed.fields).toEqual(draft.fields)
 })

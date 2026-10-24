@@ -17,13 +17,7 @@ const letter = [
   field('telefono', 'Teléfono convencional', false),
   field('celular', 'Teléfono celular', false),
 ]
-const company = [
-  field('empresa', 'Empresa o institución'),
-  field('representante', 'Representante de la empresa'),
-  field('cargoRepresentante', 'Cargo del representante'),
-  field('cedulaRepresentante', 'Cédula del representante'),
-  field('emailRepresentante', 'Correo del representante'),
-]
+const companyLetter = letter.filter((item) => !['telefono', 'celular'].includes(item.key))
 const report = [
   date,
   field('avance', 'Avance acumulado (%)', true, 'number'),
@@ -47,7 +41,7 @@ const specs: [string, string, number, Modality[], TemplateField[], string, boole
     'Anexo 3 · Compromiso empresarial',
     8,
     work,
-    [...letter, ...company],
+    companyLetter,
     'Representante de la empresa',
     true,
   ],
@@ -103,7 +97,7 @@ const specs: [string, string, number, Modality[], TemplateField[], string, boole
     'Cumplimiento empresarial del 100%',
     18,
     work,
-    [...letter, ...company],
+    companyLetter,
     'Representante de la empresa',
     true,
   ],

@@ -23,6 +23,13 @@ export interface StudentProfile {
   tutor: string
   aplicaEmpresa: boolean
   initialStage: string
+  empresa: string
+  representante: string
+  cargoRepresentante: string
+  cedulaRepresentante: string
+  emailRepresentante: string
+  telefonoRepresentante: string
+  celularRepresentante: string
 }
 export interface Activity {
   id: string
@@ -155,6 +162,7 @@ export interface Requirement {
   optional?: boolean
   modalities?: Modality[]
   annex?: string
+  template?: string
 }
 export type GuideIcon =
   | 'prepare'
@@ -247,6 +255,13 @@ export const newProfile = (): StudentProfile => ({
   tutor: '',
   aplicaEmpresa: false,
   initialStage: 'propuesta',
+  empresa: '',
+  representante: '',
+  cargoRepresentante: '',
+  cedulaRepresentante: '',
+  emailRepresentante: '',
+  telefonoRepresentante: '',
+  celularRepresentante: '',
 })
 export const modalityLabels: Record<Modality, string> = {
   research: 'Proyecto de Investigación',

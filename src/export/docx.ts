@@ -15,11 +15,21 @@ import {
 } from 'docx'
 import type { DocumentModel, DocumentParagraph } from './document-model'
 
+const alignments = {
+  left: AlignmentType.LEFT,
+  center: AlignmentType.CENTER,
+  right: AlignmentType.RIGHT,
+}
+
 function paragraph(item: DocumentParagraph, signature = false) {
   return new Paragraph({
-    alignment: item.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+    alignment: alignments[item.align ?? 'left'],
     keepNext: signature || item.keepNext,
-    spacing: { after: signature ? 20 : (item.spaceAfter ?? 6) * 20, line: 240 },
+    spacing: {
+      before: (item.spaceBefore ?? 0) * 20,
+      after: signature ? 20 : (item.spaceAfter ?? 6) * 20,
+      line: 240,
+    },
     children: item.text
       .split('\n')
       .flatMap((text, index) => [
@@ -66,17 +76,9 @@ export async function renderDocx(model: DocumentModel): Promise<Blob> {
   children.push(...model.afterTable.map((item) => paragraph(item)))
   children.push(
     ...model.signature.map((item, index) =>
-      paragraph({ ...item, center: model.report }, index < model.signature.length - 1),
+      paragraph(item, index < model.signature.length - 1),
     ),
   )
-  for (const note of model.notes) {
-    children.push(
-      new Paragraph({
-        children: [new TextRun({ text: note, size: 18 })],
-        spacing: { after: 100 },
-      }),
-    )
-  }
   const doc = new Document({
     title: model.title,
     creator: 'Organizador de titulación',

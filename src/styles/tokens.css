@@ -1491,26 +1491,6 @@ summary {
 .quick-action > svg {
   color: #8c7c9f;
 }
-.waiting-list {
-  margin-top: 24px;
-}
-.waiting-list h3 {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.78rem;
-  color: var(--muted);
-  font-weight: 500;
-}
-.waiting-list a {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 0.8rem;
-  padding: 7px 0;
-  color: var(--muted);
-  text-decoration: none;
-}
 .backup-reminder {
   display: flex;
   justify-content: space-between;
@@ -1939,7 +1919,6 @@ summary {
 .document-field:focus { outline: 2px solid #2b6148; outline-offset: 2px; background: #f1f4ed; }
 .document-field[aria-invalid='true'] { border-bottom: 2px solid #a52626; }
 .document-field.is-readonly { border: 0; cursor: default; }
-.annex-notes { margin-top: 28px; font-size: 10pt; }
 .annex-paper-footer { margin-top: 48px; border-top: 1px solid #d4dbd1; padding-top: 12px; font: 9px/1.5 system-ui, sans-serif; color: #586459; text-align: center; }
 .annex-paper .activities { margin: 24px 0; }
 .annex-paper .activities h3 { font: bold 12pt 'Times New Roman', serif; }
@@ -2203,3 +2182,32 @@ summary {
 @media (max-width: 700px) {
   .task-requirement-grid { grid-auto-rows: auto; }
 }
+.profile-company { min-width: 0; margin: 4px 0 16px; padding: 14px 16px 4px; border: 1px solid var(--border); border-radius: 12px; }
+.profile-company legend { padding: 0 6px; font-weight: 650; }
+.focus-stage { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; color: #71548c; font-size: 0.78rem; font-weight: 600; }
+.focus-copy p.focus-deadline { display: flex; align-items: center; gap: 6px; margin: 0 0 18px; color: #6d5a80; font-size: 0.8rem; }
+.focus-copy p.focus-deadline.is-soon { color: #9a5310; font-weight: 600; }
+.focus-copy:has(.focus-missing) > p:not(.focus-deadline) { margin-bottom: 10px; }
+.focus-missing { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
+.focus-missing a, .focus-missing-more { display: inline-block; max-width: 100%; padding: 4px 10px; overflow: hidden; border: 1px solid #ddd0ec; border-radius: 999px; background: #fff; color: #4f3b66; font-size: 0.76rem; font-weight: 550; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+.focus-missing a:hover { border-color: var(--accent); color: var(--accent); }
+.focus-missing-more { border-style: dashed; background: transparent; color: #71548c; }
+.home-current { margin-top: 30px; }
+.home-current h2 { margin-bottom: 12px; font-size: 1.05rem; }
+.current-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.current-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: start; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--text); text-decoration: none; }
+.current-card:hover { border-color: #cdb9e3; box-shadow: 0 4px 14px #3423400f; }
+.current-card-icon { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: #f1ecf7; color: #6b4a92; }
+.current-card strong { font-size: 0.88rem; font-weight: 600; line-height: 1.35; }
+.current-card-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; color: var(--accent); font-size: 0.74rem; font-weight: 600; }
+.current-card-status small { color: var(--muted); font-weight: 450; }
+.current-card-status small::before { content: '·'; margin-right: 6px; }
+.current-card.is-waiting { border-color: #efd3b5; }
+.current-card.is-waiting .current-card-icon { background: #fdf0e1; color: #9a5310; }
+.current-card.is-waiting .current-card-status { color: #9a5310; }
+.timeline-node.has-icon { display: grid; place-items: center; top: 1px; left: -12px; width: 23px; height: 23px; border-width: 1px; color: #7a5a9c; }
+.timeline-item.near .timeline-node.has-icon { color: #fff; }
+.timeline-node.has-icon.is-deadline { border-color: #e7c9a8; color: #9a5310; }
+.timeline-node.has-icon.is-administrative { border-color: #c9d7e8; color: #3d5f86; }
+.timeline-node.has-icon.is-personal { border-color: #c8e1d2; color: #287149; }
+.timeline-item.past .timeline-node.has-icon { border-color: #e7cfc9; color: #985343; }
