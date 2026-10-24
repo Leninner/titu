@@ -1,0 +1,1 @@
+PDF de imagen sin texto extraíble. La página 1 fue renderizada e inspeccionada visualmente. Consultar ../calendar-2026.md para su transcripción estructurada, contrastada con CAL-02.

@@ -1,0 +1,46 @@
+Fuente: 4. Sustentación/1. Formulario no adeudar.docx
+Versión aportada: 2026-10-22. Verificar destinatarios y vigencia.
+SHA-256 original: 2e72917e4328230791dd68219e7a9db1e3be2a9648bb5d8634a6b5032a9a6ff8
+
+PROCEDIMIENTO PARA GENERAR EL FORMULARIO DE NO ADEUDAR A DEPENDENCIAS UNIVERSITARIAS DE GRADO
+NOTA: El formulario de no adeudar es válido por treinta días a partir de la fecha de emisión por la Tesorería de la Universidad Técnica de Ambato, tiempo después del cual caduca y se debe adquirir un nuevo formulario. Debe estar vigente hasta el ingreso de la petición de día y hora.
+
+Para ingresar al módulo debe utilizar la siguiente dirección: https://servicios.uta.edu.ec/SistemaIntegrado desde un navegador Web.
+Nota: no utilizar Internet Explorer como navegador de preferencia.
+Introducir Usuario (correo institucional sin @uta.edu.ec), Contraseña y Código de verificación, dar clic en Iniciar Sesión.
+
+NOTA: En caso de tener problemas de acceso o con el correo electrónico el estudiante deberá acercarse a la DITIC - Centro de Soporte ubicado en el primer piso del edificio de Ciencias Aplicadas (Edificio localizado diagonal a la Facultad por la calle del costado).
+
+Dar clic en Gestión.
+Dar clic en FORMULARIOS de NO Adeudar.
+Dar clic en MENÚ GESTIÓN SOLICITUD
+Dar clic en SUBMENÚ REGISTRAR SOLICITUD 
+Seleccionar: GRADO: Facultad, Carrera
+Dar clic en el botón REGISTRAR SOLICITUD
+Dar clic en aceptar
+NOTA: Si la Solicitud se creó exitosamente se emite el siguiente mensaje: Su solicitud ha sido registrada. Si desea realizar una nueva Solicitud clic en el botón Nueva Solicitud, caso contrario clic en el botón Regresar.
+UNA VEZ QUE SE REGISTRA LA SOLICITUD ÉSTA PASA A LA BANDEJA DE SECRETARÍA DE FACULTAD PARA LA GENERACIÓN DE LA ORDEN. LAS ÓRDENES SE DESPACHAN DIARIAMENTE Y EN ORDEN CRONOLÓGICO.
+NOTA: SI EL ESTUDIANTE GENERÓ LA SOLICITUD POR ERROR, COMUNICARSE INMEDIATAMENTE CON LA SECRETARÍA DE FACULTAD AL CORREO: ddlm.montenegro@uta.edu.ec PARA SOLICITAR DAR DE BAJA LA ORDEN, APLICA HASTA ANTES DE SU VALIDACIÓN.
+PARA VERIFICAR EL AVANCE DEL PROCESO:
+Dar clic en MENÚ GESTIÓN SOLICITUD
+Dar clic en el SUBMENÚ AVANCE
+A continuación, se visualiza la Solicitud registrada con su respectivo Avance o Estado. 
+
+
+Ejemplo de orden:
+
+Si no adeuda o una vez realizado el pago, inicia el proceso de validación en las distintas dependencias.
+Cuando la Solicitud se encuentra en Estado Finalizado, el Solicitante puede descargar la respectiva Orden de Pago y el Formulario de No Adeudar con sus respectivas firmas, no antes.
+
+
+
+
+NOTA: No se puede descargar la Orden de Pago si en la columna “Tiene Orden de Pago” se encuentra la palabra NO. Si aparece de este modo, contactarse con el Departamento Financiero para verificar el trámite según lo dispuesto en el numeral 3 del Submenú Avance del instructivo.
+Para consultas e inquietudes al Departamento Financiero:
+Números de teléfono: 3730260 – 3730261- horario 08h00 a 13h00 y de 14h00 a 16h00.
+
+Para proceder a la descarga del respectivo Formulario se debe verificar que las columnas: “Tiene Orden de Pago”, “Tiene Factura Electrónica”, “Tiene Certificado” y “Tiene Firma Electrónica” tengan la palabra SI.
+
+
+NOTA: DE ACUERDO CON EL ART. 142 DEL CÓDIGO ORGÁNICO ADMINISTRATIVO LOS TRÁMITES SE DESPACHAN EN ORDEN CRONOLÓGICO SEGÚN SU FECHA DE INGRESO.
+

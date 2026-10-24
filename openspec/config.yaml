@@ -1,0 +1,16 @@
+schema: spec-driven
+context: |
+  Proyecto nuevo: organizador de titulación FISEI para múltiples estudiantes.
+  Aplicación estática React + TypeScript, datos locales por navegador, sin backend ni cuentas.
+  Idioma de producto y documentación: español. Zona horaria: America/Guayaquil.
+  Fuentes principales: carpeta aportada UNIDAD DE TITULACIÓN (Malla actual).
+  Cronograma y agenda julio-diciembre 2026 aportados son las fuentes principales de fechas.
+  Guía rápida 2026 es secundaria; no reemplaza cronogramas ni formatos específicos.
+  Anexos: editor en vivo, exportación Word editable y PDF con texto real.
+  Seguir las instrucciones Semble del usuario para explorar implementaciones.
+rules:
+  specs:
+    - Usar SHALL para requisitos y escenarios WHEN/THEN verificables.
+    - Conservar procedencia, modalidad, responsables y discrepancias de cada regla.
+  tasks:
+    - Agrupar tareas numeradas con casillas sin marcar y verificaciones concretas.

@@ -1,0 +1,102 @@
+
+PORTADA
+UNIVERSIDAD TÉCNICA DE AMBATO
+
+FACULTAD DE INGENIERÍA EN SISTEMAS, ELECTRÓNICA E INDUSTRIAL
+
+CARRERA DE ************* 
+
+Tema: 
+
+(COLOCAR TEMA EN MAYÚSCULAS) 
+
+Trabajo de titulación modalidad Artículo Académico, presentado previo a la obtención del título de Ingeniero/Ingeniera ******** 
+
+ÁREA: *****
+LÍNEA DE INVESTIGACIÓN: *****(aprobada por CONIN)
+AUTOR: *****(nombres y apellidos)
+TUTOR: ******** (Ing. Nombres y apellidos, Mg./PhD./MSc.)
+
+
+Ambato - Ecuador
+agosto – 2025
+(debe ir el mes que se presenta papeles para defensa)
+APROBACIÓN DEL TUTOR
+
+En calidad de tutor del trabajo de titulación con el tema: ***************(mayúsculas), desarrollado bajo la modalidad Artículo Académico por el señor ***************(nombres),  estudiante  de  la  Carrera  de Ingeniería  *********,  de la Facultad de Ingeniería en Sistemas, Electrónica e Industrial, de la Universidad Técnica de Ambato, me permito indicar que el estudiante ha sido tutorado durante todo el desarrollo del trabajo hasta su conclusión, de acuerdo a lo dispuesto en el Artículo 17 del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato y el numeral 6.3 del instructivo del reglamento referido.
+
+
+Ambato, agosto 2025. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+
+------------------------------------------
+Ing. …………………………
+TUTOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+AUTORÍA
+
+El presente trabajo de titulación titulado:  *****************(MAYÚSCULAS) es absolutamente original, auténtico y personal y ha observado los preceptos establecidos en la Disposición General Quinta del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato. En tal virtud, el contenido, efectos legales y académicos que se desprenden del mismo son de exclusiva responsabilidad del autor.
+
+
+
+Ambato, agosto 2025. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+
+------------------------------------------
+(nombres estudiante)
+C.C. …………………
+AUTOR
+
+
+
+
+
+
+
+
+
+APROBACIÓN DEL TRIBUNAL DE GRADO
+
+En calidad de par calificador del informe final del trabajo de titulación presentado por el señor ***********, estudiante de la Carrera de ************, de la Facultad de Ingeniería en Sistemas, Electrónica e Industrial, bajo la Modalidad Artículo Académico, titulado (*********mayúsculas), nos permitimos informar que el trabajo ha sido revisado y calificado de acuerdo al Artículo 19 del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato y el numeral 6.4 del instructivo del reglamento referido. Para cuya constancia suscribimos, conjuntamente con la señora Presidente del Tribunal.
+
+Ambato, agosto 2024. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+------------------------------------------
+Ing. Mg. Franklin Oswaldo Mayorga Mayorga
+PRESIDENTE DEL TRIBUNAL 
+(siempre va el Decano)
+
+
+ -------------------------------                                         ------------------------------- 
+Ing.*********                (nombres completos)                Ing.*********
+PROFESOR CALIFICADOR           PROFESOR CALIFICADOR
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+NOTA:
+
+Cada página preliminar deberá tener las respectivas firmas.
+
+TODOS LOS DOCUMENTOS EN LOS QUE DEBA FIRMAR UNA PERSONA, DEBERÁN TENER ESTAMPADAS LAS FIRMAS DIGITALES O AUTÓGRAFAS, NO MIXTAS (SIN EXCEPCIÓN)
+
+
+DEBE SER POSIBLE VERIFICAR LA VALIDEZ DE CADA FIRMA ELECTRÓNICA.
+

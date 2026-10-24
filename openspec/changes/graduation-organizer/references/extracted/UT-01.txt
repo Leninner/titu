@@ -1,0 +1,535 @@
+
+PORTADA
+UNIVERSIDAD TÉCNICA DE AMBATO
+
+FACULTAD DE INGENIERÍA EN SISTEMAS, ELECTRÓNICA E INDUSTRIAL
+
+CARRERA DE ************* 
+
+Tema: 
+
+(COLOCAR TEMA EN MAYÚSCULAS) 
+
+Trabajo de titulación modalidad Proyecto de Investigación, presentado previo a la obtención del título de Ingeniero/Ingeniera ******** 
+
+ÁREA: *****
+LÍNEA DE INVESTIGACIÓN: *****(aprobada por CONIN)
+AUTOR: *****(nombres y apellidos)
+TUTOR: ******** (Ing. Nombres y apellidos, Mg./PhD./MSc.)
+
+
+Ambato - Ecuador
+agosto – 2023
+(debe ir el mes que se presenta papeles para defensa)
+APROBACIÓN DEL TUTOR
+
+En calidad de tutor del trabajo de titulación con el tema: ***************(COLOCAR TEMA EN MAYÚSCULAS), desarrollado bajo la modalidad Proyecto de Investigación por el/la señor/señorita ***************(nombres y apellidos),  estudiante  de  la  Carrera  de Ingeniería  **********,  de la Facultad de Ingeniería en Sistemas, Electrónica e Industrial, de la Universidad Técnica de Ambato, me permito indicar que el estudiante ha sido tutorado durante todo el desarrollo del trabajo hasta su conclusión, de acuerdo a lo dispuesto en el Artículo 17 del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato y el numeral 6.3 del instructivo del reglamento referido.
+
+
+Ambato, agosto 2023. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+
+------------------------------------------
+Ing. Nombres y apellidos, Mg./PhD./MSc.
+TUTOR
+
+
+
+
+
+
+
+
+
+AUTORÍA
+
+El presente trabajo de titulación con el tema:  ***************(COLOCAR TEMA EN MAYÚSCULAS) es absolutamente original, auténtico y personal y ha observado los preceptos establecidos en la Disposición General Quinta del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato. En tal virtud, el contenido, efectos legales y académicos que se desprenden del mismo son de exclusiva responsabilidad del autor.
+
+
+
+Ambato, agosto 2023. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+
+------------------------------------------
+(nombres y apellidos)
+C.C. …………………
+AUTOR
+
+
+
+
+
+
+
+DERECHOS DE AUTOR
+
+Autorizo a la Universidad Técnica de Ambato para que reproduzca total o parcialmente este trabajo de titulación dentro de las regulaciones legales e institucionales correspondientes. Además, cedo todos mis derechos de autor a favor de la institución con el propósito de su difusión pública, por lo tanto, autorizo su publicación en el repositorio virtual institucional como un documento disponible para la lectura y uso con fines académicos e investigativos de acuerdo con la Disposición General Cuarta del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato.
+
+
+Ambato, agosto 2023. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+------------------------------------------
+(nombres y apellidos)
+C.C. …………………
+AUTOR
+
+
+
+
+
+
+
+
+APROBACIÓN DEL TRIBUNAL DE GRADO
+
+En calidad de par calificador del informe final del trabajo de titulación presentado por el/la señor/señorita ***************(nombres y apellidos), estudiante de la Carrera de ************, de la Facultad de Ingeniería en Sistemas, Electrónica e Industrial, bajo la Modalidad Proyecto de Investigación, titulado ***************(COLOCAR TEMA EN MAYÚSCULAS), nos permitimos informar que el trabajo ha sido revisado y calificado de acuerdo al Artículo 19 del Reglamento para la Titulación de Grado en la Universidad Técnica de Ambato y el numeral 6.4 del instructivo del reglamento referido. Para cuya constancia suscribimos, conjuntamente con la señora Presidente del Tribunal.
+
+Ambato, agosto 2023. 
+(debe ir el mes que se presenta papeles para defensa)
+
+
+------------------------------------------
+Ing. Elsa Pilar Urrutia Urrutia, Mg.
+PRESIDENTE DEL TRIBUNAL 
+(siempre va la Decana)
+
+
+ -------------------------------                                         ------------------------------- 
+Ing.*********                                            Ing. Nombres y apellidos, Mg./PhD./MSc.
+
+PROFESOR CALIFICADOR           PROFESOR CALIFICADOR
+
+DEDICATORIA
+
+Redactar dedicatoria en no más de una hoja.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AGRADECIMIENTO
+
+
+Redactar el agradecimiento en no más de una hoja.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ÍNDICE GENERAL DE CONTENIDOS
+PORTADAi
+APROBACIÓN DEL TUTORii
+AUTORÍAiii
+DERECHOS DE AUTORiv
+APROBACIÓN DEL TRIBUNAL DE GRADOv
+DEDICATORIAvi
+AGRADECIMIENTOvii
+ÍNDICE GENERAL DE CONTENIDOSviii
+ÍNDICE DE TABLASx
+ÍNDICE DE FIGURASxi
+ÍNDICE DE ANEXOSxii
+RESUMEN EJECUTIVOxiii
+ABSTRACTxiv
+CAPÍTULO I. MARCO TEÓRICO1
+1.1Tema de investigación1
+1.1.1 Planteamiento del problema1
+1.2Antecedentes investigativos1
+1.3Fundamentación teórica1
+1.3.1 Subtítulo tercer nivel1
+1.4Objetivos3
+1.4.1 Objetivo general3
+1.4.2 Objetivos específicos3
+CAPÍTULO II. METODOLOGÍA4
+2.1Materiales4
+2.2Métodos4
+2.2.1 Modalidad de la investigación4
+2.2.2 Población y muestra4
+2.2.3 Recolección de información4
+2.2.4 Procesamiento y análisis de datos4
+CAPÍTULO III. RESULTADOS Y DISCUSIÓN5
+3.1Subtítulo segundo nivel5
+3.2Subtítulo segundo nivel5
+3.2.1 Subtítulo tercer nivel5
+CAPÍTULO IV. CONCLUSIONES Y RECOMENDACIONES6
+4.1Conclusiones6
+4.2Recomendaciones6
+REFERENCIAS BIBLIOGRÁFICAS7
+ANEXOS8
+
+ÍNDICE DE TABLAS
+Tabla 1. Niveles en el texto2
+Tabla 2. Ejemplo de tabla dividida 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ÍNDICE DE FIGURAS
+Figura 1. Símbolos para el diagrama de flujo 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ÍNDICE DE ANEXOS
+Anexo A. Ejemplo de anexo8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+RESUMEN EJECUTIVO
+El resumen ejecutivo constará de máximo 250 palabras.
+Palabras claves: Primera letra de la primera palabra en mayúscula, las siguientes palabras con minúsculas, a excepción de nombres propios que inician con letra mayúscula. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ABSTRACT
+The executive summary will consist of a maximum of 250 words.
+Keywords: First letter of the first word in capital letters, the following words with lowercase, except for proper names that start with a capital letter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CAPÍTULO I. MARCO TEÓRICO
+Tema de investigación
+Texto
+Planteamiento del problema
+Texto
+Antecedentes investigativos
+Texto
+Fundamentación teórica
+Subtítulo tercer nivel
+Texto
+Subtítulo cuarto nivel
+Texto
+Ejemplo de lista
+Ejemplo de lista
+Subtítulo cuarto nivel
+Texto
+Subtítulo quinto nivel. Información pertinente de este nivel.
+Subtítulo quinto nivel. Información pertinente de este nivel.
+
+En la Figura 1 se muestra los símbolos para el diagrama de flujo.
+
+Figura 1. Símbolos para el diagrama de flujo [1]
+En la Tabla 1 se muestra los niveles en el texto.
+Tabla 1. Niveles en el texto
+Primer nivel
+Segundo nivel
+Tercer nivel
+Cuarto nivel
+Quinto nivel
+Capítulos
+1.1
+1.1.1
+a.
+b.
+
+
+
+1.2
+1.2.1
+a.
+b.
+
+
+
+2.1
+2.1.1
+a.
+b.
+
+
+
+2.2
+2.2.1
+a.
+b.
+
+
+
+3.1
+3.1.1
+a.
+b.
+
+
+
+3.2
+3.2.1
+a.
+b.
+
+
+
+En la Tabla 2 se muestra un ejemplo de tabla dividida.
+Tabla 2. Ejemplo de tabla dividida [1]
+Encabezado 1
+Encabezado 2
+Encabezado 3
+ Descripción
+ Descripción
+Descripción
+
+ Descripción
+Descripción
+
+ Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Descripción
+Descripción
+
+Ejemplo para mencionar la Ecuación 1 en el texto:
+
+
+(1)
+Aquí continua el texto.
+Objetivos
+Objetivo general
+Texto
+Objetivos específicos
+Objetivo 1
+Objetivo 2
+Objetivo 3
+
+
+CAPÍTULO II. METODOLOGÍA
+
+Materiales
+Texto
+Métodos
+Modalidad de la investigación
+Texto
+Población y muestra
+Texto
+Recolección de información 
+Texto
+Procesamiento y análisis de datos
+Texto
+
+
+
+
+
+
+
+
+
+CAPÍTULO III. RESULTADOS Y DISCUSIÓN
+
+Subtítulo segundo nivel
+Texto
+Subtítulo segundo nivel
+Texto
+Subtítulo tercer nivel
+Texto
+
+CAPÍTULO IV. CONCLUSIONES Y RECOMENDACIONES
+
+Conclusiones 
+Texto
+Texto
+Recomendaciones
+Texto
+Texto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+REFERENCIAS BIBLIOGRÁFICAS
+Para las referencias bibliográficas se debe utilizar la norma IEEE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXOS
+Anexo A. Ejemplo de anexo
+En la Figura A1 se muestra el diagrama de flujo. 
+
+Figura A1. Diagrama de flujo
+
+
+
+
+
+

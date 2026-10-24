@@ -1,0 +1,240 @@
+    UNIVERSIDAD TÉCNICA DE
+           AMBATO
+
+FACULTAD DE INGENIERÍA EN SISTEMAS,
+     ELECTRÓNICA E INDUSTRIAL
+
+ GUÍA PARA LA ELABORACIÓN DEL INFORME FINAL DEL
+              TRABAJO DE TITULACIÓN
+
+
+
+
+                         DESARROLLO DE PROYECTOS
+                                   ÍNDICE GENERAL DE CONTENIDOS
+
+
+1.   Hojas preliminares .............................................................................................................. 2
+2.   Cuerpo del documento ........................................................................................................ 2
+1. Hojas preliminares
+
+a. El formato de la portada se muestra en el Anexo A.
+b. En la dedicatoria y agradecimiento se debe utilizar el tipo de letra Times New Roman,
+   tamaño 10, en cursiva, justificado y con un espacio interlineal de 1,5. Asimismo, se debe
+   configurar el texto en dos columnas en la página, donde la primera columna debe
+   permanecer vacía y el contenido debe ser escrito en la segunda columna.
+c. En el índice general de contenidos se enuncian los títulos de primero, segundo, y tercer
+   nivel, en el mismo orden en que aparecen y los números de las páginas donde se encuentran.
+   Los índices: general de contenidos, tablas, figuras y anexos; deben ir sin sangría, con 1,5
+   de espacio interlineal; no se deben aparecer las referencias bibliográficas en los índices.
+   Cada índice debe comenzar en una nueva página.
+d. El resumen ejecutivo constará de máximo 250 palabras y debe resaltar la importancia del
+   tema y su actualidad. Además, se debe incluir una descripción breve de la metodología
+   aplicada, la línea de investigación y la novedad científica o propuesta en la que concluye el
+   trabajo de investigación. Se debe redactar en forma impersonal y en tiempo presente. Deben
+   incluirse entre 4 y 7 palabras clave.
+e. Las páginas preliminares: se enumeran con números romanos en minúscula (la portada se
+   toma en cuenta para enumerar, pero no se coloca el número).
+
+2. Cuerpo del documento
+
+a. Tamaño de papel: A4 (210 mm x 297 mm).
+b. Márgenes: se debe cumplir los siguientes márgenes establecidos: izquierdo de 4 cm,
+   derecho de 2.5 cm, superior de 3 cm e inferior de 2.5 cm.
+c. El texto debe llegar hasta el margen inferior establecido. Se debe evitar títulos o subtítulos
+   solos al final de la página o renglones sueltos.
+d. Se debe escribir siempre a 1,5 de espacio interlineal.
+e. El espaciado antes y después del párrafo debe ser de una interlínea (12 puntos).
+f. Los párrafos no tienen sangría.
+g. La alineación de los textos es justificada.
+h. Se debe conservar el mismo tipo de escritura, desde el comienzo hasta el final. Se debe
+   utilizar el tipo de letra: Times New Roman, tamaño 12.
+i. Numeración de hojas.
+   •    Comenzando desde el capítulo I, incluido los anexos se enumeran con números
+        arábigos, iniciando en 1.
+   •    La numeración se debe ubicar en el centro sin guiones.
+j. Redacción.
+   •    Para lograr un buen estilo se recomienda respetar rigurosamente la sintaxis, la ortografía
+        y las reglas gramaticales pertinentes.
+   •    Se debe redactar en forma impersonal (la forma impersonal corresponde a la tercera
+        persona del singular, por ejemplo: se hace, se definió, se contrastó).
+   •    El documento escrito debe tener una presentación nítida y ordenada. El trabajo debe
+        estar exento de errores, ortográficos, gramaticales y de redacción.
+k. Capítulos.
+   •    Los títulos de los capítulos se escriben con mayúscula sostenida, centrados, en negrilla,
+        sin punto final, a 3cm del borde superior de la hoja y precedidos por el numeral
+        correspondiente (números romanos). El título se separa del texto por dos interlíneas (24
+        puntos). En los títulos, cualquiera que sea su importancia, no se dejan espacios entre
+        letras, ni se utiliza subrayado.
+   •    Toda división o capítulo, a su vez, puede subdividirse en otros niveles y sólo se enumera
+        hasta el tercer nivel como se muestra en la Tabla 1. El cuarto nivel se señala con letras
+        (ejemplo: a.). Para el quinto nivel se debe utilizar viñetas, conservando el mismo estilo
+        de ésta, a lo largo de todo el documento.
+
+                                     Tabla 1. Niveles en el texto
+
+    Primer nivel          Segundo nivel       Tercer nivel        Cuarto nivel       Quinto nivel
+                                                             a.                  •
+                     1.1                   1.1.1
+                                                             b.                  •
+                                                             a.                  •
+                     1.2                   1.2.1
+                                                             b.                  •
+                                                             a.                  •
+                     2.1                   2.1.1
+                                                             b.                  •
+ Capítulos
+                                                             a.                  •
+                     2.2                   2.2.1
+                                                             b.                  •
+                                                             a.                  •
+                     3.1                   3.1.1
+                                                             b.                  •
+                                                             a.                  •
+                     3.2                   3.2.1
+                                                             b.                  •
+
+
+
+   •    Las subdivisiones, las viñetas y sus textos acompañantes deben presentarse sin sangría
+        y justificados.
+   •   Los títulos de segundo y tercer nivel se escriben con mayúscula la letra inicial al margen
+       izquierdo y en negrilla, no llevan punto final y separados del texto o contenido por dos
+       interlíneas (24 puntos).
+   •   Los títulos de cuarto nivel se escriben con mayúscula la letra inicial, en cursiva y
+       negrilla y separados del texto o contenido por una interlínea (12 puntos).
+   •   Los títulos de quinto nivel se escriben con mayúscula la letra inicial, en cursiva y
+       negrilla. El texto continúa en el mismo renglón, dejando un espacio, después del punto.
+   •   Las listas en el texto del documento deben presentarse con viñetas y con una sangría
+       francesa en 0.63 cm antes del texto.
+l. Figuras y tablas
+   •   Se deben colocar en la misma página en que se mencionan o en la siguiente.
+   •   La referencia bibliográfica de la figura o de la tabla debe colocarse al final del título.
+   •   Las tablas y figuras de autoría propia no deben referenciarse.
+   •   En el nombre y título de las tablas y figuras debe emplearse el tipo de letra Times New
+       Roman, tamaño 12 y sin negrilla.
+   •   El nombre de las figuras se debe escribir en la parte inferior y centrado con la palabra
+       “Figura” seguida de su numeración. En su numeración se deben utilizar números
+       arábigos, en orden consecutivo, a lo largo de todo el texto. Deben llevar un título breve
+       sobre su contenido. La separación entre el título y la figura debe ser de 6 puntos.
+   •   Las figuras no deben configurarse con bordes.
+   •   El nombre de las tablas se debe escribir en la parte superior y centrado con la palabra
+       “Tabla” seguida de su numeración. En su numeración se deben utilizar números
+       arábigos, en orden consecutivo, a lo largo de todo el texto. Deben llevar un título breve
+       sobre su contenido. La separación entre la tabla y su título debe ser de 6 puntos.
+   •   El texto dentro de la tabla tiene interlineado simple y debe emplearse el tipo de letra
+       Times New Roman, tamaño 10.
+   •   Los encabezados de las columnas de las tablas se escriben en negrilla y centrados.
+   •   Los números de las figuras o de las tablas, cuando se mencionan en el texto, deben ir
+       precedidos de las palabras “Figura” o “Tabla”.
+   •   En las tablas, los encabezados de las columnas se deben repetir en todas las páginas
+       después de la primera.
+m. Ecuaciones.
+   •   Deben estar centradas e identificarse con cifras correlativas colocadas entre paréntesis
+       en el extremo derecho de la línea.
+   •   Los números de las ecuaciones, cuando se mencionan en el texto, deben ir precedidos
+       de la palabra “Ecuación”.
+n. Referencias bibliográficas
+   •   Para las referencias bibliográficas se debe utilizar la norma IEEE
+o. Anexos
+
+Los anexos pueden ofrecer informaciones más detalladas, explicaciones más completas de los
+métodos y técnicas resumidos en el texto, lecturas aconsejadas (bibliografía) y cualquier otra
+información que no es esencial para la comprensión del cuerpo del documento.
+
+La paginación de los anexos debe ser correlativa y continuará la del cuerpo del documento.
+
+La primera letra de la palabra anexo y la letra que lo identifica se escribe en mayúscula
+sostenida, comenzando con la letra A, centrado a 3 cm del borde superior de la hoja. Si hay
+más de 26 anexos, se debe optar por identificarlos con números arábigos consecutivos.
+
+Los números de los anexos, cuando se mencionan en el texto, deben ir precedidos de la palabra
+“Anexo”.
+
+Los anexos deben llevar un título breve sobre su contenido.
+
+En el nombre y título del anexo debe emplearse el tipo de letra Times New Roman, tamaño 12
+y separados por dos interlíneas (24 puntos), sin negrilla.
+
+Cada anexo debe comenzar en una nueva página.
+
+   •   Las figuras y las tablas en los anexos se deben designar por la letra del anexo seguida
+       de un número propio.
+
+Nota: El Anexo A corresponde a la plantilla que se deberá utilizar para el desarrollo del informe
+final del trabajo de titulación, en la cual constan estilos configurados y ejemplos de referencia.
+FIRMAS DE RESPONSABILIDAD
+
+
+
+
+    ACCIONES             NOMBRE                     CARGO             FIRMA
+
+
+                                                                        Firmado electrónicamente por:
+                                                                        ANA PAMELA CASTRO
+                 Ing. Pamela Castro, MSc.     Docente                   MARTIN
+
+
+
+
+                                                                      Firmado electrónicamente por:
+
+                 Ing. Daysi Ortiz, Mg.        Docente                 DAYSI MARGARITA
+                                                                      ORTIZ GUERRERO
+
+
+
+Elaborado por:
+
+                 Ing. Franklin Mayorga, Mg.   Docente                 Firmado electrónicamente por:
+                                                                      FRANKLIN OSWALDO
+                                                                      MAYORGA MAYORGA
+
+
+
+
+                                                                        Firmado electrónicamente por:
+                 Ing. Julio Balarezo, Mg.     Docente                   JULIO ENRIQUE
+                                                                        BALAREZO LOPEZ
+
+
+
+
+                                                                         Firmado electrónicamente por:
+                                              Presidente de la           CARLOS HUMBERTO
+                 Ing. Carlos Sánchez, Mg.                                SANCHEZ ROSERO
+                                              Unidad de Titulación
+
+
+                                              Coordinador de la
+                 Ing. Christian Mariño, Mg.   Carrera de Ingeniería   Firmado electrónicamente por:
+                                                                      CHRISTIAN JOSE
+                                                                      MARINO RIVERA
+                                              Industrial
+
+                                              Coordinador de la
+                 Ing. Geovanny Brito, Mg.     Carrera de                Firmado electrónicamente por:
+                                                                        GEOVANNI DANILO
+                                                                        BRITO MONCAYO
+                                              Telecomunicaciones
+Validado por:                                 Coordinador de las
+                                              Carreras de
+                 Ing. Clay Aldás, Mg.         Tecnologías de la       Firmado electrónicamente por:
+                                                                      CLAY FERNANDO ALDAS
+                                                                      FLORES
+                                              Información y de
+                                              Software
+                                              Docente miembro de       Firmado electrónicamente por:
+
+                 Ing. Patricio Córdova, Mg.   la Unidad de             EDGAR PATRICIO
+                                                                       CORDOVA CORDOVA
+                                              Titulación
+
+                                        Docente miembro de
+                 Ing. Hernando Buenaño,                               Firmado electrónicamente por:
+
+                                        la Unidad de                  EDWIN HERNANDO
+                 Mg.                                                  BUENANO VALENCIA
+                                        Titulación
+

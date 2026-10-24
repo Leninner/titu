@@ -1,0 +1,231 @@
+Fuente: 2. Proceso trabajo de titulación/ANEXO2_PROPUESTA.pdf
+Versión aportada: 2026-10-22. Verificar destinatarios y vigencia.
+SHA-256 original: a46c5b884b6d7fe6713d5f591a67689f0ee581b8c33c18bfdb2dfba9e1c6cc3e
+
+                                    ANEXO 2
+
+
+ ESTRUCTURA DE LA PROPUESTA DEL TRABAJO DE TITULACIÓN
+
+
+
+
+PORTADA
+ÍNDICE
+
+         A.   DATOS INFORMATIVOS
+
+              MODALIDAD: (según cada Facultad)…………………….
+              AUTOR:……………………………………………………..
+              CARRERA:………………………………………………….
+              ÁREA: (cuando aplique)……………………..
+              LÍNEA DE INVESTIGACIÓN: (aprobadas por CONIN)
+              PERÍODO: (en el que se desarrollará la investigación)
+              LUGAR Y FECHA DE PRESENTACIÓN:
+
+         B.   CONTENIDOS
+
+              1.   Tema de investigación
+                   1.1. Planteamiento del problema (máx. 1 pg.)
+                   1.2. Delimitación
+              2.   Justificación (máx. 1 pg.)
+              3.   Objetivo general
+              4.   Objetivos específicos (máx. 3)
+              5.   Fundamentación teórica
+                   5.1. Antecedentes investigativos
+                   5.2. Marco teórico
+              6.   Metodología (descripción breve de los materiales, métodos y
+                   técnicas a utilizar, en caso de existir se debe colocar el diseño
+                   experimental e hipótesis)
+                   6.1. Modalidad de investigación
+                   6.2. Población y muestra (en caso de requerir)
+                   6.3. Recolección de información
+                   6.4. Procesamiento y análisis de datos
+                   6.5. Propuesta de solución
+                   6.6. Desarrollo del proyecto
+
+              7.   Recursos (institucionales, humanos, materiales, económicos, entre
+                   otros)
+                   7.1. Institucionales
+                   7.2. Humanos
+                   7.3. Materiales
+                   7.4. Económicos
+               8. Cronograma (especificar mediante un esquema toda la
+                   planificación del Trabajo de Titulación)
+               9. Bibliografía (Formato IEEE)
+               10. Anexos
+
+   a. Normas de presentación de la propuesta:
+
+   Tamaño de hoja: INEN A4
+   Tipo y tamaño de fuente: Times New Roman de 12 puntos
+   Espaciado: 1.5 puntos
+   Márgenes: superior 3cm, inferior 2.5 cm, derecha 2.5 cm, izquierda 4 cm.
+   Títulos: Mayúsculas y negrilla, centrado y sin punto final
+   Subtítulos: Sólo con mayúscula la letra inicial, negrillas, sin punto final
+   Redacción: Forma impersonal, justificado. Se redactará en tiempo futuro. Después
+   de cada título o párrafo, doble espacio.
+   El lenguaje de redacción puede ser en español o inglés.
+   El formato de la Bibliografía para los Trabajos de Titulación será en IEEE
+
+1. Tema de investigación
+Enunciado que sintetiza el trabajo investigativo.
+Usar letras mayúsculas, el título debe aparecer en la primera página del informe y
+deberá describir de forma clara y concisa el contenido del proyecto, el cual debe
+relacionarse con el objetivo general del trabajo de investigación.
+
+1.1. Planteamiento del problema
+El planteamiento del problema es un proceso de comprensión-interpretación del objeto
+de estudio. Responde la pregunta ¿Cuál es la realidad a investigar? y consiste en
+describir ampliamente la situación del objeto de estudio. Se recomienda contextualizar
+en sus aspectos macro, meso y micro; adicionalmente incluya un análisis crítico basado
+en el árbol de problemas estableciendo la relación causa-problema-efecto.
+
+1.2. Delimitación
+Tomar en cuenta los siguientes parámetros: delimitación de contenidos (área
+académica, línea de investigación), delimitación espacial (lugar donde se realizará la
+investigación), delimitación temporal (período en el cual se desarrollará el Trabajo de
+Titulación).
+
+2. Justificación
+En este apartado debe explicar el por qué es necesario desarrollar este Trabajo de
+Titulación y/o la obtención del producto planteado, cuáles son los beneficios directos,
+la importancia teórica del proyecto, y otras consideraciones que crea necesario incluir.
+Es preciso enunciar los beneficios o impactos positivos de la investigación en el
+bienestar empresarial, regional, personal, conviene también añadir cifras, estadísticas
+y datos concretos que den validez a la justificación. Se explica además en que consiste
+el producto que se está planteando generar y los beneficios que este producto aportaría,
+pero, evitando entrar en detalles metodológicos u operacionales. En una justificación
+se anotará qué nuevos conocimientos aporta la investigación a la solución del problema
+planteado (importancia teórico-práctica), el significado que tiene la investigación para
+los beneficiarios, y quienes son estos, el por qué es útil la investigación (utilidad
+práctica), la factibilidad de desarrollar la investigación, es decir, aclarar si hay
+disponibilidad de recursos humanos, económicos, tecnológicos y bibliográficos
+actualizados. Se sugiere para la redacción basarse en las siguientes guías y redactar un
+párrafo de cada una de ellas:
+−Interés por investigar
+−Importancia teórico-práctica
+−Novedad en algún aspecto
+−Utilidad
+−Impacto
+- Factibilidad
+- Beneficiarios
+
+3. Objetivo general
+¿Para qué investigar? los objetivos expresan los propósitos de la investigación, se
+deben considerar como metas concretas a cumplirse, deben ser alcanzables, y pueden
+redactarse imaginándose el producto terminado; además deben ser orientadores y
+evaluables, no deben caer en la trivialidad ni expresarse como métodos o
+procedimientos. El objetivo general expresa el fin que busca el proyecto y mantiene
+coherencia con el problema planteado, se sugiere expresarlo en relación con el tema
+del proyecto, para redactar se puede usar la siguiente sintaxis: objetivo general = verbo
++ tema.
+
+4. Objetivos específicos
+Facilitan el cumplimiento del objetivo general mediante la determinación de etapas o
+la precisión y ejecución de los aspectos necesarios de este proceso. Deben guardar
+coherencia con el planteamiento del problema a solucionar. Redactarse con un verbo
+en infinitivo que se pueda evaluar, verificar, y refutar en un momento dado.
+
+5. Fundamentación teórica
+Contiene los fundamentos científicos o tecnológicos relevantes que sustentan el
+trabajo, requieren ser citados.
+
+5.1. Antecedentes investigativos
+Una vez que se ha realizado la búsqueda bibliográfica, se procede a escribir un
+documento que recopile el estado actual de la investigación en el tema y que ofrezca
+una visión global del área de investigación, documento que se denomina estado del
+arte. El estado del arte describe las investigaciones más recientes y actuales, y, le sirve
+al investigador como referencia para saber qué se ha hecho o hasta donde ha llegado
+la investigación en el tema.
+
+5.2. Marco teórico
+Es el tratamiento conceptual que se da a un problema de investigación o Trabajo de
+Titulación, y no únicamente, un conjunto de conceptos que la convertiría en un
+glosario estático de términos. El valor del fundamento teórico no está tanto en su
+extensión sino en su profundidad, por lo que habrá que cuidar la validez científica de
+la bibliografía seleccionada, y la calidad del análisis y argumentación que se haga del
+material investigado. Todo cuanto se desarrolle en el fundamento teórico, ha de ser
+pertinente y significativo.
+Tomar en cuenta también que la sola recopilación de datos no desarrolla en ningún
+momento una teoría y la descripción llana de un fenómeno tampoco es significativa
+desde el punto de vista teórico; por lo que es necesario orientar la investigación a través
+de un juicio crítico, hacia concepciones más profundas y significativas, capaces de
+validar la importancia de los datos que se proporcionan y de sustentar determinadas
+posturas conceptuales.
+
+6. Metodología
+¿Cómo y con qué se va a investigar? es el camino a seguir mediante una serie de
+operaciones y reglas prefijadas para conseguir el resultado inicialmente propuesto.
+Descripción breve de los materiales, métodos y técnicas a utilizar.
+
+6.1. Modalidad de investigación
+
+Se debe incluir las modalidades que se van a utilizar en el Trabajo de Titulación, por
+ejemplo:
+Investigación de campo,
+Investigación bibliográfica documental
+Investigación aplicada
+Investigación experimental, etc.
+
+6.2. Población y muestra
+(En caso de requerir)
+Población: describir la población y explicar el tipo (finita, infinita).
+Muestra: explicar el cálculo de la muestra y tipo de muestreo utilizado.
+
+6.3. Recolección de información
+Se explica el plan que se empleará para recoger información, conviene contestar las
+siguientes preguntas: ¿para qué? (para alcanzar los objetivos de investigación), ¿de
+qué personas u objetos?, ¿cómo? (técnicas: entrevista, encuesta, observación), ¿con
+qué? (instrumento: cuestionario, ficha de observación, otros), ¿cuándo?, ¿dónde?,
+¿cuántas veces?, etc.
+
+6.4. Procesamiento y análisis de datos
+El procesamiento y análisis se ejecutará por medio de una clasificación/tabulación de
+la información obtenida en la investigación.
+
+6.5. Hipótesis o propuesta de solución
+Algunos trabajos de grado generalmente se basan en alternativas de solución a
+problemas de tipo práctico, por lo que no se trata de comprobar la veracidad de una
+hipótesis sino de establecer la viabilidad técnica, económica, el impacto ambiental y
+social de un proyecto de inversión, de la implementación de una planta de producción,
+la fabricación de un producto, del diseño o modificación de un proceso, la aplicación
+de una tecnología, la implementación de un nuevo negocio, o el mejoramiento de un
+sistema. Se trata entonces no de una hipótesis sino de propuestas de solución y al
+enunciarlas se debe precisar lo que en realidad se propone, recordemos que hipótesis
+son las suposiciones de hechos que van a ocurrir. Es una predicción o explicación
+provisional de la relación entre dos o más variables. Se debe verificar (comprobar si
+es verdadero o falso). Vale la pena tener en cuenta que el enunciado, tanto de la
+hipótesis como de la propuesta de solución, debe ser preciso, claro, conciso y
+afirmativo.
+
+6.6. Desarrollo del proyecto
+Conjunto ordenado de las actividades que se van a realizar en el proyecto para lograr
+el cumplimiento de los objetivos.
+
+7. Recursos
+Para lograr la realización del proyecto se requerirá algunas acciones de carácter
+administrativo que se detallan a continuación:
+Recursos, es decir ¿con qué recursos se realizará la investigación?:
+• Humanos
+• Institucionales
+• Materiales
+• Económicos
+• Presupuesto y financiamiento
+
+8. Cronograma
+Programación de actividades básicas en el tiempo, indica cómo se desarrollará el
+proyecto; en términos generales contendrá el proceso de desarrollo, el diseño para su
+elaboración y la manera de generar la solución propuesta del proyecto, actividades que
+deben mantener la correspondencia con los procedimientos específicos aprendidos en
+la carrera universitaria (tomar como guía las actividades indicadas en el numeral 6.6.
+desarrollo del proyecto).
+
+9. Bibliografía
+Fuentes bibliográficas confiables donde se consultará sobre el tema y metodología,
+que contenga el nombre de autor o institución responsables de la información, usando
+formato IEEE (al menos 10 fuentes).
+
+10. Anexos
+Documentos y/o diseños que complementarán el proyecto.
+

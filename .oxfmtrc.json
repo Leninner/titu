@@ -1,0 +1,8 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "printWidth": 100,
+  "ignorePatterns": ["node_modules", "dist", "openspec", "test-results", "pnpm-lock.yaml"]
+}

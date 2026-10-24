@@ -1,0 +1,12 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.superpowers/
+playwright.local.config.ts
+.impeccable/review/
+
+.playwright-cli/
+.impeccable
+.pnpm-store
+docs/

@@ -1,0 +1,74 @@
+import type { AnnexDraft } from './types'
+import { createDraft, validateAnnex } from './annex'
+
+export function buildFinalReport(monthlyRevisions: AnnexDraft[]): AnnexDraft {
+  if (!monthlyRevisions.length) throw new Error('Seleccionar al menos un informe mensual')
+  const first = monthlyRevisions[0]
+  const seen = new Set<string>()
+  for (const monthly of monthlyRevisions) {
+    if (monthly.templateId !== 'anexo-5') throw new Error('Solo se admiten informes mensuales')
+    if (seen.has(monthly.id)) throw new Error('Seleccionar una sola revisión por informe mensual')
+    seen.add(monthly.id)
+    if (!validateAnnex(monthly).valid)
+      throw new Error(`Revisar el informe mensual: ${monthly.name}`)
+    if (
+      monthly.profileSnapshot.id !== first.profileSnapshot.id ||
+      monthly.profileSnapshot.tema !== first.profileSnapshot.tema ||
+      monthly.profileSnapshot.modalidad !== first.profileSnapshot.modalidad
+    )
+      throw new Error('Los informes deben corresponder al mismo estudiante, tema y modalidad')
+  }
+  const result = createDraft('anexo-11', first.profileSnapshot)
+  result.sourceMonthlyRevisions = monthlyRevisions.map((monthly) => ({
+    draftId: monthly.id,
+    revision: monthly.revision,
+  }))
+  result.activities = monthlyRevisions
+    .flatMap((monthly) =>
+      monthly.activities.map((activity) => ({
+        ...activity,
+        id: crypto.randomUUID(),
+        sourceDraftId: monthly.id,
+        sourceRevision: monthly.revision,
+      })),
+    )
+    .sort((a, b) => a.date.localeCompare(b.date))
+  // Percentages describe accumulated progress. They are never summed or inferred.
+  result.fields = {
+    fecha: '',
+    avance: '',
+    mensualesRevisados: '',
+    ultimoAvanceMensual: [...monthlyRevisions]
+      .sort((a, b) => a.monthlyPeriod.localeCompare(b.monthlyPeriod))
+      .at(-1)!.fields.avance,
+    actividadesMensualesSnapshot: JSON.stringify(
+      result.activities.map(({ date, description, sourceDraftId, sourceRevision }) => ({
+        date,
+        description,
+        sourceDraftId,
+        sourceRevision,
+      })),
+    ),
+  }
+  return result
+}
+export function compareFinalReport(final: AnnexDraft, currentMonthly: AnnexDraft[]) {
+  return final.sourceMonthlyRevisions.flatMap((source) => {
+    const current = currentMonthly.find((draft) => draft.id === source.draftId)
+    if (!current || current.revision !== source.revision)
+      return [
+        {
+          draftId: source.draftId,
+          previousRevision: source.revision,
+          currentRevision: current?.revision,
+          previousActivities: final.activities.filter(
+            (activity) => activity.sourceDraftId === source.draftId,
+          ),
+          currentActivities: current?.activities ?? [],
+        },
+      ]
+    return []
+  })
+}
+export const isFinalReportStale = (final: AnnexDraft, currentMonthly: AnnexDraft[]) =>
+  compareFinalReport(final, currentMonthly).length > 0
