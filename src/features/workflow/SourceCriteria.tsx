@@ -1,10 +1,9 @@
 import { catalog } from '../../catalog'
 import { sources } from '../../catalog/sources'
 
-export function SourceDetails({ sourceIds }: { sourceIds: string[] }) {
+export function SourceCriteria({ sourceIds }: { sourceIds: string[] }) {
   return (
-    <details className="source-details">
-      <summary>Fuentes y criterios</summary>
+    <div className="source-criteria">
       <ul>
         {sourceIds.map((id) => {
           const source = sources.find((source) => source.id === id)
@@ -36,6 +35,6 @@ export function SourceDetails({ sourceIds }: { sourceIds: string[] }) {
           {conflict.decision}
         </p>
       ))}
-    </details>
+    </div>
   )
 }

@@ -20,7 +20,7 @@ it('exports real editable OOXML with canonical page geometry and repeatable tabl
   expect(xml).toContain('w:w="12240"')
   expect(xml).toContain('w:h="15840"')
   expect(xml).toContain('w:left="1701"')
-  expect(xml).toContain('QUIPUX')
+  expect(xml).not.toContain('QUIPUX')
   expect(xml).not.toContain('<w:drawing')
   mkdirSync('/private/tmp/graduation-export-qa', { recursive: true })
   writeFileSync(
@@ -46,7 +46,7 @@ it('produces Unicode textual PDF preserving all 40 rows', async () => {
   expect(text).toContain('María Muñoz Vásquez')
   expect(text).toContain('José Núñez')
   for (let i = 1; i <= 40; i++) expect(text).toContain(`Actividad ${i}:`)
-  expect(text).toContain('QUIPUX')
+  expect(text).not.toContain('QUIPUX')
   await pdf.destroy()
 }, 30000)
 it('each letter variant has its own filled text and institutional notes', async () => {

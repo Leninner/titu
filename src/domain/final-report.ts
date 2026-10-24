@@ -1,4 +1,4 @@
-import type { AnnexDraft } from './types'
+import type { AnnexDraft, MonthlyReportAnalysis, StudentProfile } from './types'
 import { createDraft, validateAnnex } from './annex'
 
 export function buildFinalReport(monthlyRevisions: AnnexDraft[]): AnnexDraft {
@@ -72,3 +72,42 @@ export function compareFinalReport(final: AnnexDraft, currentMonthly: AnnexDraft
 }
 export const isFinalReportStale = (final: AnnexDraft, currentMonthly: AnnexDraft[]) =>
   compareFinalReport(final, currentMonthly).length > 0
+
+export const uploadedOrigin = 'archivos'
+
+export interface UploadedMonthlyReport {
+  versionId: string
+  month: string
+  analysis: MonthlyReportAnalysis
+}
+
+export function finalReportActivities(reports: UploadedMonthlyReport[]) {
+  return [...reports]
+    .sort((a, b) => a.month.localeCompare(b.month))
+    .flatMap((report) => report.analysis.activities ?? [])
+    .map((activity) => ({ id: crypto.randomUUID(), ...activity }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export function finalReportFields(reports: UploadedMonthlyReport[], fecha: string) {
+  const last = [...reports].sort((a, b) => a.month.localeCompare(b.month)).at(-1)
+  return {
+    fecha,
+    avance: '100',
+    origenMensual: uploadedOrigin,
+    fuentesMensuales: JSON.stringify(reports.map((report) => report.versionId)),
+    ultimoAvanceMensual: last?.analysis.progress === undefined ? '' : String(last.analysis.progress),
+  }
+}
+
+export function buildFinalReportFromUploads(
+  profile: StudentProfile,
+  reports: UploadedMonthlyReport[],
+  fecha: string,
+): AnnexDraft {
+  if (!reports.length) throw new Error('Sube al menos un Anexo 5 en los informes mensuales')
+  const draft = createDraft('anexo-11', profile)
+  draft.activities = finalReportActivities(reports)
+  draft.fields = finalReportFields(reports, fecha)
+  return draft
+}

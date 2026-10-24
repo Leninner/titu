@@ -9,7 +9,7 @@ import type {
   CalendarEvent,
 } from '../domain/types'
 import { workflowDefinitions } from '../catalog/workflows'
-import { migrateTaskRecords } from './migrate-workspace'
+import { migrateTaskRecords, moveReceivedFiles } from './migrate-workspace'
 
 export interface StoredBlobRecord {
   id: string
@@ -54,7 +54,6 @@ export class WorkspaceDatabase extends Dexie {
     // New writes use ArrayBuffer: WebKit can reject native Blob/File storage.
     // Keep legacy Blob rows intact and decode both representations on reads.
     this.version(3).stores({ blobs: 'id' })
-    // Reception-only workflows merge into the workflow that requested them.
     this.version(4)
       .stores({})
       .upgrade(async (transaction) => {
@@ -72,6 +71,20 @@ export class WorkspaceDatabase extends Dexie {
         await transaction.table('tasks').clear()
         await transaction.table('tasks').bulkAdd(migrated.tasks)
         await transaction.table('submissions').bulkPut(migrated.submissions)
+      })
+    this.version(5)
+      .stores({})
+      .upgrade(async (transaction) => {
+        const tasks = moveReceivedFiles(
+          {
+            tasks: await transaction.table<TaskRecord>('tasks').toArray(),
+            submissions: [],
+            documents: await transaction.table<DocumentRecord>('documents').toArray(),
+            versions: await transaction.table<DocumentVersion>('versions').toArray(),
+          },
+          workflowDefinitions,
+        )
+        await transaction.table('tasks').bulkPut(tasks)
       })
   }
 }

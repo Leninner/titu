@@ -1,6 +1,7 @@
 import type { DocumentVersion, TaskRecord, Workspace } from '../../domain/types'
 import { repository } from '../../storage/repository'
 import { systemFileName } from '../../domain/file-names'
+import { reportAnalysis } from '../documents/report-analysis'
 
 export type EvidenceField = 'evidenceVersionIds' | 'outputVersionIds'
 
@@ -43,6 +44,7 @@ export async function uploadVersion(
     category,
     signatureStatus: 'unsigned',
     textualPdfStatus,
+    reportAnalysis: await reportAnalysis(file, category),
   })
 }
 
@@ -71,9 +73,9 @@ export async function addEvidence(
   category: string,
   documentId?: string,
   field: EvidenceField = 'evidenceVersionIds',
-): Promise<TaskRecord> {
+): Promise<{ task: TaskRecord; version: DocumentVersion }> {
   const version = await uploadVersion(workspace, file, category, documentId)
-  return withUploadedVersion(task, workspace, version, category, field)
+  return { task: withUploadedVersion(task, workspace, version, category, field), version }
 }
 
 export async function signEvidence(
@@ -96,6 +98,7 @@ export async function signEvidence(
     textualPdfStatus: version.textualPdfStatus,
     issuedOn: version.issuedOn,
     expiresOn: version.expiresOn,
+    reportAnalysis: version.reportAnalysis,
   })
   return {
     ...task,

@@ -26,6 +26,7 @@ export interface DocumentModel {
   afterTable: DocumentParagraph[]
   signature: DocumentParagraph[]
   notes: string[]
+  guidance: string[]
   report: boolean
   footer: string
 }
@@ -61,7 +62,8 @@ export function buildDocumentModel(input: AnnexDraft): DocumentModel {
     rows: [],
     afterTable: [],
     signature: [],
-    notes: layout.notes,
+    notes: layout.report ? [] : layout.notes,
+    guidance: layout.report ? layout.notes : [],
     footer:
       'INSTRUCTIVO DEL REGLAMENTO PARA LA TITULACIÓN DE GRADO EN LA UNIVERSIDAD TÉCNICA DE AMBATO',
   }

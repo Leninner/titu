@@ -10,6 +10,7 @@ import { downloadBlob, errorMessage } from '../../components/download'
 import type { DocumentCategory } from './document-categories'
 import { NaturalDateInput } from '../../components/NaturalDateInput'
 import { multiFileCategories, systemFileName } from '../../domain/file-names'
+import { reportAnalysis } from './report-analysis'
 
 export function DocumentCard({ category }: { category: DocumentCategory }) {
   const { workspace, run, busy } = useWorkspace()
@@ -75,6 +76,7 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
           textualPdfStatus,
           issuedOn: issuedOn || undefined,
           expiresOn: expiresOn || undefined,
+          reportAnalysis: await reportAnalysis(file, category.id),
         })
         saved++
       } catch (failure) {
@@ -106,6 +108,7 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
         textualPdfStatus: version.textualPdfStatus,
         issuedOn: version.issuedOn,
         expiresOn: version.expiresOn,
+        reportAnalysis: version.reportAnalysis,
       })
     })
   }

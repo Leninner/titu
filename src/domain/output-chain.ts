@@ -67,3 +67,10 @@ export function chainOutput(
       return chained.evidenceVersionIds.join() === task.evidenceVersionIds.join() ? [] : [chained]
     })
 }
+
+export function unavailableAsOutput(taskId: string, workspace: Workspace) {
+  return [
+    ...workspace.tasks.filter((task) => task.id !== taskId).flatMap((task) => task.outputVersionIds),
+    ...workspace.versions.filter((version) => version.sourceDraftId).map((version) => version.id),
+  ]
+}

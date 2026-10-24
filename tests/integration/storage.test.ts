@@ -97,7 +97,7 @@ it('rejects corrupted hashes and future schemas without replacing existing recor
   await expect(
     importBackup(new Blob([zipSync(entries) as Uint8Array<ArrayBuffer>])),
   ).rejects.toThrow()
-  manifest.formatVersion = 3
+  manifest.formatVersion = 4
   entries['manifest.json'] = strToU8(JSON.stringify(manifest))
   await expect(
     importBackup(new Blob([zipSync(entries) as Uint8Array<ArrayBuffer>])),

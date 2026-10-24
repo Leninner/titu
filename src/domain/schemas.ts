@@ -8,7 +8,7 @@ const timestamp = z.iso.datetime()
 const localTime = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
 const monthlyPeriod = z.union([z.literal(''), z.string().regex(/^\d{4}-(?:0[1-9]|1[0-2])$/)])
 const modality = z.enum(['research', 'article', 'complexivo'])
-export const currentBackupFormat = 2
+export const currentBackupFormat = 3
 const status = z.enum(['pending', 'preparing', 'waiting', 'submitted', 'observed', 'completed'])
 export const profileSchema = z.object({
   id,
@@ -83,6 +83,15 @@ export const versionSchema = z.object({
   revision: z.number().int().nonnegative().optional(),
   signatureStatus: z.enum(['unsigned', 'pending', 'reported-signed']),
   textualPdfStatus: z.enum(['unknown', 'text-detected', 'no-text-detected']),
+  reportAnalysis: z
+    .object({
+      recognized: z.boolean(),
+      month: z.string().regex(/^\d{4}-(?:0[1-9]|1[0-2])$/).optional(),
+      topic: text.optional(),
+      progress: z.number().optional(),
+      activities: z.array(z.object({ date, description: text })).optional(),
+    })
+    .optional(),
 })
 export const submissionSchema = z.object({
   id,
@@ -120,7 +129,7 @@ export const workspaceSchema = z.object({
   settings: z.record(z.string(), text),
 })
 export const backupManifestSchema = z.object({
-  formatVersion: z.union([z.literal(1), z.literal(currentBackupFormat)]),
+  formatVersion: z.union([z.literal(1), z.literal(2), z.literal(currentBackupFormat)]),
   catalogVersion: id,
   exportedAt: timestamp,
   records: workspaceSchema,

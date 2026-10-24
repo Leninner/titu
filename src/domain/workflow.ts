@@ -8,6 +8,8 @@ import type {
 } from './types'
 import { ecuadorDate, noDebtValidity } from './dates'
 import { evidenceIdsForTask } from './task-evidence'
+import { monthlyCoverage, monthlyGaps } from './monthly-report'
+import { validateAnnex } from './annex'
 
 export function applicableWorkflows(
   workspace: Workspace,
@@ -78,6 +80,7 @@ function fileGap(
   requirement: Requirement & { category: string },
   selectedIds: string[],
   workspace: Workspace,
+  catalog: CatalogVersion,
   now: Date,
 ) {
   const evidence = workspace.versions.filter(
@@ -89,6 +92,8 @@ function fileGap(
       ),
   )
   if (!evidence.length) return `Adjuntar: ${requirement.label}`
+  if (requirement.category === 'mensual')
+    return monthlyGaps(monthlyCoverage(evidence, workspace, catalog, !!requirement.signed))[0]
   const signedEvidence = requirement.signed
     ? evidence.filter((version) => version.signatureStatus === 'reported-signed')
     : evidence
@@ -113,18 +118,36 @@ function fileGap(
   return undefined
 }
 
+export const latestDraft = (workspace: Workspace, templateId: string) =>
+  workspace.drafts
+    .filter((draft) => draft.templateId === templateId)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0]
+
+function annexGap(requirement: Requirement & { annex: string }, workspace: Workspace) {
+  const draft = latestDraft(workspace, requirement.annex)
+  return draft && validateAnnex(draft).valid ? undefined : `Completar: ${requirement.label}`
+}
+
 export function requirementGap(
   requirement: Requirement,
   task: TaskRecord,
   selectedIds: string[],
   workspace: Workspace,
+  catalog: CatalogVersion,
   now: Date = new Date(),
 ): string | undefined {
   if (requirement.optional) return undefined
+  if (requirement.annex) return annexGap({ ...requirement, annex: requirement.annex }, workspace)
   if (numericRequirementIds.has(requirement.id)) return numericGap(requirement, task)
   if (!requirement.category)
     return task.requirementChecks[requirement.id] === true ? undefined : requirement.label
-  return fileGap({ ...requirement, category: requirement.category }, selectedIds, workspace, now)
+  return fileGap(
+    { ...requirement, category: requirement.category },
+    selectedIds,
+    workspace,
+    catalog,
+    now,
+  )
 }
 
 function averageGap(requirements: Requirement[], task: TaskRecord) {
@@ -142,11 +165,12 @@ function requirementGaps(
   task: TaskRecord,
   selectedIds: string[],
   workspace: Workspace,
+  catalog: CatalogVersion,
   now: Date,
 ) {
   return [
     ...requirements.map((requirement) =>
-      requirementGap(requirement, task, selectedIds, workspace, now),
+      requirementGap(requirement, task, selectedIds, workspace, catalog, now),
     ),
     averageGap(requirements, task),
   ].filter((gap): gap is string => !!gap)
@@ -253,7 +277,7 @@ export function evaluateTask(
   const selectedIds = evidenceIdsForTask(task, definition, workspace)
   const missingRequirements = [
     ...dependencyGaps(definition, workspace, catalog),
-    ...requirementGaps(taskInputs(definition, workspace), task, selectedIds, workspace, now),
+    ...requirementGaps(taskInputs(definition, workspace), task, selectedIds, workspace, catalog, now),
     ...developmentGaps(definition, selectedIds, workspace),
     ...topicGaps(selectedIds, workspace),
     ...dayHourGaps(definition, selectedIds, workspace),
@@ -263,6 +287,7 @@ export function evaluateTask(
     task,
     task.outputVersionIds,
     workspace,
+    catalog,
     now,
   )
   const ready = missingRequirements.length === 0

@@ -15,12 +15,15 @@ import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
 import { processFolders, processMap, type NodeStatus, type ProcessNode } from '../../domain/process-map'
 import { evidenceIdsForTask } from '../../domain/task-evidence'
-import type { TaskRecord, Workspace } from '../../domain/types'
-import { requirementGap, taskInputs, taskOutputs } from '../../domain/workflow'
+import { unavailableAsOutput } from '../../domain/output-chain'
+import type { DocumentVersion, TaskRecord, Workspace } from '../../domain/types'
+import { latestDraft, requirementGap, taskInputs, taskOutputs } from '../../domain/workflow'
+import { AnnexDocument } from '../annexes/AnnexDocument'
 import { repository } from '../../storage/repository'
 import { RequirementsPanel } from './RequirementsPanel'
 import { addEvidence, signEvidence, withEvidence, type EvidenceField } from './evidence-actions'
-import { fileRequirements } from './PrepareStep'
+import { fileRequirements, type FileHandlers } from './PrepareStep'
+import { MonthlyReportCards } from './MonthlyReportCards'
 import { persistTask } from './task-persistence'
 import { taskFor } from './task-record'
 import { ReportGuideLinks } from './ReportGuide'
@@ -39,6 +42,7 @@ const statusText: Record<NodeStatus, string> = {
   blocked: 'Bloqueado',
 }
 const StatusIcon = { done: CircleCheck, waiting: Hourglass, active: CircleDot, blocked: Lock }
+const edgeStates = ['is-done', 'is-ready', 'is-pending'] as const
 const folderShort = { trabajo: 'Trabajo', calificadores: 'Calificadores', sustentacion: 'Sustentación' }
 
 function useCompact(query = '(max-width: 760px)') {
@@ -135,6 +139,23 @@ function NodeContent({ node }: { node: ProcessNode }) {
   )
 }
 
+function AnnexPreviewSection({ templateId, label }: { templateId: string; label: string }) {
+  const { workspace } = useWorkspace()
+  const draft = latestDraft(workspace, templateId)
+  return (
+    <section className="process-dialog-annex" aria-label={label}>
+      <h3>{label} <span>{draft ? `${draft.activities.length} ${draft.activities.length === 1 ? 'actividad' : 'actividades'}` : 'Sin crear'}</span></h3>
+      {draft ? (
+        <div className="document-canvas">
+          <AnnexDocument draft={draft} onChange={() => {}} readOnly />
+        </div>
+      ) : (
+        <p className="process-dialog-empty">Aún no está creado; se prepara en el trámite completo.</p>
+      )}
+    </section>
+  )
+}
+
 function ProcessDialog({
   node,
   nodes,
@@ -178,6 +199,24 @@ function ProcessDialog({
     await refresh()
   }
 
+  const files: FileHandlers = {
+    onToggle: (versionId, checked) =>
+      void update((current, latest) => withEvidence(current, latest, versionId, checked, field)),
+    onUpload: async (file, category, documentId) => {
+      let uploaded: DocumentVersion | undefined
+      await update(async (current, latest) => {
+        const added = await addEvidence(current, latest, file, category, documentId, field)
+        uploaded = added.version
+        return added.task
+      })
+      return uploaded!
+    },
+    onSignatureChange: (version, signed) =>
+      update((current, latest) => signEvidence(current, latest, version, signed, field)),
+  }
+  const monthly = documents.find((requirement) => requirement.category === 'mensual')
+  const annex = result ? undefined : requirements.find((requirement) => requirement.annex)
+
   const Icon = StatusIcon[node.status]
   return (
     // Clicking the backdrop closes the dialog; Escape is handled by onCancel.
@@ -216,7 +255,7 @@ function ProcessDialog({
               </div>
             </div>
           )}
-          <p className="process-panel-instructions">{definition.instructions}</p>
+          <p className="process-panel-instructions">{definition.summary}</p>
           {pendingDeps.length > 0 && (
             <div className="process-panel-section">
               <h3>Antes necesitas</h3>
@@ -236,7 +275,7 @@ function ProcessDialog({
               <h3>{result ? 'Datos del resultado' : 'Otros requisitos'}</h3>
               <ul className="process-panel-checks">
                 {checks.map((requirement) => {
-                  const done = !requirementGap(requirement, task, selectedIds, workspace)
+                  const done = !requirementGap(requirement, task, selectedIds, workspace, catalog)
                   return (
                     <li key={requirement.id} className={done ? 'is-done' : ''}>
                       {done ? <CircleCheck size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
@@ -250,27 +289,27 @@ function ProcessDialog({
           )}
         </div>
         <div className="process-dialog-docs">
+          {annex && <AnnexPreviewSection templateId={annex.annex!} label={annex.label} />}
           {documents.length > 0 ? (
             <>
               <h3>
                 {result ? 'Resultado' : 'Documentos'}{' '}
                 <span>{node.documents.done} de {node.documents.total} listos</span>
               </h3>
-              <RequirementsPanel
-                requirements={documents}
-                selectedIds={selectedIds}
-                anchorPrefix="map-requirement"
-                layout="cards"
-                purpose={result ? 'result' : 'delivery'}
-                onToggle={(versionId, checked) =>
-                  void update((current, latest) => withEvidence(current, latest, versionId, checked, field))}
-                onUpload={(file, category, documentId) =>
-                  update((current, latest) => addEvidence(current, latest, file, category, documentId, field))}
-                onSignatureChange={(version, signed) =>
-                  update((current, latest) => signEvidence(current, latest, version, signed, field))}
-              />
+              {documents.some((requirement) => requirement !== monthly) && (
+                <RequirementsPanel
+                  requirements={documents.filter((requirement) => requirement !== monthly)}
+                  selectedIds={selectedIds}
+                  anchorPrefix="map-requirement"
+                  layout="cards"
+                  purpose={result ? 'result' : 'delivery'}
+                  excludedIds={result ? unavailableAsOutput(task.id, workspace) : []}
+                  {...files}
+                />
+              )}
+              {monthly && <MonthlyReportCards selectedIds={selectedIds} signed={!!monthly.signed} files={files} />}
             </>
-          ) : (
+          ) : !annex && (
             <p className="process-dialog-empty">Este paso no pide documentos.</p>
           )}
         </div>
@@ -431,6 +470,23 @@ export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNo
         >
           <div className="process-canvas-inner" style={{ width, height }}>
             <svg className="process-edges" width={width} height={height} aria-hidden="true">
+              <defs>
+                {edgeStates.map((state) => (
+                  <marker
+                    key={state}
+                    id={`process-arrow-${state}`}
+                    className={`process-arrow ${state}`}
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="5"
+                    markerHeight="5"
+                    orient="auto"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                ))}
+              </defs>
               <line className="process-lane-line" x1={PADDING} x2={width - PADDING} y1={laneTop - LANE_GAP / 2} y2={laneTop - LANE_GAP / 2} />
               {map.edges.map((edge) => {
                 const from = map.nodes.find((node) => node.definition.id === edge.from)!
@@ -445,9 +501,11 @@ export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNo
                 const state = from.status === 'done' ? (to.status === 'done' ? 'is-done' : 'is-ready') : 'is-pending'
                 return (
                   <g key={`${edge.from}-${edge.to}`} className={`process-edge ${state}`}>
-                    <path d={`M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`} />
+                    <path
+                      d={`M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2 - 1} ${y2}`}
+                      markerEnd={`url(#process-arrow-${state})`}
+                    />
                     <circle cx={x1} cy={y1} r={4} />
-                    <circle cx={x2} cy={y2} r={4} />
                   </g>
                 )
               })}

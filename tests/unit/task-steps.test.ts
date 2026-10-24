@@ -28,17 +28,24 @@ function proposalWorkspace(): Workspace {
     documents: [
       { id: 'document-personal', name: 'Cédula', category: 'personal', createdAt: '' },
       { id: 'document-solicitud', name: 'Anexo 1', category: 'solicitud', createdAt: '' },
+      { id: 'document-avales', name: 'Avales', category: 'avales', createdAt: '' },
+      { id: 'document-perfil', name: 'Anexo 2', category: 'propuesta-perfil', createdAt: '' },
       { id: 'document-resolucion', name: 'Resolución', category: 'resolucion', createdAt: '' },
     ],
-    versions: [version('personal', false), version('solicitud'), version('resolucion')],
+    versions: [
+      version('personal', false),
+      version('solicitud'),
+      version('avales', false),
+      version('perfil', false),
+      version('resolucion'),
+    ],
   }
 }
 
 const preparedProposal = (): TaskRecord => ({
   ...emptyTask('propuesta'),
   status: 'submitted',
-  requirementChecks: { avales: true },
-  evidenceVersionIds: ['personal', 'solicitud'],
+  evidenceVersionIds: ['personal', 'solicitud', 'avales', 'perfil'],
 })
 
 it('shows each step state and opens on the first incomplete step', () => {
@@ -46,7 +53,7 @@ it('shows each step state and opens on the first incomplete step', () => {
   workspace.submissions = [{
     id: 'sent',
     taskId: 'propuesta',
-    exactVersionIds: ['personal', 'solicitud'],
+    exactVersionIds: ['personal', 'solicitud', 'avales', 'perfil'],
     recipient: 'informacion.fisei',
     sentAt: '2026-11-03T15:00:00.000Z',
     note: '',
@@ -64,7 +71,7 @@ it('counts prepared documents and starts on Preparar while inputs are missing', 
   const workspace = proposalWorkspace()
   const task = { ...preparedProposal(), status: 'preparing' as const, evidenceVersionIds: [] }
   const { steps, initial } = taskSteps(task, definition('propuesta'), workspace, catalog)
-  expect(steps[0].detail).toBe('1/2 docs')
+  expect(steps[0].detail).toBe('1/4 docs')
   expect(initial).toBe('prepare')
 })
 
@@ -97,7 +104,7 @@ it('completes only when inputs are ready and every required output is registered
   expect(pending.ready).toBe(true)
   expect(pending.canComplete).toBe(false)
   expect(pending.missingOutputs).toEqual([
-    'Adjuntar: Resolución de Consejo Directivo de modalidad y tema',
+    'Adjuntar: Resolución de modalidad y tema',
   ])
   const received = evaluateTask({ ...task, outputVersionIds: ['resolucion'] }, workspace, catalog)
   expect(received.canComplete).toBe(true)

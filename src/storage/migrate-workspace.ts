@@ -79,7 +79,11 @@ function moveReceivedEvidence(
 ): TaskRecord {
   const definition = definitions.find((item) => item.id === task.definitionId)
   if (!definition) return task
-  const inputCategories = new Set(definition.requirements.map((requirement) => requirement.category))
+  const inputCategories = new Set(
+    definition.requirements
+      .filter((requirement) => !requirement.annex)
+      .map((requirement) => requirement.category),
+  )
   const receivedCategories = new Set(
     definition.outputs
       .map((requirement) => requirement.category)
@@ -97,6 +101,15 @@ function moveReceivedEvidence(
     evidenceVersionIds: task.evidenceVersionIds.filter((id) => !isReceived(id)),
     outputVersionIds: unique([...task.outputVersionIds, ...received]),
   }
+}
+
+export function moveReceivedFiles(
+  records: MigratableRecords,
+  definitions: WorkflowDefinition[],
+): TaskRecord[] {
+  return records.tasks.map((task) =>
+    moveReceivedEvidence({ ...task, outputVersionIds: task.outputVersionIds ?? [] }, definitions, records),
+  )
 }
 
 export function migrateTaskRecords(

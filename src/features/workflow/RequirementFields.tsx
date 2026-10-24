@@ -1,4 +1,5 @@
 import { Field } from '../../components/Field'
+import { InfoTip } from '../../components/InfoTip'
 import type { Requirement, TaskRecord } from '../../domain/types'
 import { numericMaximum, numericRequirementIds } from '../../domain/workflow'
 
@@ -17,7 +18,8 @@ export function RequirementFields({
 }) {
   const numeric = requirements.filter((requirement) => numericRequirementIds.has(requirement.id))
   const checks = requirements.filter(
-    (requirement) => !requirement.category && !numericRequirementIds.has(requirement.id),
+    (requirement) =>
+      !requirement.category && !requirement.annex && !numericRequirementIds.has(requirement.id),
   )
   return (
     <>
@@ -38,6 +40,7 @@ export function RequirementFields({
                   onChange={(event) =>
                     onChange(requirement.id, event.target.value === '' ? '' : Number(event.target.value))}
                 />
+                {requirement.detail && <InfoTip label={requirement.label} text={requirement.detail} />}
               </div>
             )
           })}
@@ -46,15 +49,18 @@ export function RequirementFields({
       {checks.length > 0 && (
         <div className="task-requirement-checks">
           {checks.map((requirement) => (
-            <label className="check task-requirement-check" id={`${anchorPrefix}-${requirement.id}`} key={requirement.id}>
-              <input
-                type="checkbox"
-                aria-label={requirement.label}
-                checked={task.requirementChecks[requirement.id] === true}
-                onChange={(event) => onChange(requirement.id, event.target.checked)}
-              />
-              <span>{requirement.label}</span>
-            </label>
+            <div className="task-requirement-check-row" id={`${anchorPrefix}-${requirement.id}`} key={requirement.id}>
+              <label className="check task-requirement-check">
+                <input
+                  type="checkbox"
+                  aria-label={requirement.label}
+                  checked={task.requirementChecks[requirement.id] === true}
+                  onChange={(event) => onChange(requirement.id, event.target.checked)}
+                />
+                <span>{requirement.label}</span>
+              </label>
+              {requirement.detail && <InfoTip label={requirement.label} text={requirement.detail} />}
+            </div>
           ))}
         </div>
       )}

@@ -5,7 +5,6 @@ export function buildSubmissionEmail(
   definition: WorkflowDefinition,
   task: TaskRecord,
   workspace: Workspace,
-  recipient: string,
 ) {
   const profile = workspace.profile
   const files = evidenceIdsForTask(task, definition, workspace)
@@ -46,8 +45,7 @@ export function buildSubmissionEmail(
   return {
     subject,
     body,
-    recipient,
     attachmentCount: files.length,
-    fullText: `Para: ${recipient || '[Confirmar destinatario]'}\nAsunto: ${subject}\n\n${body}`,
+    fullText: `Asunto: ${subject}\n\n${body}`,
   }
 }

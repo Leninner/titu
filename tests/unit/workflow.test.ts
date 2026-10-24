@@ -14,6 +14,7 @@ const definition: WorkflowDefinition = {
     { id: 'grade-2', label: 'Nota 2' },
   ],
   outputs: [],
+  summary: '',
   instructions: '',
   role: 'Estudiante',
 }
@@ -145,6 +146,7 @@ it('keeps non-monthly files out of the development package', () => {
     createdAt: '',
     signatureStatus: 'reported-signed' as const,
     textualPdfStatus: 'text-detected' as const,
+    reportAnalysis: { recognized: true, month: '2026-10' },
   }))
   const c = {
     ...catalog,
@@ -242,6 +244,7 @@ it('requires explicit resolution when linked annex topic differs from approved t
       createdAt: '',
       signatureStatus: 'reported-signed',
       textualPdfStatus: 'text-detected',
+      reportAnalysis: { recognized: true, month: '2026-10' },
     },
   ]
   const c = {

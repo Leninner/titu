@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { useRef, useState, type DragEvent } from 'react'
 import { Circle, CircleAlert, CircleCheck, Plus, RefreshCw, Upload } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { FilePage, FileTile } from '../../components/FileTile'
 import { EvidencePreview } from '../../components/EvidencePreview'
+import { InfoTip } from '../../components/InfoTip'
 import { errorMessage } from '../../components/download'
 import { multiFileCategories } from '../../domain/file-names'
 import type { DocumentVersion, Requirement, Workspace } from '../../domain/types'
@@ -181,6 +182,7 @@ function Viewer({
     >
       <div className="req-viewer-head">
         <h4>{requirement.label}</h4>
+        {requirement.detail && <InfoTip label={requirement.label} text={requirement.detail} />}
         <span className={`req-status is-${state.status}`}>{state.statusText}</span>
         {requirement.category === 'mensual' && <a href="#/anexos">Crear Anexo 5</a>}
       </div>
@@ -280,7 +282,6 @@ export function RequirementsPanel({
   requirements,
   selectedIds,
   anchorPrefix,
-  focusId,
   layout = 'split',
   purpose = 'delivery',
   notes = {},
@@ -292,14 +293,13 @@ export function RequirementsPanel({
   requirements: FileRequirement[]
   selectedIds: string[]
   anchorPrefix: string
-  focusId?: string
   // 'cards' shows every requirement at once, each one its own drop target.
   layout?: 'split' | 'cards'
   purpose?: RequirementPurpose
   notes?: Record<string, string>
   excludedIds?: string[]
   onToggle: (versionId: string, checked: boolean) => void
-  onUpload: (file: File, category: string, documentId?: string) => Promise<void>
+  onUpload: (file: File, category: string, documentId?: string) => Promise<unknown>
   onSignatureChange: (version: DocumentVersion, signed: boolean) => Promise<void>
 }) {
   const { workspace } = useWorkspace()
@@ -315,30 +315,26 @@ export function RequirementsPanel({
   const target = useRef<{ id: string; documentId?: string } | null>(null)
   const active = states.find((state) => state.requirement.id === activeId) ?? states[0]
 
-  useEffect(() => {
-    if (focusId && states.some((state) => state.requirement.id === focusId)) setActiveId(focusId)
-    // Only an explicit request (the next-step button) moves the selection.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusId])
-
   async function upload(state: RequirementState, files: FileList | File[], documentId?: string) {
     const id = state.requirement.id
     setActiveId(id)
-    if (files.length > 1) {
-      setErrors({ ...errors, [id]: 'Suelta un archivo a la vez en cada requisito.' })
+    if (files.length > 1 && !state.multiple) {
+      setErrors({ ...errors, [id]: 'Este requisito admite un solo archivo.' })
       return
     }
-    const file = files[0]
-    if (!file || uploadingId) return
+    if (!files.length || uploadingId) return
     setUploadingId(id)
     setErrors({ ...errors, [id]: '' })
-    try {
-      await onUpload(file, state.requirement.category, documentId ?? (state.replacing ? state.selected[0].documentId : undefined))
-    } catch (failure) {
-      setErrors((current) => ({ ...current, [id]: errorMessage(failure) }))
-    } finally {
-      setUploadingId('')
+    const failed: string[] = []
+    for (const file of Array.from(files)) {
+      try {
+        await onUpload(file, state.requirement.category, documentId ?? (state.replacing ? state.selected[0].documentId : undefined))
+      } catch (failure) {
+        failed.push(files.length > 1 ? `${file.name}: ${errorMessage(failure)}` : errorMessage(failure))
+      }
     }
+    setErrors((current) => ({ ...current, [id]: failed.join(' · ') }))
+    setUploadingId('')
   }
 
   function pick(state: RequirementState, documentId?: string) {
@@ -353,6 +349,7 @@ export function RequirementsPanel({
       className="visually-hidden"
       tabIndex={-1}
       type="file"
+      multiple
       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
       aria-label={`Subir archivo para ${active.requirement.label}`}
       onChange={(event) => {

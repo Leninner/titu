@@ -63,6 +63,17 @@ export interface DocumentRecord {
   category: string
   createdAt: string
 }
+export interface ReportedActivity {
+  date: string
+  description: string
+}
+export interface MonthlyReportAnalysis {
+  recognized: boolean
+  month?: string
+  topic?: string
+  progress?: number
+  activities?: ReportedActivity[]
+}
 export interface DocumentVersion {
   id: string
   documentId: string
@@ -78,6 +89,7 @@ export interface DocumentVersion {
   revision?: number
   signatureStatus: 'unsigned' | 'pending' | 'reported-signed'
   textualPdfStatus: 'unknown' | 'text-detected' | 'no-text-detected'
+  reportAnalysis?: MonthlyReportAnalysis
 }
 export interface BlobRecord {
   id: string
@@ -136,11 +148,13 @@ export interface TemplateDefinition {
 export interface Requirement {
   id: string
   label: string
+  detail?: string
   companyOnly?: boolean
   signed?: boolean
   category?: string
   optional?: boolean
   modalities?: Modality[]
+  annex?: string
 }
 export interface WorkflowDefinition {
   id: string
@@ -153,6 +167,8 @@ export interface WorkflowDefinition {
   outputs: Requirement[]
   optional?: boolean
   companyOnly?: boolean
+  autoComplete?: boolean
+  summary: string
   instructions: string
   role: string
 }

@@ -35,7 +35,6 @@ const keyDates: Record<string, string> = {
   defensa: 'sustentaciones-limite',
 }
 
-// Once a request is sent, the milestone that matters is the institutional response.
 const responseDates: Record<string, string> = {
   'calificadores-research': 'calificaciones-limite',
   'calificadores-article': 'calificaciones-limite',
@@ -132,7 +131,7 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
       ? task.outputVersionIds
       : evidenceIdsForTask(task, definition, workspace)
     const isDone = (requirement: Requirement) =>
-      !requirementGap(requirement, task, selectedIds, workspace, now)
+      !requirementGap(requirement, task, selectedIds, workspace, catalog, now)
     const documents = requirements.filter((requirement) => requirement.category)
     const checks = requirements.filter((requirement) => !requirement.category)
     const blocked = (deps.get(definition.id) ?? []).some((id) => !completed.has(id))

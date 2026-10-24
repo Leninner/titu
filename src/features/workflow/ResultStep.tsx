@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
-import { outputUsage } from '../../domain/output-chain'
+import { outputUsage, unavailableAsOutput } from '../../domain/output-chain'
 import type { Requirement, TaskRecord, WorkflowDefinition, Workspace } from '../../domain/types'
 import { fileRequirements, type FileHandlers } from './PrepareStep'
 import { RequirementFields } from './RequirementFields'
@@ -22,7 +22,6 @@ export function ResultStep({
   outputs,
   missingInputs,
   canComplete,
-  focusId,
   files,
   onTaskChange,
   onComplete,
@@ -34,7 +33,6 @@ export function ResultStep({
   outputs: Requirement[]
   missingInputs: string[]
   canComplete: boolean
-  focusId?: string
   files: FileHandlers
   onTaskChange: (task: TaskRecord) => void
   onComplete: () => void
@@ -44,20 +42,17 @@ export function ResultStep({
   const { workspace, busy } = useWorkspace()
   const [observation, setObservation] = useState<string>()
   const documents = fileRequirements(outputs)
-  const otherOutputIds = workspace.tasks
-    .filter((item) => item.id !== task.id)
-    .flatMap((item) => item.outputVersionIds)
+  const unavailableIds = unavailableAsOutput(task.id, workspace)
   return (
     <>
       <RequirementsPanel
         requirements={documents}
         selectedIds={task.outputVersionIds}
         anchorPrefix="task-output"
-        focusId={focusId}
         layout="cards"
         purpose="result"
         notes={usageNotes(outputs, definition, workspace)}
-        excludedIds={otherOutputIds}
+        excludedIds={unavailableIds}
         {...files}
       />
       <RequirementFields

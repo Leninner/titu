@@ -24,10 +24,20 @@ El sistema SHALL presentar cada trámite en los pasos Preparar, Enviar y Resulta
 - **WHEN** confirma el envío en Enviar
 - **THEN** el trámite queda `submitted` y la pestaña activa pasa a Resultado.
 
-#### Scenario: Siguiente paso
+#### Scenario: Sin barra fija
 
-- **WHEN** lo siguiente es subir una salida y pulsa la acción de la barra fija
-- **THEN** se activa Resultado y se enfoca la tarjeta de esa salida.
+- **WHEN** abre cualquier trámite
+- **THEN** no hay una barra fija de siguiente paso y el estado se lee en los pasos.
+
+#### Scenario: Envío con un botón
+
+- **WHEN** Preparar está completo y pulsa "Confirmar envío" en Enviar
+- **THEN** se registra el envío con la fecha y hora actuales, sin pedir destinatario ni fecha, y Enviar solo muestra asunto y cuerpo del correo.
+
+#### Scenario: Historial y fuentes
+
+- **WHEN** abre el menú "⋯" del trámite y elige Historial de estados o Fuentes y criterios
+- **THEN** ve esa sección en un diálogo, sin que ocupe espacio al pie de la página.
 
 #### Scenario: Modal del mapa
 
@@ -77,6 +87,83 @@ El sistema SHALL migrar expedientes y respaldos con trámites fusionados sin per
 - **WHEN** restaura un respaldo creado antes de la fusión
 - **THEN** se aplica la misma migración y el respaldo pasa la validación de referencias.
 
+### Requirement: Requisitos según el anexo del trámite
+
+El sistema SHALL pedir como documentos los adjuntos que lista el anexo de cada trámite, en su orden, con sus condiciones de modalidad, empresa u opcionalidad.
+
+#### Scenario: Propuesta según el Anexo 1
+
+- **WHEN** un estudiante de Proyecto con empresa abre la propuesta
+- **THEN** ve, en este orden, Anexo 1 firmado, copia de cédula, capturas de los correos de aval, carta de compromiso Anexo 3, oficio de la Unidad Operativa de Investigación (opcional), propuesta del perfil Anexo 2 y certificado de requisitos habilitantes (opcional), sin un checkbox de avales.
+
+#### Scenario: Propuesta de complexivo
+
+- **WHEN** un estudiante de complexivo abre la propuesta
+- **THEN** no se le piden capturas de aval ni Anexo 2.
+
+### Requirement: Informes mensuales por mes
+
+El sistema SHALL admitir varios Anexo 5 a la vez, identificar el mes de cada uno según el formato del anexo y exigir un informe por cada mes del rango configurado con el tema aprobado.
+
+#### Scenario: Subir varios meses
+
+- **WHEN** sube a la vez los Anexo 5 de agosto, septiembre y octubre con rango agosto–noviembre
+- **THEN** cada archivo queda asociado a su mes y figura como faltante el informe de noviembre.
+
+#### Scenario: Tarjeta por mes
+
+- **WHEN** abre los informes mensuales con rango agosto–noviembre
+- **THEN** ve una tarjeta por mes, cada una con su archivo, su firma y su estado, y una tarjeta para agregar otro mes.
+
+#### Scenario: Completado automático
+
+- **WHEN** sube y marca como firmado el Anexo 5 del último mes que faltaba
+- **THEN** el trámite queda completado sin pasos de envío ni correo; si luego falta una firma, vuelve a preparación.
+
+#### Scenario: Avance declarado de la tesis
+
+- **WHEN** los Anexo 5 incluidos de agosto y septiembre declaran 20 % y 45 % de avance
+- **THEN** la vista muestra en una franja compacta 45 % como avance actual de la tesis según septiembre, y en cada tarjeta su porcentaje con la diferencia frente al mes anterior; un mes sin porcentaje legible figura sin dato y una baja de avance se resalta.
+
+#### Scenario: Archivo que no es Anexo 5
+
+- **WHEN** sube un archivo sin el formato del Anexo 5
+- **THEN** se indica que no se reconoció como Anexo 5 y puede asignarle un mes a mano.
+
+#### Scenario: Tema distinto
+
+- **WHEN** un Anexo 5 tiene un tema distinto al aprobado en el perfil
+- **THEN** el informe figura con el tema distinto como faltante.
+
+### Requirement: Informe final desde los Anexo 5
+
+El sistema SHALL preparar el Anexo 11 dentro del trámite con las fechas y actividades de todos los Anexo 5 subidos, y SHALL pedir el Anexo 11 firmado como resultado.
+
+#### Scenario: Crear el Anexo 11
+
+- **WHEN** hay Anexo 5 de agosto a noviembre y abre el informe final
+- **THEN** el editor del Anexo 11 contiene todas sus actividades ordenadas por fecha y el avance en 100 %.
+
+#### Scenario: Descargar el Anexo 11 sin firmar
+
+- **WHEN** descarga el Anexo 11 desde el trámite
+- **THEN** recibe el archivo, que no se guarda en Documentos ni aparece en la tarjeta del Anexo 11 firmado.
+
+#### Scenario: Anexo 11 en el mapa
+
+- **WHEN** abre en el mapa el informe final con el Anexo 11 creado
+- **THEN** el modal muestra el documento en solo lectura y la edición queda en el trámite completo.
+
+#### Scenario: Anexo 11 firmado
+
+- **WHEN** sube el Anexo 11 firmado en Resultado y completa el trámite
+- **THEN** queda seleccionado como informe final en la designación de calificadores.
+
+#### Scenario: Notas del formato
+
+- **WHEN** edita o exporta un Anexo 5 u 11
+- **THEN** las notas del formato no forman parte del documento y se consultan en un tooltip.
+
 ### Requirement: Textos del proceso
 
 El sistema SHALL nombrar trámites y requisitos por el documento o acto, su emisor y destinatario cuando importan, y SHALL omitir textos que expliquen cómo usar la interfaz.
@@ -85,6 +172,16 @@ El sistema SHALL nombrar trámites y requisitos por el documento o acto, su emis
 
 - **WHEN** se muestran las instrucciones de un trámite
 - **THEN** contienen hechos del trámite (plazo, destinatario, formato, emisor) y ninguna indicación de uso de la aplicación.
+
+#### Scenario: Resumen del trámite
+
+- **WHEN** abre un trámite
+- **THEN** bajo el título ve una sola frase con lo que debe hacer, y las instrucciones completas se abren en "Cómo se tramita" como viñetas.
+
+#### Scenario: Etiqueta corta con detalle
+
+- **WHEN** se muestra la tarjeta de un requisito con detalle
+- **THEN** el encabezado muestra solo la etiqueta corta y el detalle completo aparece en un tooltip accesible por teclado.
 
 #### Scenario: Zonas de subida
 

@@ -71,4 +71,12 @@ describe('institutional catalog', () => {
         /aplicaci[oó]n|\bapp\b|marcar|registrar|subir|arrastr|adjunta|selecciona/i,
       )
   })
+  it('keeps a one-sentence summary and short requirement labels with their detail apart', () => {
+    for (const definition of catalog.workflowDefinitions) {
+      expect(definition.summary.length).toBeLessThanOrEqual(120)
+      expect(definition.summary.split(/\.\s/)).toHaveLength(1)
+      for (const requirement of [...definition.requirements, ...definition.outputs])
+        expect(requirement.label.length, requirement.label).toBeLessThanOrEqual(40)
+    }
+  })
 })

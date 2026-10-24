@@ -47,7 +47,7 @@ it.each([1, 2])(
     const updated = new WorkspaceDatabase(name)
     try {
       await updated.open()
-      expect(updated.verno).toBe(4)
+      expect(updated.verno).toBe(5)
       expect(await updated.profile.get(profile.id)).toEqual(profile)
       expect(await updated.drafts.where('templateId').equals('anexo-5').toArray()).toEqual([draft])
       expect(await updated.draftHistory.get(['draft', 1])).toEqual(draft)

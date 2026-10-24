@@ -38,6 +38,7 @@ export interface AddDocumentInput {
   revision?: number
   signatureStatus?: DocumentVersion['signatureStatus']
   textualPdfStatus?: DocumentVersion['textualPdfStatus']
+  reportAnalysis?: DocumentVersion['reportAnalysis']
 }
 const mimeTypes: Record<string, string> = {
   pdf: 'application/pdf',
@@ -154,6 +155,7 @@ export class WorkspaceRepository {
       revision: input.revision,
       signatureStatus: input.signatureStatus ?? 'unsigned',
       textualPdfStatus: input.textualPdfStatus ?? 'unknown',
+      ...(input.reportAnalysis && { reportAnalysis: input.reportAnalysis }),
     }
     await this.db.transaction(
       'rw',

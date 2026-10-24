@@ -16,6 +16,7 @@ const definition: WorkflowDefinition = {
   dependsOn: [],
   requirements: [],
   outputs: [],
+  summary: '',
   instructions: '',
   role: 'Estudiante',
 }
@@ -30,7 +31,7 @@ const task: TaskRecord = {
   history: [],
 }
 describe('correo preparado', () => {
-  it('reutiliza datos sin inventar destinatario ni afirmar envío', () => {
+  it('reutiliza datos sin destinatario ni afirmar envío', () => {
     const workspace = {
       ...emptyWorkspace(),
       profile: {
@@ -40,10 +41,10 @@ describe('correo preparado', () => {
         tema: 'Tema aprobado',
       },
     }
-    const email = buildSubmissionEmail(definition, task, workspace, '')
+    const email = buildSubmissionEmail(definition, task, workspace)
     expect(email.subject).toBe('Presentar propuesta | María Muñoz')
     expect(email.body).toContain('Tema aprobado')
-    expect(email.fullText).toContain('[Confirmar destinatario]')
+    expect(email.fullText).not.toContain('Para:')
     expect(email.body).toContain('[Agregar los documentos antes de enviar]')
   })
   it('los informes solicitan revisión al tutor', () => {
@@ -52,7 +53,6 @@ describe('correo preparado', () => {
       { ...definition, id: 'desarrollo' },
       task,
       workspace,
-      'tutor@example.test',
     )
     expect(email.body).toContain('Estimado/a José Núñez:')
     expect(email.body).toContain('revisión y firma')
@@ -74,7 +74,6 @@ describe('correo preparado', () => {
       ] },
       task,
       workspace,
-      '',
     )
     expect(email.attachmentCount).toBe(1)
     expect(email.body).toContain('cedula.pdf')

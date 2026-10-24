@@ -20,7 +20,13 @@ function savedView(): 'map' | 'list' {
   }
 }
 
-export function WorkflowPage({ selectedId }: { selectedId?: string }) {
+export function WorkflowPage({
+  selectedId,
+  headerTarget,
+}: {
+  selectedId?: string
+  headerTarget?: HTMLElement | null
+}) {
   const { workspace } = useWorkspace()
   const now = useCurrentTime()
   const definitions = applicableWorkflows(workspace, catalog)
@@ -62,7 +68,7 @@ export function WorkflowPage({ selectedId }: { selectedId?: string }) {
   return (
     <div className={`page${selected ? ' workflow-detail-page' : ' process-page'}`}>
       {selected ? (
-        <TaskDetail key={selected.id} definition={selected} />
+        <TaskDetail key={selected.id} definition={selected} headerTarget={headerTarget} />
       ) : (
         <>
           {view === 'map' && (

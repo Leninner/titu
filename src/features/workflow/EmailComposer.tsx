@@ -7,20 +7,16 @@ import { buildSubmissionEmail } from '../../domain/submission-email'
 export function EmailComposer({
   definition,
   task,
-  recipient,
-  onRecipientChange,
 }: {
   definition: WorkflowDefinition
   task: TaskRecord
-  recipient: string
-  onRecipientChange: (value: string) => void
 }) {
   const { workspace, run } = useWorkspace()
   const [copyReceipt, setCopyReceipt] = useState({ part: '', content: '' })
   const [customBody, setCustomBody] = useState<{ body: string; original: string } | null>(null)
-  const email = buildSubmissionEmail(definition, task, workspace, recipient)
+  const email = buildSubmissionEmail(definition, task, workspace)
   const body = customBody?.body ?? email.body
-  const content = `${recipient}\n${email.subject}\n${body}`
+  const content = `${email.subject}\n${body}`
   const copied = copyReceipt.content === content ? copyReceipt.part : ''
   const copy = (part: string, text: string) =>
     void run(async () => {
@@ -37,15 +33,6 @@ export function EmailComposer({
         <span className="draft-tag">Borrador</span>
       </div>
       <div className="email-meta">
-        <label>
-          <span>Para</span>
-          <input
-            aria-label="Destinatario (verificar)"
-            placeholder="Confirma el correo institucional"
-            value={recipient}
-            onChange={(event) => onRecipientChange(event.target.value)}
-          />
-        </label>
         <div>
           <span>Asunto</span>
           <strong>{email.subject}</strong>
@@ -93,7 +80,7 @@ export function EmailComposer({
           onClick={() =>
             copy(
               'all',
-              `Para: ${recipient || '[Confirmar destinatario]'}\nAsunto: ${email.subject}\n\n${body}`,
+              `Asunto: ${email.subject}\n\n${body}`,
             )
           }
         >

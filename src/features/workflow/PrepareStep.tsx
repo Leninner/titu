@@ -3,18 +3,20 @@ import { downloadBlob } from '../../components/download'
 import type { DocumentVersion, Requirement, TaskRecord, WorkflowDefinition } from '../../domain/types'
 import { submissionZip } from '../../export/submission-zip'
 import { repository } from '../../storage/repository'
+import { FinalReportEditor } from './FinalReportEditor'
+import { MonthlyReportCards } from './MonthlyReportCards'
 import { RequirementFields } from './RequirementFields'
 import { RequirementsPanel, type FileRequirement } from './RequirementsPanel'
 
 export interface FileHandlers {
   onToggle: (versionId: string, checked: boolean) => void
-  onUpload: (file: File, category: string, documentId?: string) => Promise<void>
+  onUpload: (file: File, category: string, documentId?: string) => Promise<DocumentVersion>
   onSignatureChange: (version: DocumentVersion, signed: boolean) => Promise<void>
 }
 
 export const fileRequirements = (requirements: Requirement[]): FileRequirement[] =>
   requirements.flatMap((requirement) =>
-    requirement.category ? [{ ...requirement, category: requirement.category }] : [])
+    requirement.category && !requirement.annex ? [{ ...requirement, category: requirement.category }] : [])
 
 export function PrepareStep({
   definition,
@@ -23,7 +25,6 @@ export function PrepareStep({
   selectedIds,
   ready,
   dirty,
-  focusId,
   files,
   onTaskChange,
   onSave,
@@ -34,32 +35,37 @@ export function PrepareStep({
   selectedIds: string[]
   ready: boolean
   dirty: boolean
-  focusId?: string
   files: FileHandlers
   onTaskChange: (task: TaskRecord) => void
   onSave: () => void
 }) {
   const { workspace, run, busy } = useWorkspace()
   const documents = fileRequirements(inputs)
-  const inputCategories = new Set(documents.map((requirement) => requirement.category))
+  const inputCategories = new Set(inputs.map((requirement) => requirement.category))
+  const monthly = documents.find((requirement) => requirement.category === 'mensual')
+  const categoryOf = (version: DocumentVersion) =>
+    workspace.documents.find((document) => document.id === version.documentId)?.category
   const otherSelectedVersions = workspace.versions.filter(
     (version) =>
       task.evidenceVersionIds.includes(version.id) &&
-      !inputCategories.has(
-        workspace.documents.find((document) => document.id === version.documentId)?.category ?? '',
-      ),
+      !inputCategories.has(categoryOf(version) ?? ''),
   )
   return (
     <>
-      {documents.length > 0 && (
+      {documents.some((requirement) => requirement !== monthly) && (
         <RequirementsPanel
-          requirements={documents}
+          requirements={documents.filter((requirement) => requirement !== monthly)}
           selectedIds={selectedIds}
           anchorPrefix="task-requirement"
-          focusId={focusId}
           layout="cards"
           {...files}
         />
+      )}
+      {inputs.some((requirement) => requirement.annex === 'anexo-11') && (
+        <FinalReportEditor />
+      )}
+      {monthly && (
+        <MonthlyReportCards selectedIds={selectedIds} signed={!!monthly.signed} files={files} />
       )}
       <RequirementFields
         requirements={inputs}
@@ -80,7 +86,7 @@ export function PrepareStep({
           ))}
         </details>
       )}
-      <div className="task-followup">
+      {!definition.autoComplete && <div className="task-followup">
         <label className="field">
           <span>Observaciones y seguimiento</span>
           <textarea
@@ -109,7 +115,7 @@ export function PrepareStep({
             Descargar {ready ? 'paquete ZIP' : 'borrador ZIP'}
           </button>
         </div>
-      </div>
+      </div>}
     </>
   )
 }

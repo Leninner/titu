@@ -1,6 +1,7 @@
 import type { TaskRecord, Workspace } from '../../domain/types'
 import { catalog } from '../../catalog'
 import { chainOutput } from '../../domain/output-chain'
+import { withAutomaticCompletion } from '../../domain/auto-completion'
 import { repository } from '../../storage/repository'
 
 const withTask = (workspace: Workspace, task: TaskRecord): Workspace => ({
@@ -8,9 +9,10 @@ const withTask = (workspace: Workspace, task: TaskRecord): Workspace => ({
   tasks: [...workspace.tasks.filter((item) => item.id !== task.id), task],
 })
 
-// Saves a task and offers each newly received output to the later workflows that ask for it.
-export async function persistTask(next: TaskRecord, previous: TaskRecord) {
-  let workspace = withTask(await repository.loadWorkspace(), next)
+export async function persistTask(requested: TaskRecord, previous: TaskRecord) {
+  const loaded = await repository.loadWorkspace()
+  const next = withAutomaticCompletion(requested, withTask(loaded, requested), catalog)
+  let workspace = withTask(loaded, next)
   const changed = new Map<string, TaskRecord>([[next.id, next]])
   const received = next.outputVersionIds.filter((id) => !previous.outputVersionIds.includes(id))
   for (const versionId of received)
@@ -19,4 +21,5 @@ export async function persistTask(next: TaskRecord, previous: TaskRecord) {
       workspace = withTask(workspace, task)
     }
   await repository.saveTasks([...changed.values()])
+  return next
 }

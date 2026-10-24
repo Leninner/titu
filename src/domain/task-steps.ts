@@ -21,13 +21,16 @@ function prepareStep(
   task: TaskRecord,
   definition: WorkflowDefinition,
   workspace: Workspace,
+  catalog: CatalogVersion,
   ready: boolean,
   now: Date,
 ): TaskStep {
   const selectedIds = evidenceIdsForTask(task, definition, workspace)
-  const files = taskInputs(definition, workspace).filter((requirement) => requirement.category)
+  const files = taskInputs(definition, workspace).filter(
+    (requirement) => requirement.category && !requirement.optional,
+  )
   const done = files.filter(
-    (requirement) => !requirementGap(requirement, task, selectedIds, workspace, now),
+    (requirement) => !requirementGap(requirement, task, selectedIds, workspace, catalog, now),
   ).length
   return {
     id: 'prepare',
@@ -70,9 +73,14 @@ export function taskSteps(
   now: Date = new Date(),
 ) {
   const result = resultStep(task)
+  const ready = () => evaluateTask(task, workspace, catalog, now).ready
+  if (definition.autoComplete) {
+    const prepare = prepareStep(task, definition, workspace, catalog, ready(), now)
+    return { steps: [prepare], initial: prepare.id }
+  }
   const steps = taskInputs(definition, workspace).length
     ? [
-        prepareStep(task, definition, workspace, evaluateTask(task, workspace, catalog, now).ready, now),
+        prepareStep(task, definition, workspace, catalog, ready(), now),
         sendStep(task, workspace),
         result,
       ]

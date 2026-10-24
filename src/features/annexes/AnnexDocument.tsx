@@ -3,6 +3,7 @@ import type { AnnexDraft, StudentProfile } from '../../domain/types'
 import { catalog } from '../../catalog'
 import { buildDocumentModel, type DocumentParagraph } from '../../export/document-model'
 import { ActivityTable } from './ActivityTable'
+import { InfoTip } from '../../components/InfoTip'
 
 const profileLabels: Record<string, string> = {
   nombres: 'Estudiante', cedula: 'Cédula', email: 'Correo', direccion: 'Dirección',
@@ -10,8 +11,8 @@ const profileLabels: Record<string, string> = {
   aprobacionFecha: 'Fecha de aprobación', aprobacionResolucion: 'Resolución de aprobación', tutor: 'Tutor',
 }
 
-function EditableText({ value, label, error, readOnly, onChange }: {
-  value: string; label: string; error?: string; readOnly?: boolean; onChange: (value: string) => void
+function EditableText({ value, label, error, readOnly, hint, onChange }: {
+  value: string; label: string; error?: string; readOnly?: boolean; hint?: string; onChange: (value: string) => void
 }) {
   const ref = useRef<HTMLSpanElement>(null)
   useLayoutEffect(() => {
@@ -28,13 +29,13 @@ function EditableText({ value, label, error, readOnly, onChange }: {
     aria-description={error}
     tabIndex={readOnly ? undefined : 0}
     data-placeholder={`[${label}]`}
-    title={error || (readOnly ? 'Se actualiza desde Ajustes' : label)}
+    title={error || hint || label}
     onInput={(event) => onChange(event.currentTarget.innerText ?? event.currentTarget.textContent ?? '')}
   />
 }
 
-export function AnnexDocument({ draft, onChange, errors = {} }: {
-  draft: AnnexDraft; onChange: (next: AnnexDraft) => void; errors?: Record<string, string>
+export function AnnexDocument({ draft, onChange, errors = {}, readOnly = false }: {
+  draft: AnnexDraft; onChange: (next: AnnexDraft) => void; errors?: Record<string, string>; readOnly?: boolean
 }) {
   const template = catalog.templates.find((item) => item.id === draft.templateId)!
   // Render the export model with field markers, so document text and ordering stay shared.
@@ -61,18 +62,23 @@ export function AnnexDocument({ draft, onChange, errors = {} }: {
       const { key, profile, label } = binding
       const value = profile ? String(draft.profileSnapshot[key as keyof StudentProfile] ?? '') : draft.fields[key] ?? ''
       return <EditableText key={partIndex} value={value} label={label}
-        error={errors[profile ? `profile.${key}` : key]} readOnly={profile && key === 'tema'}
+        error={errors[profile ? `profile.${key}` : key]} readOnly={readOnly || (profile && key === 'tema')}
+        hint={!readOnly && profile && key === 'tema' ? 'Se actualiza desde Ajustes' : undefined}
         onChange={(next) => onChange(profile
           ? { ...draft, profileSnapshot: { ...draft.profileSnapshot, [key]: next } }
           : { ...draft, fields: { ...draft.fields, [key]: next } })} />
     })}
   </p>
-  return <article className="annex-paper" aria-label="Documento editable">
+  return <article className="annex-paper" aria-label={readOnly ? 'Documento' : 'Documento editable'}>
+    {model.guidance.length > 0 && <div className="annex-guidance">
+      <span>Notas del formato</span>
+      <InfoTip label="Notas del formato" text={model.guidance.join('\n\n')} />
+    </div>}
     <header className="annex-paper-heading">{model.headings.map(paragraph)}</header>
     <div>{model.paragraphs.map(paragraph)}</div>
     {model.report && <ActivityTable activities={draft.activities}
       monthlyPeriod={draft.templateId === 'anexo-5' ? draft.monthlyPeriod : undefined}
-      readOnly={draft.templateId === 'anexo-11'}
+      readOnly={readOnly || (draft.templateId === 'anexo-11' && draft.fields.origenMensual !== 'archivos')}
       onChange={(activities) => onChange({ ...draft, activities })} />}
     <div>{model.afterTable.map(paragraph)}</div>
     <div className="annex-signature">{model.signature.map(paragraph)}</div>

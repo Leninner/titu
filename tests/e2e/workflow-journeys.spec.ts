@@ -51,11 +51,9 @@ async function openStep(page: Page, name: 'Preparar' | 'Enviar' | 'Resultado') {
   if (await tab.count()) await tab.click()
 }
 
-async function submit(page: Page, id: string, time: string) {
+async function submit(page: Page, id: string) {
   await openStep(page, 'Enviar')
-  await page.getByLabel('Destinatario (verificar)', { exact: true }).fill('secretaria@example.test')
-  await page.getByLabel('Fecha y hora del envío realizado (Ecuador)', { exact: true }).fill(time)
-  await page.getByRole('button', { name: 'Confirmar que ya lo envié', exact: true }).click()
+  await page.getByRole('button', { name: 'Confirmar envío', exact: true }).click()
   await expectStatus(page, id, 'submitted')
   await expect(page.getByRole('tab', { name: /^Resultado/ })).toHaveAttribute('aria-selected', 'true')
 }
@@ -73,7 +71,8 @@ async function fill(
 ) {
   for (const requirement of requirements) {
     if (requirement.optional || requirement.category === 'personal') continue
-    if (requirement.category) await evidenceCheckbox(page, versions[requirement.category].filename).check()
+    if (requirement.annex) await page.getByRole('button', { name: 'Crear Anexo 11', exact: true }).click()
+    else if (requirement.category) await evidenceCheckbox(page, versions[requirement.category].filename).check()
     else if (['grade-1', 'grade-2', 'similarity', 'attendance'].includes(requirement.id))
       await page.getByLabel(requirement.label, { exact: true }).fill(sample(requirement.id))
     else await page.getByLabel(requirement.label, { exact: true }).check()
@@ -131,8 +130,11 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
           tema: 'Tema aprobado de prueba',
           carrera: 'Software',
           tutor: 'Tutor de prueba',
+          aprobacionFecha: '2026-07-15',
         })
         await repository.saveSetting('dayHourSubmissionDate', '2026-12-10')
+        await repository.saveSetting('monthlyFrom', '2026-10')
+        await repository.saveSetting('monthlyTo', '2026-10')
         const seeded: Record<string, { id: string; filename: string }> = {}
         for (const category of categories) {
           const filename = `${category}-original.pdf`
@@ -144,6 +146,14 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
             textualPdfStatus: 'text-detected',
             issuedOn: '2026-12-07',
             expiresOn: '2027-01-15',
+            ...(category === 'mensual' && {
+              reportAnalysis: {
+                recognized: true,
+                month: '2026-10',
+                progress: 100,
+                activities: [{ date: '2026-10-14', description: 'Avance del capítulo' }],
+              },
+            }),
           })
           seeded[category] = { id: version.id, filename }
         }
@@ -166,23 +176,23 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
         await reuseLegalVersions(page, modality)
         await page.reload()
       }
-      await expect(page.getByRole('heading', { name: definition.title, exact: true })).toBeVisible()
+      await expect(page.getByRole('heading', { name: definition.title, exact: true, level: 1 })).toBeVisible()
       const inputs = inputsOf(definition)
       const outputs = outputsOf(definition)
-      await expect(page.getByRole('tablist')).toHaveCount(inputs.length ? 1 : 0)
+      await expect(page.getByRole('tablist')).toHaveCount(inputs.length && !definition.autoComplete ? 1 : 0)
       await fill(page, inputs, versions)
       await expectRejected(page, inputs, 'similarity', '11')
 
       if (definition.id === 'propuesta') {
         await page.getByRole('button', { name: 'Guardar cambios', exact: true }).click()
         await expectStatus(page, definition.id, 'preparing')
-        await submit(page, definition.id, '2026-10-21T09:00')
+        await submit(page, definition.id)
         await page.getByRole('button', { name: 'Hay una observación', exact: true }).click()
         await page.getByLabel('Observación recibida').fill('Secretaría solicita corregir el Anexo 1')
         await page.getByRole('button', { name: 'Guardar observación', exact: true }).click()
         await expectStatus(page, definition.id, 'observed')
         await expect(page.getByRole('tab', { name: /^Resultado/ })).toContainText('observado')
-        await submit(page, definition.id, '2026-10-22T10:00')
+        await submit(page, definition.id)
         const state = await records(page)
         expect(state.submissions.filter((item) => item.taskId === definition.id)).toHaveLength(2)
         expect(
@@ -192,7 +202,12 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
         ).toBe(true)
       }
       if (definition.id.startsWith('aptitud-legal-'))
-        await submit(page, definition.id, '2026-12-08T10:00')
+        await submit(page, definition.id)
+      if (definition.autoComplete) {
+        await expect(page.getByRole('tablist')).toHaveCount(0)
+        await expectStatus(page, definition.id, 'completed')
+        continue
+      }
 
       await openStep(page, 'Resultado')
       const complete = page.getByRole('button', { name: 'Completar trámite', exact: true })

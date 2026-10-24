@@ -1,7 +1,7 @@
 import type { AnnexDraft, BackupManifest, WorkspaceSnapshot } from '../domain/types'
 import { backupManifestSchema, currentBackupFormat } from '../domain/schemas'
 import { workflowDefinitions } from '../catalog/workflows'
-import { migrateTaskRecords } from './migrate-workspace'
+import { migrateTaskRecords, moveReceivedFiles } from './migrate-workspace'
 
 export interface ValidatedBackup {
   manifest: BackupManifest & { draftHistory?: AnnexDraft[] }
@@ -11,15 +11,23 @@ export async function sha256(blob: Blob): Promise<string> {
   const hash = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer())
   return Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, '0')).join('')
 }
+function upgradedRecords(manifest: BackupManifest) {
+  const records = manifest.records
+  if (manifest.formatVersion === 1)
+    return migrateTaskRecords(
+      { ...records, modality: records.profile?.modalidad },
+      workflowDefinitions,
+      manifest.exportedAt,
+    )
+  return { tasks: moveReceivedFiles(records, workflowDefinitions), submissions: records.submissions }
+}
 function upgradeManifest(manifest: BackupManifest & { draftHistory?: AnnexDraft[] }) {
   if (manifest.formatVersion === currentBackupFormat) return manifest
-  const records = manifest.records
-  const migrated = migrateTaskRecords(
-    { ...records, modality: records.profile?.modalidad },
-    workflowDefinitions,
-    manifest.exportedAt,
-  )
-  return { ...manifest, formatVersion: currentBackupFormat, records: { ...records, ...migrated } }
+  return {
+    ...manifest,
+    formatVersion: currentBackupFormat,
+    records: { ...manifest.records, ...upgradedRecords(manifest) },
+  }
 }
 export async function validateBackup(input: ValidatedBackup): Promise<ValidatedBackup> {
   const manifest = upgradeManifest(backupManifestSchema.parse(input.manifest))

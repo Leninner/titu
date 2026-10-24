@@ -51,6 +51,7 @@ export function AppShell() {
   const [hash, setHash] = useState(window.location.hash)
   const [search, setSearch] = useState('')
   const [editorHeader, setEditorHeader] = useState<HTMLDivElement | null>(null)
+  const [taskHeader, setTaskHeader] = useState<HTMLDivElement | null>(null)
   useEffect(() => {
     const update = () => {
       setHash(window.location.hash)
@@ -127,11 +128,14 @@ export function AppShell() {
           {route === 'anexos' && draft ? (
             <div className="topbar-editor-slot" ref={setEditorHeader} />
           ) : selectedWorkflow ? (
-            <nav className="editor-breadcrumb topbar-workflow-breadcrumb" aria-label="Ubicación del trámite">
-              <a href="#/proceso">Mi proceso</a>
-              <ChevronRight size={15} aria-hidden="true" />
-              <span aria-current="page">{selectedWorkflow.title}</span>
-            </nav>
+            <>
+              <nav className="editor-breadcrumb topbar-workflow-breadcrumb" aria-label="Ubicación del trámite">
+                <a href="#/proceso">Mi proceso</a>
+                <ChevronRight size={15} aria-hidden="true" />
+                <h1 aria-current="page">{selectedWorkflow.title}</h1>
+              </nav>
+              <div className="topbar-task-slot" ref={setTaskHeader} />
+            </>
           ) : route === 'proceso' ? (
             <nav className="editor-breadcrumb topbar-workflow-breadcrumb" aria-label="Ubicación">
               <span className="topbar-period">{period}</span>
@@ -183,7 +187,7 @@ export function AppShell() {
             )}
             <div hidden={!!search}>
               {route === 'proceso' ? (
-                <WorkflowPage selectedId={id} />
+                <WorkflowPage selectedId={id} headerTarget={taskHeader} />
               ) : route === 'documentos' ? (
                 <DocumentsPage />
               ) : route === 'anexos' ? (

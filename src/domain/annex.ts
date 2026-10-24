@@ -93,7 +93,11 @@ export function validateAnnex(draft: AnnexDraft, previousMonthly?: AnnexDraft): 
     }
     if (previousMonthly?.fields.avance?.trim() && Number.isFinite(Number(previousMonthly.fields.avance)) && Number(previousMonthly.fields.avance) <= 100 && progress < Number(previousMonthly.fields.avance))
       errors.avance = `El avance no puede ser menor al ${previousMonthly.fields.avance}% del informe anterior.`
-    if (draft.templateId === 'anexo-11') {
+    if (draft.templateId === 'anexo-11' && draft.fields.origenMensual === 'archivos') {
+      if (progress !== 100) errors.avance = 'El cumplimiento final requiere declarar 100%'
+      if (draft.fields.ultimoAvanceMensual && draft.fields.ultimoAvanceMensual !== '100')
+        warnings.ultimoAvanceMensual = `El último Anexo 5 declara ${draft.fields.ultimoAvanceMensual}% de avance`
+    } else if (draft.templateId === 'anexo-11') {
       if (progress !== 100) errors.avance = 'El cumplimiento final requiere declarar 100%'
       if (draft.fields.ultimoAvanceMensual !== '100')
         errors.ultimoAvanceMensual = 'El último mensual seleccionado debe respaldar el 100% final'

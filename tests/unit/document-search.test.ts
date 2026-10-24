@@ -13,7 +13,7 @@ describe('document search', () => {
   it('ignores accents, case and word order', () => {
     expect(search('record')).toContain('record')
     expect(search('ACADEMICO récord')).toContain('record')
-    expect(search('aptitud legal')).toEqual(['aptitud-legal'])
+    expect(search('aptitud legal')).toEqual(['solicitud-aptitud', 'aptitud-legal'])
   })
 
   it('matches uploaded file names', () => {

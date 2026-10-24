@@ -9,6 +9,7 @@ import { repository } from '../../src/storage/repository'
 import { newProfile } from '../../src/domain/types'
 import { catalog } from '../../src/catalog'
 import { applicableWorkflows } from '../../src/domain/workflow'
+import { buildFinalReportFromUploads } from '../../src/domain/final-report'
 
 vi.mock('../../src/features/annexes/AnnexPreview', () => ({
   AnnexPreview: () => <aside aria-label="Vista previa de prueba" />,
@@ -140,7 +141,7 @@ it('opens the process map by default and shows a step with its documents in a di
   const panel = within(await screen.findByRole('dialog', {
     name: 'Propuesta y aprobación de modalidad',
   }))
-  expect(panel.getByRole('heading', { name: 'Anexo 1 · Solicitud de modalidad, firmada por estudiante y tutor' })).toBeTruthy()
+  expect(panel.getByRole('heading', { name: 'Anexo 1 · Solicitud de modalidad' })).toBeTruthy()
   expect(panel.getByRole('link', { name: /Abrir trámite completo/ }).getAttribute('href'))
     .toBe('#/proceso/propuesta')
   fireEvent.click(panel.getByRole('button', { name: 'Cerrar detalle' }))
@@ -185,8 +186,8 @@ it('uploads original document bytes and appends a signed correction without muta
   mount()
   await screen.findByRole('navigation', { name: 'Principal' })
   await navigate('#/documentos')
-  const card = within(await openCategory('Solicitudes'))
-  const input = card.getByLabelText('Agregar archivo a Solicitudes')
+  const card = within(await openCategory('Solicitud de modalidad · Anexo 1'))
+  const input = card.getByLabelText('Agregar archivo a Solicitud de modalidad · Anexo 1')
   fireEvent.change(input, {
     target: {
       files: [new File(['original image bytes'], 'certificado.png', { type: 'image/png' })],
@@ -239,8 +240,8 @@ it('confirms the signature beside the saved file and keeps the unsigned version'
   mount()
   await screen.findByRole('navigation', { name: 'Principal' })
   await navigate('#/documentos')
-  const card = within(await openCategory('Solicitudes'))
-  fireEvent.change(card.getByLabelText('Agregar archivo a Solicitudes'), {
+  const card = within(await openCategory('Solicitud de modalidad · Anexo 1'))
+  fireEvent.change(card.getByLabelText('Agregar archivo a Solicitud de modalidad · Anexo 1'), {
     target: { files: [new File(['signed later'], 'anexo-1.png', { type: 'image/png' })] },
   })
   const signature = await card.findByRole('checkbox', {
@@ -348,4 +349,38 @@ it('drops multiple originals into their category without changing other cards an
   expect(within(target).queryByText('Pendiente')).toBeNull()
   const bytes = await Promise.all(snapshot.blobs.map((blob) => blob.data.text()))
   expect(bytes.sort()).toEqual(['first original', 'second original'])
+})
+it('shows the generated Anexo 11 read-only in the map dialog', async () => {
+  window.localStorage.clear()
+  const profile = {
+    ...newProfile(),
+    modalidad: 'research' as const,
+    nombres: 'María Muñoz',
+    carrera: 'Software',
+    tema: 'Tema aprobado',
+    tutor: 'Ing. Tutor',
+    aprobacionFecha: '2026-07-15',
+  }
+  await repository.saveProfile(profile)
+  await repository.saveDraft(
+    buildFinalReportFromUploads(
+      profile,
+      [{ versionId: 'v', month: '2026-08', analysis: { recognized: true, activities: [{ date: '2026-08-20', description: 'Diseño del sistema' }] } }],
+      '2026-11-18',
+    ),
+    0,
+  )
+  mount()
+  await screen.findByRole('navigation', { name: 'Principal' })
+  await navigate('#/proceso')
+  await screen.findByRole('heading', { name: 'Mi proceso', level: 1 })
+  fireEvent.click(await screen.findByRole('button', { name: /^Informe final de avance del tutor ·/ }))
+  const dialog = within(await screen.findByRole('dialog', { name: 'Informe final de avance del tutor' }))
+  const annex = within(dialog.getByRole('region', { name: 'Anexo 11 · Informe final' }))
+  expect(annex.getByText('1 actividad')).toBeTruthy()
+  const paper = within(annex.getByRole('article', { name: 'Documento' }))
+  expect((paper.getByLabelText('Actividad 1') as HTMLTextAreaElement).value).toBe('Diseño del sistema')
+  expect((paper.getByLabelText('Actividad 1') as HTMLTextAreaElement).readOnly).toBe(true)
+  expect(paper.queryAllByRole('textbox').filter((item) => item.getAttribute('contenteditable') === 'plaintext-only')).toHaveLength(0)
+  expect(dialog.queryByText('Este paso no pide documentos.')).toBeNull()
 })

@@ -3,11 +3,17 @@ import { applicableWorkflows, taskInputs, taskOutputs } from '../../domain/workf
 
 const names: Record<string, string> = {
   personal: 'Identificación',
-  solicitud: 'Solicitudes',
+  solicitud: 'Solicitud de modalidad · Anexo 1',
+  'solicitud-calificadores': 'Solicitud de calificadores · Anexo 10',
+  'solicitud-aptitud': 'Solicitud de aptitud legal · Anexo 15',
+  'solicitud-sustentacion': 'Solicitud de sustentación · Anexo 14',
   resolucion: 'Resolución de modalidad y tema',
   'resolucion-designacion': 'Designación de calificadores',
   'resolucion-tramite': 'Resoluciones de trámites excepcionales',
-  compromiso: 'Compromiso empresarial',
+  compromiso: 'Carta de compromiso · Anexo 3',
+  avales: 'Avales de la propuesta',
+  'oficio-investigacion': 'Oficio de investigación',
+  'propuesta-perfil': 'Propuesta del perfil · Anexo 2',
   mensual: 'Informes mensuales · Anexo 5',
   final: 'Informe final',
   'aval-informes': 'Aval del tutor',
@@ -42,7 +48,7 @@ export function documentCategories(workspace: Workspace, catalog: CatalogVersion
     for (const requirement of [...taskInputs(workflow, workspace), ...taskOutputs(workflow, workspace)]) {
       if (!requirement.category) continue
       const id = requirement.category
-      const group = ['personal', 'solicitud', 'resolucion', 'compromiso', 'matricula'].includes(id)
+      const group = ['personal', 'solicitud', 'solicitud-calificadores', 'solicitud-aptitud', 'solicitud-sustentacion', 'resolucion', 'compromiso', 'matricula', 'avales', 'oficio-investigacion', 'propuesta-perfil'].includes(id)
         ? 'Tu expediente'
         : [
               'mensual',

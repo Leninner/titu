@@ -119,6 +119,9 @@
 .process-edge.is-ready circle { stroke: var(--accent); }
 .process-edge.is-done path { stroke: #5aae84; stroke-dasharray: none; }
 .process-edge.is-done circle { stroke: #5aae84; }
+.process-arrow path { fill: #cbc2d6; stroke: none; }
+.process-arrow.is-ready path { fill: var(--accent); }
+.process-arrow.is-done path { fill: #5aae84; }
 
 .process-node {
   position: absolute;
@@ -482,3 +485,8 @@
 .process-panel-status.is-done { color: #287149; }
 .process-panel-status.is-active { color: var(--accent); }
 .process-panel-status.is-waiting { color: #8a4f14; }
+.process-dialog-annex { display: flex; flex: 1; flex-direction: column; gap: 10px; min-height: 0; }
+.process-dialog-annex .document-canvas { flex: 1; min-height: 360px; overflow: auto; padding: 12px; border: 1px solid #eee9f3; border-radius: 12px; background: #f7f5fa; }
+.process-dialog-annex .annex-paper { zoom: 0.72; margin: 0 auto; }
+.process-dialog-annex h3 { display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 0.95rem; }
+.process-dialog-annex h3 span { color: var(--muted); font-size: 0.78rem; font-weight: 550; }

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
-import { templateEvidenceCategory, validateAnnex } from '../../domain/annex'
+import { validateAnnex } from '../../domain/annex'
+import { exportAnnex } from './export-annex'
 import type { AnnexDraft } from '../../domain/types'
 import { repository } from '../../storage/repository'
 import { downloadBlob, errorMessage } from '../../components/download'
@@ -69,21 +70,7 @@ export function AnnexEditor({ initial, headerTarget }: { initial: AnnexDraft; he
         throw new Error(
           'Los datos cambiaron durante el guardado. Revisa los campos antes de exportar.',
         )
-      const { renderAnnex } = await import('../../export/render-annex')
-      const blob = await renderAnnex(structuredClone(latest), format)
-      const name = `${draft.name.replace(/[^\p{L}\p{N}_ -]/gu, '')}-r${latest.revision}.${format}`
-      const previous = workspace.versions.find((version) => version.sourceDraftId === draft.id)
-      await repository.addDocumentVersion({
-        file: blob,
-        originalName: name,
-        documentId: previous?.documentId,
-        category: templateEvidenceCategory(draft.templateId),
-        sourceDraftId: draft.id,
-        revision: latest.revision,
-        signatureStatus: 'pending',
-        textualPdfStatus: format === 'pdf' ? 'text-detected' : 'unknown',
-      })
-      downloadBlob(blob, name)
+      await exportAnnex(latest, format, workspace)
       await refresh()
     } catch (error) {
       setActionError(errorMessage(error))
