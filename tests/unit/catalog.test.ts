@@ -67,7 +67,7 @@ describe('institutional catalog', () => {
   })
   it('describes each workflow by its facts, without instructions for using the app', () => {
     for (const definition of catalog.workflowDefinitions)
-      expect(definition.instructions).not.toMatch(
+      expect([...definition.guide.steps.map((item) => item.text), ...definition.guide.notes].join(' ')).not.toMatch(
         /aplicaci[oó]n|\bapp\b|marcar|registrar|subir|arrastr|adjunta|selecciona/i,
       )
   })

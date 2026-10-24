@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CircleAlert, FileDown, FileText, FileType2, RefreshCw } from 'lucide-react'
+import { CircleAlert, FileDown, FileText, RefreshCw } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
 import { errorMessage } from '../../components/download'
@@ -101,33 +101,23 @@ function DraftEditor({ initial }: { initial: AnnexDraft }) {
         <div className="final-report-actions">
           <button
             type="button"
-            className="icon-button"
             disabled={working}
-            aria-label="Volver a importar actividades de los Anexo 5"
-            title="Volver a importar actividades de los Anexo 5"
+            title="Vuelve a leer las actividades de los Anexo 5"
             onClick={() => void reimport()}
           >
-            <RefreshCw size={16} aria-hidden="true" />
+            <RefreshCw size={15} aria-hidden="true" /> Reimportar actividades
+          </button>
+          <button type="button" disabled={working} aria-label="Descargar Word" onClick={() => void download('docx')}>
+            <FileDown size={15} aria-hidden="true" /> Word
           </button>
           <button
             type="button"
-            className="icon-button"
-            disabled={working}
-            aria-label="Descargar Word"
-            title="Descargar Word"
-            onClick={() => void download('docx')}
-          >
-            <FileType2 size={16} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="icon-button is-primary"
+            className="primary"
             disabled={working}
             aria-label="Descargar PDF"
-            title="Descargar PDF"
             onClick={() => void download('pdf')}
           >
-            <FileDown size={16} aria-hidden="true" />
+            <FileDown size={15} aria-hidden="true" /> PDF
           </button>
         </div>
       </div>

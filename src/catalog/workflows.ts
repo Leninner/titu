@@ -1,4 +1,4 @@
-import type { Modality, Requirement, WorkflowDefinition } from '../domain/types'
+import type { GuideIcon, Modality, Requirement, WorkflowDefinition } from '../domain/types'
 
 const all: Modality[] = ['research', 'article', 'complexivo']
 const work: Modality[] = ['research', 'article']
@@ -75,6 +75,12 @@ const responseCaptures: Requirement = {
   ...doc('respuesta', 'Capturas del correo de respuesta', 'respuesta', false),
   optional: true,
 }
+const step = (icon: GuideIcon, actor: string, text: string) => ({ icon, actor, text })
+const sendRules = [
+  'Solo desde el correo institucional, con los documentos en PDF con OCR, sin unificar, numerados en el orden establecido y en una carpeta comprimida.',
+  'Firmas electrónicas o autógrafas, nunca mixtas ni una imagen pegada.',
+  'Si falta un requisito, el trámite se devuelve.',
+]
 const definitions: WorkflowDefinition[] = []
 function add(
   definition: Omit<WorkflowDefinition, 'outputs' | 'role'> &
@@ -147,8 +153,22 @@ add({
     },
   ],
   outputs: [doc('resolucion', ['Resolución de modalidad y tema', 'Resolución de Consejo Directivo que aprueba la modalidad, la opción, el tutor y el tema'], 'resolucion')],
-  instructions:
-    'La propuesta del perfil (Anexo 2), hecha en Diseño de Proyectos con el tutor sugerido, se envía por correo al Coordinador de Carrera y al docente de la Unidad de Titulación, con copia al tutor, para obtener su aval; las observaciones se corrigen y se reenvían. Con el aval se firma el Anexo 1, dirigido al Presidente de la Unidad de Titulación. La solicitud va a informacion.fisei@uta.edu.ec solo desde el correo institucional, hasta el fin de los exámenes de recuperación del penúltimo nivel, con los documentos sin unificar, numerados en el orden del anexo y en una carpeta comprimida. Las firmas son electrónicas o autógrafas, nunca mixtas ni una imagen pegada. El examen complexivo no lleva firmas de aval ni Anexo 2. La Unidad de Titulación verifica el récord académico y emite un acuerdo que el Consejo Directivo aprueba en un máximo de 8 días término; la resolución indica modalidad, opción, tutor y tema.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Desarrolla la propuesta del perfil (Anexo 2) en Diseño de Proyectos con tu tutor sugerido.'),
+      step('send', 'Estudiante', 'Envíala por correo al Coordinador de Carrera y al docente de la Unidad de Titulación, con copia al tutor, para pedir su aval.'),
+      step('review', 'Coordinación y Unidad de Titulación', 'Revisan la propuesta; si hay observaciones, las corriges y la reenvías hasta recibir el aval por correo.'),
+      step('sign', 'Estudiante y tutor sugerido', 'Con el aval, firman el Anexo 1 dirigido al Presidente de la Unidad de Titulación.'),
+      step('send', 'Estudiante', 'Envía la solicitud con sus adjuntos a informacion.fisei@uta.edu.ec, hasta el fin de los exámenes de recuperación del penúltimo nivel.'),
+      step('review', 'Unidad de Titulación', 'Verifica tu récord académico y emite un acuerdo de validación.'),
+      step('council', 'Consejo Directivo', 'Aprueba en un máximo de 8 días término; la resolución indica modalidad, opción, tutor y tema.'),
+    ],
+    notes: [
+      'Solo desde el correo institucional, con los documentos sin unificar, numerados en el orden del anexo y en una carpeta comprimida.',
+      'Firmas electrónicas o autógrafas, nunca mixtas ni una imagen pegada.',
+      'El examen complexivo no lleva firmas de aval ni Anexo 2.',
+    ],
+  },
   role: 'Estudiante, Unidad de Titulación y Consejo Directivo',
 })
 add({
@@ -161,8 +181,17 @@ add({
   sourceIds: ['UT-10'],
   dependsOn: ['propuesta'],
   requirements: [monthly],
-  instructions:
-    'El tutor firma un Anexo 5 por cada mes de desarrollo y lo envía por Quipux a la secretaría de la Unidad de Titulación, con copia al docente responsable de la Unidad de Titulación de la carrera y por correo al estudiante. Los plazos se cuentan desde la aprobación de la propuesta por el Consejo Directivo. Todos los informes llevan el tema aprobado o modificado por resolución; no puede haber documentos con temas distintos.',
+  guide: {
+    steps: [
+      step('prepare', 'Tutor', 'Cada mes, el tutor llena el Anexo 5 con las actividades realizadas.'),
+      step('sign', 'Tutor', 'Lo firma y lo envía por Quipux a la secretaría de la Unidad de Titulación, con copia al docente responsable.'),
+      step('deliver', 'Estudiante', 'Recibes cada informe por correo y lo subes en su mes.'),
+    ],
+    notes: [
+      'Los plazos se cuentan desde la aprobación de la propuesta por el Consejo Directivo.',
+      'Todos los informes llevan el tema aprobado; no puede haber documentos con temas distintos.',
+    ],
+  },
   role: 'Tutor y estudiante',
 })
 add({
@@ -187,8 +216,17 @@ add({
   outputs: [
     doc('final', ['Anexo 11 firmado', 'Firmado por el tutor y enviado por Quipux'], 'final'),
   ],
-  instructions:
-    'El Anexo 11 declara el 100 % de avance, la fecha de aprobación de la propuesta en Consejo Directivo y las mismas fechas y actividades de los informes mensuales. Lo firma solo el tutor y lo envía por Quipux a la secretaría de la Unidad de Titulación, con copia al docente responsable y por correo al estudiante.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Prepara el Anexo 11 con las fechas y actividades de todos los Anexo 5 y el 100 % de avance.'),
+      step('send', 'Estudiante', 'Envíaselo a tu tutor para que lo revise.'),
+      step('sign', 'Tutor', 'Lo firma y lo envía por Quipux a la secretaría de la Unidad de Titulación, con copia al docente responsable.'),
+      step('deliver', 'Estudiante', 'Recibes el Anexo 11 firmado y lo subes en Resultado.'),
+    ],
+    notes: [
+      'Las fechas y actividades deben coincidir con las de los informes mensuales.',
+    ],
+  },
   role: 'Tutor',
 })
 const reviewEndorsement = doc(
@@ -198,8 +236,6 @@ const reviewEndorsement = doc(
 )
 const enrollment = doc('matricula', ['Folio y matrícula', 'Certificado de folio y matrícula del período actual'], 'matricula')
 const graderOutputs = [designation, gradeReports, ...grades]
-const submissionRules =
-  'Se envía a informacion.fisei@uta.edu.ec solo desde el correo institucional, con los documentos en PDF con OCR, sin unificar, numerados en el orden establecido y en una carpeta comprimida. Las firmas son electrónicas o autógrafas, nunca mixtas ni una imagen pegada. Si falta un requisito, el trámite se devuelve.'
 add({
   id: 'calificadores-research',
   summary: 'Envía el Anexo 10 con tu trabajo terminado y espera a los calificadores y sus notas.',
@@ -222,7 +258,19 @@ add({
     thesis,
   ],
   outputs: graderOutputs,
-  instructions: `${submissionRules} El tutor envía además el informe de similitud al Consejo Directivo por Quipux. El Consejo Directivo designa a dos calificadores y lo notifica; cada uno consigna su calificación en el Anexo 12 dentro de 8 días término. El promedio mínimo es 7; con un promedio inferior procede la recalificación.`,
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Reúne los documentos en PDF con OCR y llena el Anexo 10 dirigido al Presidente del Consejo Directivo.'),
+      step('send', 'Tutor', 'Envía el informe de similitud (máximo 10 %) al Consejo Directivo por Quipux.'),
+      step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec.'),
+      step('council', 'Consejo Directivo', 'Designa a dos calificadores y te notifica.'),
+      step('grade', 'Calificadores', 'Cada uno consigna su nota en el Anexo 12 dentro de 8 días término.'),
+    ],
+    notes: [
+      ...sendRules,
+      'El promedio mínimo es 7; con un promedio inferior procede la recalificación.',
+    ],
+  },
   role: 'Estudiante, Consejo Directivo y calificadores',
 })
 add({
@@ -245,7 +293,19 @@ add({
     { ...thesis, ...labelled(['Artículo académico', 'PDF con texto seleccionable (OCR)']) },
   ],
   outputs: graderOutputs,
-  instructions: `${submissionRules} El tema va en español y en inglés solo si cambió para la publicación en la revista. El Consejo Directivo designa a dos calificadores y lo notifica; cada uno consigna su calificación en el Anexo 12. La nota mínima es 7, porque el artículo ya cuenta con la carta de aceptación.`,
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Reúne los documentos en PDF con OCR y llena el Anexo 10 dirigido al Presidente del Consejo Directivo.'),
+      step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec.'),
+      step('council', 'Consejo Directivo', 'Designa a dos calificadores y te notifica.'),
+      step('grade', 'Calificadores', 'Cada uno consigna su nota en el Anexo 12.'),
+    ],
+    notes: [
+      ...sendRules,
+      'El tema va en español y en inglés solo si cambió para la publicación en la revista.',
+      'La nota mínima es 7, porque el artículo ya cuenta con la carta de aceptación.',
+    ],
+  },
   role: 'Estudiante, Consejo Directivo y calificadores',
 })
 add({
@@ -258,8 +318,15 @@ add({
   dependsOn: ['propuesta'],
   requirements: [attendanceReport],
   outputs: [attendance, examResolutions],
-  instructions:
-    'La asistencia mínima a la preparación es del 70 %. El Consejo Directivo emite una resolución por cada examen, incluidas la segunda oportunidad y la recalificación; se obtienen en Información o en redi.uta.edu.ec.',
+  guide: {
+    steps: [
+      step('calendar', 'Estudiante', 'Asiste a la preparación; necesitas al menos 70 % de asistencia.'),
+      step('grade', 'Estudiante', 'Rinde el examen complexivo.'),
+      step('council', 'Consejo Directivo', 'Emite una resolución por cada examen, incluidas la segunda oportunidad y la recalificación.'),
+      step('download', 'Estudiante', 'Obtén las resoluciones en Información o en redi.uta.edu.ec.'),
+    ],
+    notes: [],
+  },
   role: 'Tutor y Consejo Directivo',
 })
 add({
@@ -272,8 +339,16 @@ add({
   dependsOn: [],
   requirements: [],
   outputs: [doc('no-adeudar', ['Formulario de no adeudar', 'Firmado electrónicamente; se descarga cuando su estado es Finalizado y vale 30 días'], 'no-adeudar')],
-  instructions:
-    'Se solicita en servicios.uta.edu.ec, Sistema Integrado. La solicitud pasa a la Secretaría de Facultad, que genera la orden de pago; luego cada dependencia la valida. El formulario se descarga cuando su estado es Finalizado y vale treinta días desde su emisión; después caduca.',
+  guide: {
+    steps: [
+      step('send', 'Estudiante', 'Solicítalo en servicios.uta.edu.ec, Sistema Integrado.'),
+      step('review', 'Secretaría de Facultad', 'Genera la orden de pago y cada dependencia valida la solicitud.'),
+      step('download', 'Estudiante', 'Descarga el formulario cuando su estado sea Finalizado.'),
+    ],
+    notes: [
+      'Vale treinta días desde su emisión; después caduca.',
+    ],
+  },
   role: 'Estudiante, Secretaría de Facultad y dependencias',
 })
 for (const modality of all) {
@@ -301,7 +376,17 @@ for (const modality of all) {
       ...modalityRequirements,
     ],
     outputs: [legalCertificate],
-    instructions: `${submissionRules} El certificado lo emite Secretaría y es un documento distinto de la solicitud; sus anexos son los mismos documentos que se presentan después para pedir la fecha de sustentación.`,
+    guide: {
+      steps: [
+        step('prepare', 'Estudiante', 'Llena el Anexo 15 dirigido al Decano y reúne sus anexos en PDF con OCR.'),
+        step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec.'),
+        step('review', 'Secretaría', 'Revisa los documentos y emite el certificado de aptitud legal.'),
+      ],
+      notes: [
+        ...sendRules,
+        'El certificado es distinto de la solicitud; sus anexos se presentan igual al pedir la fecha de sustentación.',
+      ],
+    },
     role: 'Estudiante y Secretaría',
   })
 }
@@ -325,8 +410,15 @@ add({
     },
   ],
   outputs: [doc('aval-inicial', ['Aval inicial de Biblioteca', 'Autoriza recoger las firmas'], 'aval-inicial')],
-  instructions:
-    'Se envía sin firmas al correo de Biblioteca FISEI (edissonhtoaza@uta.edu.ec), con el asunto «PROYECTO DE INVESTIGACIÓN – APELLIDOS Y NOMBRES» u «HOJAS PRELIMINARES Y ARTÍCULO ACADÉMICO – APELLIDOS Y NOMBRES». El Proyecto usa la plantilla del Anexo A y la estructura del Anexo 13A. Biblioteca revisa el formato y emite un aval inicial que autoriza recoger las firmas.',
+  guide: {
+    steps: [
+      step('send', 'Estudiante', 'Envía el trabajo sin firmas a edissonhtoaza@uta.edu.ec con el asunto «PROYECTO DE INVESTIGACIÓN – APELLIDOS Y NOMBRES» u «HOJAS PRELIMINARES Y ARTÍCULO ACADÉMICO – APELLIDOS Y NOMBRES».'),
+      step('library', 'Biblioteca', 'Revisa el formato y emite el aval inicial para recoger las firmas.'),
+    ],
+    notes: [
+      'El Proyecto usa la plantilla del Anexo A y la estructura del Anexo 13A.',
+    ],
+  },
   role: 'Estudiante y Biblioteca',
 })
 add({
@@ -338,8 +430,15 @@ add({
   sourceIds: ['UT-22', 'UT-23'],
   dependsOn: ['biblioteca-revision'],
   requirements: [doc('firma-estudiante', ['Trabajo firmado por el estudiante', 'Con la página de autoría (y derechos de autor en el Proyecto) firmada'], 'tesis')],
-  instructions:
-    'El estudiante firma la página de autoría y, en el Proyecto, la de derechos de autor. Cada firma se recibe una por una antes de seguir con la siguiente, y cada firma electrónica debe poder verificarse.',
+  guide: {
+    steps: [
+      step('sign', 'Estudiante', 'Firma la página de autoría y, en el Proyecto, la de derechos de autor.'),
+    ],
+    notes: [
+      'Cada firma se recibe una por una antes de seguir con la siguiente.',
+      'Cada firma electrónica debe poder verificarse.',
+    ],
+  },
 })
 add({
   id: 'biblioteca-firmas-docentes',
@@ -355,8 +454,16 @@ add({
     check('calificador-2-firma', ['Firma del segundo calificador', 'En la página de aprobación del tribunal']),
     doc('docentes-firmados', ['Trabajo con firmas docentes', 'Versión con las firmas del tutor y de los dos calificadores'], 'tesis'),
   ],
-  instructions:
-    'El tutor firma la aprobación del tutor y los dos calificadores la aprobación del tribunal, siempre sobre la última versión firmada y una firma a la vez. Cada firma electrónica debe poder verificarse.',
+  guide: {
+    steps: [
+      step('sign', 'Tutor', 'Firma la página de aprobación del tutor.'),
+      step('sign', 'Calificadores', 'Los dos firman la página de aprobación del tribunal.'),
+    ],
+    notes: [
+      'Siempre sobre la última versión firmada y una firma a la vez.',
+      'Cada firma electrónica debe poder verificarse.',
+    ],
+  },
   role: 'Tutor y calificadores',
 })
 add({
@@ -369,8 +476,16 @@ add({
   dependsOn: ['biblioteca-firmas-docentes'],
   requirements: [doc('decanato-firma', ['Trabajo firmado por Decanato', 'El Decano firma como presidente del tribunal'], 'tesis')],
   outputs: [doc('biblioteca', 'Aval final de Biblioteca', 'biblioteca')],
-  instructions:
-    'La versión con todas las firmas docentes se envía a decanato.fisei@uta.edu.ec para la firma del Decano, que siempre preside el tribunal. Luego vuelve a Biblioteca, que valida las firmas y emite el aval final. La portada lleva el mes en que se presentan los papeles para la defensa.',
+  guide: {
+    steps: [
+      step('send', 'Estudiante', 'Envía la versión con las firmas docentes a decanato.fisei@uta.edu.ec.'),
+      step('sign', 'Decano', 'Firma como presidente del tribunal.'),
+      step('library', 'Biblioteca', 'Valida todas las firmas y emite el aval final.'),
+    ],
+    notes: [
+      'La portada lleva el mes en que se presentan los papeles para la defensa.',
+    ],
+  },
   role: 'Decanato y Biblioteca',
 })
 add({
@@ -416,7 +531,19 @@ add({
       false,
     ),
   ],
-  instructions: `${submissionRules} Cada PDF se nombra con apellidos, nombres y número de cédula. Los anexos del certificado de aptitud legal son los mismos documentos presentados para obtenerlo. El examen complexivo solicita incorporación y solo presenta la resolución de aprobación o cambio de modalidad. El Consejo Directivo fija el lugar, la fecha y la hora y los notifica.`,
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Llena el Anexo 14 dirigido al Presidente del Consejo Directivo y reúne los documentos en PDF con OCR.'),
+      step('send', 'Estudiante', 'Envía la solicitud a informacion.fisei@uta.edu.ec.'),
+      step('council', 'Consejo Directivo', 'Fija el lugar, la fecha y la hora y te notifica.'),
+    ],
+    notes: [
+      ...sendRules,
+      'Cada PDF se nombra con apellidos, nombres y número de cédula.',
+      'Los anexos de aptitud legal son los mismos presentados para obtenerla.',
+      'El examen complexivo solicita incorporación y solo presenta la resolución de aprobación o cambio de modalidad.',
+    ],
+  },
   role: 'Estudiante y Consejo Directivo',
 })
 add({
@@ -429,8 +556,16 @@ add({
   dependsOn: ['dia-hora'],
   requirements: [],
   outputs: [doc('resultado', ['Acta de sustentación', 'O resultado de la incorporación'], 'resultado')],
-  instructions:
-    'La fecha y la hora de cada estudiante llegan en la notificación de Consejo Directivo; la fecha límite del calendario no es una cita individual. Cada miembro del tribunal califica en el Anexo 16 la sustentación (7), los recursos (1,5) y la expresión oral (1,5).',
+  guide: {
+    steps: [
+      step('calendar', 'Estudiante', 'Preséntate en la fecha y hora de tu notificación.'),
+      step('grade', 'Tribunal', 'Cada miembro califica la sustentación (7), los recursos (1,5) y la expresión oral (1,5) en el Anexo 16.'),
+      step('deliver', 'Estudiante', 'Recibes el acta de sustentación.'),
+    ],
+    notes: [
+      'La fecha límite del calendario no es una cita individual.',
+    ],
+  },
   role: 'Tribunal e institución',
 })
 add({
@@ -446,11 +581,18 @@ add({
     check('convocatoria', ['Convocatoria recibida', 'Convocatoria institucional a la entrega del título']),
     check('retiro', 'Título retirado'),
   ],
-  instructions:
-    'Secretaría convoca por correo institucional con el lugar y la fecha de entrega. El plazo aproximado de un mes y medio es orientativo, no oficial.',
+  guide: {
+    steps: [
+      step('send', 'Secretaría', 'Te convoca por correo institucional con el lugar y la fecha.'),
+      step('deliver', 'Estudiante', 'Retiras tu título.'),
+    ],
+    notes: [
+      'El plazo aproximado de un mes y medio es orientativo, no oficial.',
+    ],
+  },
 })
 const exceptional = (
-  definition: Pick<WorkflowDefinition, 'id' | 'title' | 'sourceIds' | 'modalities' | 'requirements' | 'summary' | 'instructions'> &
+  definition: Pick<WorkflowDefinition, 'id' | 'title' | 'sourceIds' | 'modalities' | 'requirements' | 'summary' | 'guide'> &
     Partial<Pick<WorkflowDefinition, 'outputs' | 'role'>>,
 ) =>
   add({
@@ -472,8 +614,16 @@ exceptional({
     approvalResolution,
     doc('habilitantes', ['Requisitos habilitantes', 'Certificado actualizado, emitido por Coordinación de Carrera'], 'habilitantes'),
   ],
-  instructions:
-    'Se presenta una sola vez, al finalizar el período académico, o como excepción hasta 20 días término después del inicio de clases, a informacion.fisei@uta.edu.ec. Si el cambio es a trabajo de titulación, la solicitud indica la modalidad, el tema preliminar y el tutor sugerido, que también firma.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Llena el Anexo 4; si cambias a trabajo de titulación, indica la modalidad, el tema preliminar y el tutor sugerido, que también firma.'),
+      step('send', 'Estudiante', 'Envíalo con sus adjuntos a informacion.fisei@uta.edu.ec.'),
+      step('council', 'Consejo Directivo', 'Resuelve el cambio.'),
+    ],
+    notes: [
+      'Se presenta una sola vez, al finalizar el período, o como excepción hasta 20 días término después del inicio de clases.',
+    ],
+  },
 })
 exceptional({
   id: 'notificacion-tutor',
@@ -487,8 +637,16 @@ exceptional({
     approvalResolution,
   ],
   outputs: [],
-  instructions:
-    'El estudiante notifica a la Unidad de Titulación, por informacion.fisei@uta.edu.ec, cuando el tutor no atiende tres tutorías. Tres notificaciones justifican pedir el cambio de tutor. Las notificaciones del tutor por inasistencia del estudiante (Anexos 6 y 7) las presenta el tutor.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Llena el Anexo 8 cuando tu tutor no atienda tres tutorías.'),
+      step('send', 'Estudiante', 'Envíalo a informacion.fisei@uta.edu.ec.'),
+    ],
+    notes: [
+      'Tres notificaciones justifican pedir el cambio de tutor.',
+      'Las notificaciones por inasistencia del estudiante (Anexos 6 y 7) las presenta el tutor.',
+    ],
+  },
 })
 exceptional({
   id: 'cambio-tutor',
@@ -502,8 +660,16 @@ exceptional({
     approvalResolution,
   ],
   outputs: [doc('resolucion-tramite', ['Resolución del nuevo tutor', 'Resolución de Consejo Directivo que designa al nuevo tutor'], 'resolucion-tramite')],
-  instructions:
-    'Procede tras tres notificaciones de inasistencia del tutor o por una causa justificada. Se envía a informacion.fisei@uta.edu.ec. El Consejo Directivo designa al nuevo tutor en un máximo de 10 días término.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Llena el Anexo 9 con la causa del cambio.'),
+      step('send', 'Estudiante', 'Envíalo a informacion.fisei@uta.edu.ec.'),
+      step('council', 'Consejo Directivo', 'Designa al nuevo tutor en un máximo de 10 días término.'),
+    ],
+    notes: [
+      'Procede tras tres notificaciones de inasistencia del tutor o por una causa justificada.',
+    ],
+  },
 })
 exceptional({
   id: 'recalificacion-research',
@@ -519,8 +685,17 @@ exceptional({
     { ...thesis, ...labelled(['Trabajo corregido', 'PDF con texto seleccionable (OCR)']) },
   ],
   outputs: [gradeReports, ...grades],
-  instructions:
-    'Procede con un promedio inferior a 7. El Presidente de la Unidad de Titulación convoca a la reunión de trabajo dentro de 5 días término; el estudiante presenta el trabajo corregido dentro de 8 días término después de la reunión, o se entiende que reprobó. Los calificadores recalifican dentro de 5 días término.',
+  guide: {
+    steps: [
+      step('calendar', 'Unidad de Titulación', 'Su Presidente convoca a la reunión de trabajo dentro de 5 días término.'),
+      step('send', 'Estudiante', 'Presenta el trabajo corregido dentro de 8 días término después de la reunión.'),
+      step('grade', 'Calificadores', 'Recalifican dentro de 5 días término.'),
+    ],
+    notes: [
+      'Procede con un promedio inferior a 7.',
+      'Si no presentas a tiempo, se entiende que reprobaste.',
+    ],
+  },
   role: 'Estudiante, Unidad de Titulación y calificadores',
 })
 exceptional({
@@ -532,6 +707,14 @@ exceptional({
   requirements: [
     request('solicitud-recalificacion', ['Anexo 21 · Solicitud de recalificación', 'Con su motivo, dirigida al Presidente de la Unidad de Titulación']),
   ],
-  instructions: 'La solicitud expone el motivo de la recalificación y no lleva adjuntos.',
+  guide: {
+    steps: [
+      step('prepare', 'Estudiante', 'Llena el Anexo 21 con el motivo de la recalificación.'),
+      step('send', 'Estudiante', 'Envíalo al Presidente de la Unidad de Titulación.'),
+    ],
+    notes: [
+      'No lleva adjuntos.',
+    ],
+  },
 })
 export const workflowDefinitions = definitions

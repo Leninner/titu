@@ -39,7 +39,8 @@
 - [x] 5.13 Notas de los formatos de informe como tooltip, fuera del documento y la exportación. Probar en integración.
 - [x] 5.14 Avance de la tesis en los informes mensuales: porcentaje actual en una franja compacta y porcentaje con diferencia en cada tarjeta. Probar en unit e integración y verificar con `playwright-cli`.
 - [x] 5.14 Anexo 11 en solo lectura en el modal del mapa. Probar en integración y verificar con `playwright-cli`.
-- [ ] 5.15 Encabezado compacto: título en el breadcrumb con responsable y menú, pasos más bajos y acciones del Anexo 11 como íconos. Verificar con `playwright-cli` en escritorio y móvil.
+- [x] 5.15 Encabezado compacto: título en el breadcrumb con responsable y menú, pasos más bajos y acciones del Anexo 11 como íconos.
+- [x] 5.16 "Cómo se tramita" como línea de tiempo con íconos y responsables, botón a la derecha del resumen.
 
 ## 6. Cierre
 

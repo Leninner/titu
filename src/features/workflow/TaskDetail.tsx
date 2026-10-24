@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { BookOpen } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
 import { withAutomaticCompletion } from '../../domain/auto-completion'
@@ -118,12 +119,12 @@ export function TaskDetail({
 
   return (
     <section className="task-detail">
-      <p className="task-summary">
-        {definition.summary}{' '}
-        <button type="button" className="text-button" onClick={() => setSection('guide')}>
-          Cómo se tramita
+      <div className="task-summary">
+        <p>{definition.summary}</p>
+        <button type="button" className="task-guide-button" onClick={() => setSection('guide')}>
+          <BookOpen size={15} aria-hidden="true" /> Cómo se tramita
         </button>
-      </p>
+      </div>
       {headerTarget ? createPortal(taskMeta, headerTarget) : taskMeta}
       {steps.length > 1 && <StepTabs steps={steps} active={step} onSelect={setActiveStep} />}
       <div

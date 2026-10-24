@@ -156,6 +156,26 @@ export interface Requirement {
   modalities?: Modality[]
   annex?: string
 }
+export type GuideIcon =
+  | 'prepare'
+  | 'send'
+  | 'sign'
+  | 'review'
+  | 'council'
+  | 'grade'
+  | 'library'
+  | 'calendar'
+  | 'download'
+  | 'deliver'
+export interface GuideStep {
+  icon: GuideIcon
+  actor: string
+  text: string
+}
+export interface WorkflowGuide {
+  steps: GuideStep[]
+  notes: string[]
+}
 export interface WorkflowDefinition {
   id: string
   title: string
@@ -169,7 +189,7 @@ export interface WorkflowDefinition {
   companyOnly?: boolean
   autoComplete?: boolean
   summary: string
-  instructions: string
+  guide: WorkflowGuide
   role: string
 }
 export interface CatalogVersion {

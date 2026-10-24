@@ -259,6 +259,8 @@ it('opens the state history and sources from the task menu', async () => {
   const guide = within(await screen.findByRole('dialog', { name: 'Cómo se tramita' }))
   expect(guide.getAllByRole('listitem').length).toBeGreaterThan(3)
   expect(guide.getByText(/exámenes de recuperación/)).toBeTruthy()
+  expect(guide.getByText('Consejo Directivo')).toBeTruthy()
+  expect(guide.getByRole('heading', { name: 'Ten en cuenta' })).toBeTruthy()
   fireEvent.click(guide.getByRole('button', { name: 'Cerrar' }))
   expect(screen.queryByText('Historial de estados')).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Más opciones del trámite' }))

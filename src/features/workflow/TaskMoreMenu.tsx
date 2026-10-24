@@ -1,6 +1,24 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { BookOpen, History, MoreHorizontal, ScrollText, X } from 'lucide-react'
-import type { TaskRecord, WorkflowDefinition } from '../../domain/types'
+import {
+  Award,
+  BookOpen,
+  CalendarClock,
+  Download,
+  FilePen,
+  GraduationCap,
+  History,
+  Landmark,
+  Library,
+  MoreHorizontal,
+  PenLine,
+  ScrollText,
+  SearchCheck,
+  Send,
+  TriangleAlert,
+  X,
+  type LucideIcon,
+} from 'lucide-react'
+import type { GuideIcon, TaskRecord, WorkflowDefinition } from '../../domain/types'
 import { SourceCriteria } from './SourceCriteria'
 import { statusLabels } from './task-record'
 
@@ -20,13 +38,48 @@ const historyDate = (timestamp: string) =>
     timeZone: 'America/Guayaquil',
   }).format(new Date(timestamp))
 
-function GuideList({ definition }: { definition: WorkflowDefinition }) {
+const guideIcons: Record<GuideIcon, LucideIcon> = {
+  prepare: FilePen,
+  send: Send,
+  sign: PenLine,
+  review: SearchCheck,
+  council: Landmark,
+  grade: GraduationCap,
+  library: Library,
+  calendar: CalendarClock,
+  download: Download,
+  deliver: Award,
+}
+
+function GuideTimeline({ definition }: { definition: WorkflowDefinition }) {
   return (
     <>
-      <p className="task-guide-role">Responsable: {definition.role}</p>
-      <ul className="task-guide">
-        {definition.instructions.split(/(?<=\.)\s+/).map((sentence) => <li key={sentence}>{sentence}</li>)}
-      </ul>
+      <ol className="guide-timeline">
+        {definition.guide.steps.map((item, index) => {
+          const Icon = guideIcons[item.icon]
+          return (
+            <li key={index}>
+              <span className="guide-timeline-icon" aria-hidden="true">
+                <Icon size={16} />
+              </span>
+              <div>
+                <span className="guide-timeline-actor">{item.actor}</span>
+                <p>{item.text}</p>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+      {definition.guide.notes.length > 0 && (
+        <section className="guide-notes" aria-labelledby="guide-notes-title">
+          <h3 id="guide-notes-title">
+            <TriangleAlert size={15} aria-hidden="true" /> Ten en cuenta
+          </h3>
+          <ul>
+            {definition.guide.notes.map((note) => <li key={note}>{note}</li>)}
+          </ul>
+        </section>
+      )}
     </>
   )
 }
@@ -89,7 +142,7 @@ export function TaskSectionDialog({
   onClose: () => void
 }) {
   const content = {
-    guide: () => <GuideList definition={definition} />,
+    guide: () => <GuideTimeline definition={definition} />,
     history: () => <HistoryList task={task} />,
     sources: () => <SourceCriteria sourceIds={definition.sourceIds} />,
   }

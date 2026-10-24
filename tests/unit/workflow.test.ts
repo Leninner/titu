@@ -15,7 +15,7 @@ const definition: WorkflowDefinition = {
   ],
   outputs: [],
   summary: '',
-  instructions: '',
+  guide: { steps: [], notes: [] },
   role: 'Estudiante',
 }
 const catalog: CatalogVersion = {

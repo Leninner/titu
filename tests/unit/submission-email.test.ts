@@ -17,7 +17,7 @@ const definition: WorkflowDefinition = {
   requirements: [],
   outputs: [],
   summary: '',
-  instructions: '',
+  guide: { steps: [], notes: [] },
   role: 'Estudiante',
 }
 const task: TaskRecord = {

@@ -176,7 +176,7 @@ El sistema SHALL nombrar trámites y requisitos por el documento o acto, su emis
 #### Scenario: Resumen del trámite
 
 - **WHEN** abre un trámite
-- **THEN** bajo el título ve una sola frase con lo que debe hacer, y las instrucciones completas se abren en "Cómo se tramita" como viñetas.
+- **THEN** ve una sola frase con lo que debe hacer, y "Cómo se tramita" abre una línea de tiempo con cada paso, su responsable y un ícono, más las notas a tener en cuenta.
 
 #### Scenario: Etiqueta corta con detalle
 
