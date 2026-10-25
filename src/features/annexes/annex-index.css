@@ -1,0 +1,162 @@
+.annex-index .segmented {
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.annex-section {
+  margin-top: 32px;
+}
+.annex-section h2 {
+  margin: 0 0 14px;
+  color: var(--navy);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.annex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.annex-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 210px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.annex-card:hover {
+  border-color: #b9cbe2;
+  box-shadow: 0 6px 18px rgb(11 46 89 / 6%);
+}
+.annex-card.is-new {
+  border-style: dashed;
+  background: transparent;
+}
+.annex-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.annex-card-code {
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.annex-card h3 {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 1.12rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.annex-card-period {
+  margin: 0;
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 550;
+}
+.annex-card-people {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.annex-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.annex-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c3ccd8;
+}
+.annex-status.is-incomplete::before { background: #d08a2e; }
+.annex-status.is-draft::before { background: var(--accent); }
+.annex-status.is-exported::before { background: #4f8fd6; }
+.annex-status.is-signed::before { background: #2f8a57; }
+.annex-card .field {
+  margin: 8px 0 0;
+}
+.annex-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+.annex-card-actions > .button,
+.annex-card-actions > button,
+.download-menu > button {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+}
+.annex-card-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.download-menu {
+  position: relative;
+}
+.download-menu-list {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  min-width: 150px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgb(11 46 89 / 12%);
+}
+.download-menu-list button {
+  justify-content: flex-start;
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.84rem;
+}
+.annex-references {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-top: 14px;
+  font-size: 0.82rem;
+}
+.annex-references > span {
+  color: var(--muted);
+  font-weight: 600;
+}
+.annex-references ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.annex-references a {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}

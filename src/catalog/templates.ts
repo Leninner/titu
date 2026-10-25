@@ -159,6 +159,42 @@ const specs: [string, string, number | keyof typeof content, Modality[], Templat
   ],
 ]
 
+type Placement = Pick<TemplateDefinition, 'stage' | 'issuer' | 'signers' | 'signersByModality'>
+const student = 'Estudiante'
+const company = 'Empresa'
+const companySigner = 'Representante de la empresa'
+const placements: Record<string, Placement> = {
+  'anexo-1': { stage: 'propuesta', issuer: student, signers: 'Estudiante y tutor sugerido', signersByModality: { complexivo: student } },
+  'anexo-3': { stage: 'propuesta', issuer: company, signers: companySigner },
+  'solicitud-habilitantes': { stage: 'propuesta', issuer: student, signers: student },
+  'anexo-2': { stage: 'propuesta', issuer: student },
+  'anexo-5': { stage: 'desarrollo', issuer: 'Tutor', signers: 'Tutor' },
+  'anexo-11': { stage: 'desarrollo', issuer: 'Tutor', signers: 'Tutor' },
+  'anexo-a': { stage: 'desarrollo', issuer: student },
+  'guia-final': { stage: 'desarrollo', issuer: student },
+  'anexo-13a': { stage: 'desarrollo', issuer: student },
+  'anexo-13b': { stage: 'desarrollo', issuer: 'Unidad de Titulación' },
+  'anexo-6': { stage: 'desarrollo', issuer: 'Tutor' },
+  'anexo-10-article': { stage: 'calificadores', issuer: student, signers: student },
+  'anexo-10-research': { stage: 'calificadores', issuer: student, signers: student },
+  'cumplimiento-empresarial': { stage: 'calificadores', issuer: company, signers: companySigner },
+  'anexo-12': { stage: 'calificadores', issuer: 'Calificadores' },
+  'anexo-15': { stage: 'sustentacion', issuer: student, signers: student },
+  'anexo-14-article': { stage: 'sustentacion', issuer: student, signers: student },
+  'anexo-14-research': { stage: 'sustentacion', issuer: student, signers: student },
+  'anexo-14-complexivo': { stage: 'sustentacion', issuer: student, signers: student },
+  'no-adeudar': { stage: 'sustentacion', issuer: 'Tesorería' },
+  'preliminares-article': { stage: 'sustentacion', issuer: student },
+  'preliminares-research': { stage: 'sustentacion', issuer: student },
+  'anexo-16': { stage: 'sustentacion', issuer: 'Tribunal' },
+  'anexo-4': { stage: 'otros', issuer: student, signers: 'Estudiante, y el tutor sugerido si cambia a trabajo de titulación' },
+  'anexo-8': { stage: 'otros', issuer: student, signers: student },
+  'anexo-9': { stage: 'otros', issuer: student, signers: student },
+  'recalificacion-research': { stage: 'otros', issuer: student, signers: student },
+  'anexo-21': { stage: 'otros', issuer: student, signers: student },
+  'anexo-7': { stage: 'otros', issuer: 'Tutor' },
+}
+
 export const templates: TemplateDefinition[] = specs.map(
   ([id, name, sourceRef, modalities, fields, role, companyOnly]) => {
     const sourceId = typeof sourceRef === 'string' ? sourceRef : (`UT-${String(sourceRef).padStart(2, '0')}` as keyof typeof content)
@@ -181,6 +217,7 @@ export const templates: TemplateDefinition[] = specs.map(
       ],
       page: source.geometry,
       companyOnly,
+      ...placements[id],
     }
   },
 )
@@ -198,6 +235,11 @@ const references: [string, string, number, TemplateDefinition['kind'], string][]
   ['preliminares-research', 'Preliminares de Proyecto', 26, 'reference', 'Estudiante'],
   ['anexo-16', 'Anexo 16 · Ficha de sustentación', 27, 'reference', 'Tribunal'],
 ]
+const referenceModalities: Record<string, Modality[]> = {
+  'no-adeudar': all,
+  'preliminares-article': ['article'],
+  'preliminares-research': ['research'],
+}
 for (const [id, name, number, kind, role] of references) {
   const sourceId = `UT-${String(number).padStart(2, '0')}` as keyof typeof content
   templates.push({
@@ -207,13 +249,14 @@ for (const [id, name, number, kind, role] of references) {
     version: '2026-10-22.1',
     kind,
     role,
-    modalities: id === 'no-adeudar' ? all : work,
+    modalities: referenceModalities[id] ?? work,
     fields: [],
     fixedText: '',
     notes: [
       'Consultar la fuente institucional. No se genera un documento emitido por otra persona.',
     ],
     page: content[sourceId].geometry,
+    ...placements[id],
   })
 }
 templates.push({
@@ -228,4 +271,5 @@ templates.push({
   fixedText: '',
   notes: ['Mencionado en UT-05, pero no aportado. Solicitar el formato a la Unidad de Titulación.'],
   page: { width: 595.3, height: 841.9, marginX: 85.05, marginY: 70.85 },
+  ...placements['anexo-13b'],
 })

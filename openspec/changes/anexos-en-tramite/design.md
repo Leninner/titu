@@ -21,7 +21,7 @@ Regla común en todos los instructivos: firmas electrónicas o autógrafas, **no
 1. Cada trámite muestra en Preparar los anexos que pide, con su ciclo **Redactar → Firmar → Adjuntar firmado** y el estado de cada etapa.
 2. La etapa Firmar refleja quién firma y quién entrega, según la fuente del formato.
 3. El editor se abre en el contexto del trámite y vuelve a él.
-4. Desaparece la sección "Anexos" del menú; ningún borrador queda huérfano.
+4. La sección "Anexos" queda como índice de tarjetas (ver `anexos-indice`) que abre cada anexo en su trámite; ningún borrador queda huérfano.
 5. Cada anexo tiene categoría propia, para que el encadenamiento por categoría nunca confunda un formato con otro.
 6. El catálogo pide los anexos que exigen las fuentes y hoy faltan.
 

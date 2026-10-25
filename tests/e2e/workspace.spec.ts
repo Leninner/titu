@@ -20,7 +20,7 @@ test('expediente local, rutas, búsqueda y navegación adaptable', async ({ page
   await expect(page.getByRole('link', { name: /aptitud legal/i }).first()).toBeVisible()
   await page.getByLabel('Buscar en mi expediente').press('Escape')
   await page.getByRole('link', { name: 'Anexos', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Tu primer informe empieza aquí' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Propuesta', level: 2 })).toBeVisible()
   for (const width of [360, 768, 1440]) {
     await page.setViewportSize({ width, height: 950 })
     expect(

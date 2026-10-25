@@ -2,22 +2,17 @@
 
 ### Requirement: Anexos dentro de Mi proceso
 
-El sistema SHALL ofrecer los anexos solo desde el trámite que los pide, sin sección Anexos en el menú principal, y SHALL redirigir las rutas antiguas.
+El sistema SHALL editar los anexos desde el trámite que los pide, SHALL conservar la sección Anexos como índice que abre cada anexo en su trámite, y SHALL redirigir las rutas antiguas del editor.
 
-#### Scenario: Menú principal
+#### Scenario: Índice de anexos
 
-- **WHEN** se muestra la barra lateral
-- **THEN** contiene Inicio, Mi proceso, Documentos y Fechas, sin Anexos.
+- **WHEN** pulsa "Abrir" en una tarjeta de la sección Anexos
+- **THEN** se abre el editor del anexo dentro de su trámite.
 
 #### Scenario: Ruta antigua de un borrador
 
 - **WHEN** abre `#/anexos/<id>` de un borrador de Anexo 15 en Proyecto
 - **THEN** se redirige a `#/proceso/aptitud-legal-research/anexo/<id>`.
-
-#### Scenario: Ruta antigua de la sección
-
-- **WHEN** abre `#/anexos`
-- **THEN** se redirige a `#/proceso`.
 
 #### Scenario: Búsqueda global
 

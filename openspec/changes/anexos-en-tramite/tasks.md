@@ -26,7 +26,7 @@
 - [ ] 4.1 Tarjeta de requisito con ciclo de anexo en `RequirementsPanel`: etapas, acciones por firmante y entrega, "Ya lo tengo firmado" y diálogo de tipo de firma.
 - [ ] 4.2 Lista de Anexos 5 por mes en Desarrollo con "Nuevo informe mensual"; selección de mensuales para el Anexo 11 en Informe final.
 - [ ] 4.3 Ruta `#/proceso/<trámite>/anexo/<borrador>` en `AppShell`, miga de pan y regreso a la tarjeta enfocada; redirecciones de `#/anexos` y `#/anexos/<id>`; búsqueda global.
-- [ ] 4.4 Quitar Anexos del menú y eliminar `AnnexLibrary`; "Borradores de otra modalidad" y "Solicitudes sin clasificar" en Documentos; formatos de referencia en el pie del trámite.
+- [ ] 4.4 Hacer que "Abrir" del índice de Anexos lleve al editor dentro del trámite; "Borradores de otra modalidad" y "Solicitudes sin clasificar" en Documentos; formatos de referencia en el pie del trámite.
 - [ ] 4.5 Tests de integración: Anexo 10 de redactar a firmado en calificadores; revisión cambiada tras firmar; Anexo 5 con entrega del tutor.
 - [ ] 4.6 E2E en `tests/e2e` y verificación con `playwright-cli` a 360, 768 y 1440 px: menú sin Anexos, redirección de ruta antigua, ciclo completo en propuesta y calificadores.
 

@@ -151,7 +151,12 @@ export interface TemplateDefinition {
   notes: string[]
   page: { width: number; height: number; marginX: number; marginY: number }
   companyOnly?: boolean
+  stage: AnnexStage
+  issuer: string
+  signers?: string
+  signersByModality?: Partial<Record<Modality, string>>
 }
+export type AnnexStage = 'propuesta' | 'desarrollo' | 'calificadores' | 'sustentacion' | 'otros'
 export interface Requirement {
   id: string
   label: string
@@ -170,6 +175,11 @@ export interface RequestEmail {
   subject: string
   paragraphs: string[]
   closing?: string
+  attachments?: RequestAttachment[]
+}
+export interface RequestAttachment {
+  label: string
+  category: string
 }
 export type GuideIcon =
   | 'prepare'

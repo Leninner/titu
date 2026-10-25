@@ -60,8 +60,10 @@ const enablingCertificate: Requirement = {
       'Estimados señores:',
       'Reciban un cordial saludo.',
       'Solicito de la manera más comedida su apoyo con la emisión del certificado de requisitos habilitantes.',
+      'Adjunto la copia de mi cédula de ciudadanía.',
       'Quedo atento a su confirmación.',
     ],
+    attachments: [{ label: 'Copia de cédula', category: 'personal' }],
   },
 }
 const grades = [

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   Award,
   BookOpen,
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import type { GuideIcon, TaskRecord, WorkflowDefinition } from '../../domain/types'
 import { Dialog } from '../../components/Dialog'
+import { useDismiss } from '../../components/useDismiss'
 import { SourceCriteria } from './SourceCriteria'
 import { statusLabels } from './task-record'
 
@@ -125,20 +126,7 @@ export function TaskSectionDialog({
 export function TaskMoreMenu({ onSelect }: { onSelect: (section: TaskSection) => void }) {
   const [open, setOpen] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const close = (event: Event) => {
-      if (event instanceof KeyboardEvent ? event.key === 'Escape' : !menu.current?.contains(event.target as Node))
-        setOpen(false)
-    }
-    document.addEventListener('pointerdown', close)
-    document.addEventListener('keydown', close)
-    return () => {
-      document.removeEventListener('pointerdown', close)
-      document.removeEventListener('keydown', close)
-    }
-  }, [open])
+  useDismiss(open, menu, () => setOpen(false))
 
   return (
     <div className="task-more" ref={menu}>

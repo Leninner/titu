@@ -3,6 +3,13 @@ import { existsSync } from 'node:fs'
 import { catalog, sources } from '../../src/catalog'
 
 describe('institutional catalog', () => {
+  it('places every template in a stage with its issuer and every editable one with its signers', () => {
+    for (const template of catalog.templates) {
+      expect(template.stage, template.id).toBeTruthy()
+      expect(template.issuer, template.id).toBeTruthy()
+      if (template.kind === 'editable') expect(template.signers, template.id).toBeTruthy()
+    }
+  })
   it('has 17 distinct editable variants and resolvable source extracts', () => {
     expect(catalog.templates.filter((template) => template.kind === 'editable')).toHaveLength(17)
     for (const list of [
@@ -108,6 +115,8 @@ describe('institutional catalog', () => {
     for (const requirement of enabling) {
       expect(requirement.template).toBe('solicitud-habilitantes')
       expect(requirement.requestEmail?.subject).toBe('Solicitud de certificado de requisitos habilitantes')
+      expect(requirement.requestEmail?.attachments).toEqual([{ label: 'Copia de cédula', category: 'personal' }])
+      expect(requirement.requestEmail?.paragraphs).toContain('Adjunto la copia de mi cédula de ciudadanía.')
     }
   })
   it('follows the Anexo 15 attachments for the legal aptitude certificate', () => {
