@@ -11,12 +11,12 @@ test('fechas muestra una sola vista a la vez y ordena la agenda', async ({ page 
     'true',
   )
   await expect(page.getByRole('region', { name: 'Calendario semanal de titulación' })).toHaveCount(0)
-  await expect(page.locator('.agenda-row').first()).toContainText('Solicitud no adeudar')
+  await expect(page.locator('.agenda-row').first()).toContainText('Revisión presencial Biblioteca')
 
   await page.getByRole('button', { name: 'Calendario', exact: true }).click()
   await expect(page.getByRole('region', { name: 'Calendario semanal de titulación' })).toBeVisible()
   await expect(page.locator('.agenda-row')).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Agenda', exact: true }).click()
-  await expect(page.locator('.agenda-row').first()).toContainText('Solicitud no adeudar')
+  await expect(page.locator('.agenda-row').first()).toContainText('Revisión presencial Biblioteca')
 })

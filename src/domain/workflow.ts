@@ -247,6 +247,7 @@ function dayHourGaps(definition: WorkflowDefinition, selectedIds: string[], work
 
 function nextActionsFor(
   task: TaskRecord,
+  definition: WorkflowDefinition,
   missingRequirements: string[],
   missingOutputs: string[],
 ) {
@@ -254,7 +255,9 @@ function nextActionsFor(
   if (task.status === 'completed') return ['Resultado registrado']
   if (['submitted', 'waiting', 'observed'].includes(task.status))
     return missingOutputs.length ? missingOutputs : ['Completar el trámite con el resultado recibido']
-  return ['Revisar paquete y registrar el envío manual']
+  return definition.inPerson
+    ? ['Acudir en persona y registrar el resultado']
+    : ['Revisar paquete y registrar el envío manual']
 }
 
 export function evaluateTask(
@@ -294,7 +297,7 @@ export function evaluateTask(
   return {
     missingRequirements,
     missingOutputs,
-    nextActions: nextActionsFor(task, missingRequirements, missingOutputs),
+    nextActions: nextActionsFor(task, definition, missingRequirements, missingOutputs),
     ready,
     canComplete: ready && missingOutputs.length === 0,
   }

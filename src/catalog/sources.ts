@@ -218,4 +218,11 @@ export const sources: Source[] = [
     version: '2026-10-22',
     excerptUrl: '/sources/CAL-02.txt',
   },
+  {
+    id: 'BIB-01',
+    name: 'Aviso de Biblioteca FISEI: revisión presencial del 10 de noviembre',
+    sha256: '2e06ae1cb51facafd89e9ab993917b8ef4f1c31e748311067241c5c692d8af92',
+    version: '2026-10-26',
+    excerptUrl: '/sources/BIB-01.txt',
+  },
 ]

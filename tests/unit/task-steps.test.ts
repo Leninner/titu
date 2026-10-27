@@ -97,6 +97,16 @@ it('shows only Resultado for workflows without inputs to send', () => {
   }
 })
 
+it('skips Enviar for in-person workflows and points to the visit', () => {
+  const workspace = proposalWorkspace()
+  workspace.documents.push({ id: 'document-tesis', name: 'Trabajo', category: 'tesis', createdAt: '' })
+  workspace.versions.push(version('tesis', false))
+  const task = { ...emptyTask('biblioteca-revision'), evidenceVersionIds: ['tesis'] }
+  const { steps } = taskSteps(task, definition('biblioteca-revision'), workspace, catalog)
+  expect(steps.map((step) => step.id)).toEqual(['prepare', 'result'])
+  expect(evaluateTask(task, workspace, catalog).nextActions).toEqual(['Acudir en persona y registrar el resultado'])
+})
+
 it('completes only when inputs are ready and every required output is registered', () => {
   const workspace = proposalWorkspace()
   const task = preparedProposal()

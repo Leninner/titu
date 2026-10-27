@@ -31,13 +31,13 @@ it('shows one calendar view at a time and starts with the agenda in date order',
   const agenda = await screen.findByRole('button', { name: /^Agenda$/ })
   expect(agenda.getAttribute('aria-pressed')).toBe('true')
   expect(screen.queryByRole('region', { name: 'Calendario semanal de titulación' })).toBeNull()
-  expect(document.querySelector('.agenda-row')?.textContent).toContain('Solicitud no adeudar')
+  expect(document.querySelector('.agenda-row')?.textContent).toContain('Revisión presencial Biblioteca')
 
   fireEvent.click(screen.getByRole('button', { name: /^Calendario$/ }))
   expect(screen.getByRole('region', { name: 'Calendario semanal de titulación' })).toBeTruthy()
-  expect(screen.getAllByText('Solicitud no adeudar').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Revisión presencial Biblioteca (8:30–12:30 y 14:30–16:30)').length).toBeGreaterThan(0)
   expect(document.querySelector('.agenda-row')).toBeNull()
 
   fireEvent.click(agenda)
-  expect(document.querySelector('.agenda-row')?.textContent).toContain('Solicitud no adeudar')
+  expect(document.querySelector('.agenda-row')?.textContent).toContain('Revisión presencial Biblioteca')
 })

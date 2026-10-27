@@ -32,6 +32,16 @@ const rows: [
     'deadline',
     '2026-11-24',
   ],
+  [
+    'biblioteca-revision',
+    'Revisión presencial Biblioteca (8:30–12:30 y 14:30–16:30)',
+    'appointment',
+    '2026-11-10',
+    undefined,
+    '08:30',
+    work,
+    ['BIB-01'],
+  ],
   ['solicitud-no-adeudar', 'Solicitud no adeudar', 'window', '2026-11-16', '2026-11-20', '18:00'],
   [
     'emision-no-adeudar',

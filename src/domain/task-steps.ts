@@ -81,7 +81,7 @@ export function taskSteps(
   const steps = taskInputs(definition, workspace).length
     ? [
         prepareStep(task, definition, workspace, catalog, ready(), now),
-        sendStep(task, workspace),
+        ...(definition.inPerson ? [] : [sendStep(task, workspace)]),
         result,
       ]
     : [result]

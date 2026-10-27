@@ -106,7 +106,7 @@ function add(
   definitions.push({
     role: 'Estudiante',
     ...definition,
-    outputs: [...(definition.outputs ?? []), responseCaptures],
+    outputs: [...(definition.outputs ?? []), ...(definition.inPerson ? [] : [responseCaptures])],
   })
 }
 add({
@@ -437,12 +437,13 @@ for (const modality of all) {
 }
 add({
   id: 'biblioteca-revision',
-  summary: 'Envía tu trabajo sin firmas a Biblioteca y espera el aval inicial.',
+  summary: 'Lleva tu trabajo sin firmas a Biblioteca el 10 de noviembre y obtén el aval inicial.',
   title: 'Biblioteca: revisión del trabajo sin firmas',
   stage: 'biblioteca',
   modalities: work,
-  sourceIds: ['UT-22', 'UT-23'],
+  sourceIds: ['UT-22', 'UT-23', 'BIB-01'],
   dependsOn: [],
+  inPerson: true,
   requirements: [
     {
       ...thesis,
@@ -457,10 +458,13 @@ add({
   outputs: [doc('aval-inicial', ['Aval inicial de Biblioteca', 'Autoriza recoger las firmas'], 'aval-inicial')],
   guide: {
     steps: [
-      step('send', 'Estudiante', 'Envía el trabajo sin firmas a edissonhtoaza@uta.edu.ec con el asunto «PROYECTO DE INVESTIGACIÓN – APELLIDOS Y NOMBRES» u «HOJAS PRELIMINARES Y ARTÍCULO ACADÉMICO – APELLIDOS Y NOMBRES».'),
-      step('library', 'Biblioteca', 'Revisa el formato y emite el aval inicial para recoger las firmas.'),
+      step('deliver', 'Estudiante', 'Acércate en persona a Biblioteca FISEI el 10 de noviembre, de 8:30 a 12:30 o de 14:30 a 16:30, con el trabajo sin firmas.'),
+      step('library', 'Biblioteca (Monica Paredes)', 'Revisa el formato y emite el aval inicial para recoger las firmas.'),
     ],
     notes: [
+      'Ten listos el índice, el formato, el resumen ejecutivo, el abstract y las palabras clave.',
+      'La revisión es solo ese día y en esos horarios; no se envía por correo.',
+      'Si no pasas la revisión, no se emite el aval.',
       'El Proyecto usa la plantilla del Anexo A y la estructura del Anexo 13A.',
     ],
   },

@@ -47,6 +47,14 @@ describe('institutional catalog', () => {
     expect(catalog.templates.find((template) => template.id === 'anexo-12')?.kind).toBe('reference')
     expect(catalog.conflicts).toHaveLength(8)
   })
+  it('asks for the in-person library review on November 10 with Monica Paredes', () => {
+    const review = catalog.workflowDefinitions.find((item) => item.id === 'biblioteca-revision')!
+    const guide = JSON.stringify(review.guide)
+    expect(review.sourceIds).toContain('BIB-01')
+    for (const text of ['10 de noviembre', '8:30 a 12:30', '14:30 a 16:30', 'Monica Paredes', 'abstract', 'palabras clave', 'no se emite el aval'])
+      expect(guide).toContain(text)
+    expect(guide).not.toContain('edissonhtoaza@uta.edu.ec')
+  })
   it('merges reception-only workflows into the request that produces their result', () => {
     const byId = (id: string) => catalog.workflowDefinitions.find((item) => item.id === id)
     for (const id of ['aprobacion', 'notas', 'biblioteca-aval-inicial', 'biblioteca-aval-final'])
@@ -56,7 +64,7 @@ describe('institutional catalog', () => {
     expect(outputs('calificadores-research')).toEqual([
       'resolucion-designacion', 'notas', 'grade-1', 'grade-2', 'respuesta',
     ])
-    expect(outputs('biblioteca-revision')).toEqual(['aval-inicial', 'respuesta'])
+    expect(outputs('biblioteca-revision')).toEqual(['aval-inicial'])
     expect(outputs('biblioteca-decanato')).toEqual(['biblioteca', 'respuesta'])
     expect(outputs('cambio-tutor')).toEqual(['resolucion-tramite', 'respuesta'])
     expect(byId('desarrollo')!.dependsOn).toEqual(['propuesta'])
@@ -69,7 +77,9 @@ describe('institutional catalog', () => {
     )
     for (const definition of catalog.workflowDefinitions) {
       const responses = definition.outputs.filter((output) => output.category === 'respuesta')
-      expect(responses).toEqual([expect.objectContaining({ optional: true, signed: false })])
+      expect(responses).toEqual(
+        definition.inPerson ? [] : [expect.objectContaining({ optional: true, signed: false })],
+      )
     }
   })
   it('describes each workflow by its facts, without instructions for using the app', () => {
