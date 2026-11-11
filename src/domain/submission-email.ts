@@ -1,4 +1,5 @@
 import type { RequestEmail, StudentProfile, TaskRecord, WorkflowDefinition, Workspace } from './types'
+import { submissionEntries } from './submission-entries'
 import { evidenceIdsForTask } from './task-evidence'
 
 export function buildSubmissionEmail(
@@ -7,9 +8,7 @@ export function buildSubmissionEmail(
   workspace: Workspace,
 ) {
   const profile = workspace.profile
-  const files = evidenceIdsForTask(task, definition, workspace)
-    .map((id) => workspace.versions.find((version) => version.id === id))
-    .filter((version) => version !== undefined)
+  const files = submissionEntries(definition, workspace, evidenceIdsForTask(task, definition, workspace))
   const subject = `${definition.title}${profile?.nombres ? ` | ${profile.nombres}` : ''}`
   const tutorReview = ['desarrollo', 'informe-final'].includes(definition.id)
   const greeting = tutorReview && profile?.tutor ? `Estimado/a ${profile.tutor}:` : 'Estimados/as:'
@@ -23,7 +22,7 @@ export function buildSubmissionEmail(
     .filter(Boolean)
     .join('\n')
   const attachmentList = files.length
-    ? files.map((version, index) => `${index + 1}. ${version.originalName}`).join('\n')
+    ? files.map((entry) => entry.name).join('\n')
     : '[Agregar los documentos antes de enviar]'
   const signature = [
     profile?.nombres || '[Tu nombre]',

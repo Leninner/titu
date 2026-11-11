@@ -164,6 +164,7 @@ export interface Requirement {
   companyOnly?: boolean
   signed?: boolean
   category?: string
+  submissionName?: string
   optional?: boolean
   modalities?: Modality[]
   annex?: string

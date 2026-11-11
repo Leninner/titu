@@ -1,6 +1,7 @@
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { downloadBlob } from '../../components/download'
 import type { DocumentVersion, Requirement, TaskRecord, WorkflowDefinition } from '../../domain/types'
+import { submissionEntries } from '../../domain/submission-entries'
 import { submissionZip } from '../../export/submission-zip'
 import { repository } from '../../storage/repository'
 import { FinalReportEditor } from './FinalReportEditor'
@@ -106,7 +107,10 @@ export function PrepareStep({
             onClick={() =>
               void run(async () =>
                 downloadBlob(
-                  await submissionZip(await repository.snapshot(), selectedIds),
+                  await submissionZip(
+                    await repository.snapshot(),
+                    submissionEntries(definition, workspace, selectedIds),
+                  ),
                   `${ready ? 'paquete' : 'borrador'}-${definition.id}.zip`,
                 ),
               )

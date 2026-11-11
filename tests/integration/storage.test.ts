@@ -37,7 +37,7 @@ it('preserves original bytes, rejects deletion of used evidence and roundtrips a
   })
   await expect(repo.removeVersion(version.id)).rejects.toThrow()
   const snapshot = await repo.snapshot()
-  const zip = await submissionZip(snapshot, [version.id])
+  const zip = await submissionZip(snapshot, [{ versionId: version.id, name: '1. signed.pdf' }])
   expect(
     new TextDecoder().decode(Object.values(unzipSync(new Uint8Array(await zip.arrayBuffer())))[0]),
   ).toBe('signed bytes')
