@@ -227,6 +227,7 @@ add({
       ]),
       category: 'final',
       annex: 'anexo-11',
+      optional: true,
     },
   ],
   outputs: [

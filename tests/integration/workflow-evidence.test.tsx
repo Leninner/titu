@@ -419,7 +419,8 @@ it('creates the Anexo 11 from the uploaded Anexo 5 and keeps the format notes in
     evidenceVersionIds: reports.map((report) => report.id),
   })
   await openTask('informe-final', 'Informe final de avance del tutor')
-  expect(screen.getByRole('tab', { name: /Preparar/ }).textContent).toContain('0/1 docs')
+  expect(screen.getByRole('tab', { name: /Preparar/ }).textContent).toContain('listo')
+  fireEvent.click(screen.getByRole('tab', { name: /Preparar/ }))
   expect(screen.getByText(/actividades de los 2 Anexo 5/)).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: 'Crear Anexo 11' }))
 
@@ -429,8 +430,8 @@ it('creates the Anexo 11 from the uploaded Anexo 5 and keeps the format notes in
   expect(document.queryByText(/QUIPUX/, { selector: 'p' })).toBeNull()
   const notes = document.getByRole('button', { name: 'Detalle de Notas del formato' })
   expect(window.document.getElementById(notes.getAttribute('aria-describedby')!)?.textContent).toContain('QUIPUX')
-  await waitFor(() =>
-    expect(screen.getByRole('tab', { name: /Preparar/ }).textContent).toContain('listo'))
+  await waitFor(async () =>
+    expect((await repository.loadWorkspace()).drafts.some((item) => item.templateId === 'anexo-11')).toBe(true))
   const draft = (await repository.loadWorkspace()).drafts.find((item) => item.templateId === 'anexo-11')
   expect(draft?.fields.avance).toBe('100')
 

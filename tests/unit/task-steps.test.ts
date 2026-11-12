@@ -156,3 +156,21 @@ it('requires both grades as received outputs of the grader request, not as input
   task.requirementChecks['grade-1'] = 7
   expect(evaluateTask(task, workspace, catalog).missingOutputs).toEqual([])
 })
+
+it('completes the final report with only the signed Anexo 11, without the editable draft', () => {
+  const workspace = proposalWorkspace()
+  workspace.documents.push({ id: 'document-final', name: 'Anexo 11', category: 'final', createdAt: '' })
+  workspace.versions.push(version('final'))
+  workspace.tasks.push({ ...emptyTask('desarrollo'), status: 'completed' })
+  const task = emptyTask('informe-final')
+  expect(evaluateTask(task, workspace, catalog)).toMatchObject({
+    ready: true,
+    canComplete: false,
+    missingOutputs: ['Adjuntar: Anexo 11 firmado'],
+  })
+  expect(evaluateTask({ ...task, outputVersionIds: ['final'] }, workspace, catalog).canComplete).toBe(true)
+  workspace.versions = workspace.versions.map((item) =>
+    item.id === 'final' ? { ...item, signatureStatus: 'unsigned' } : item)
+  expect(evaluateTask({ ...task, outputVersionIds: ['final'] }, workspace, catalog).missingOutputs)
+    .toEqual(['Firma pendiente: Anexo 11 firmado'])
+})
