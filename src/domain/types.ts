@@ -273,7 +273,7 @@ export const newProfile = (): StudentProfile => ({
   aprobacionFecha: '',
   aprobacionResolucion: '',
   tutor: '',
-  aplicaEmpresa: false,
+  aplicaEmpresa: true,
   initialStage: 'propuesta',
   empresa: '',
   representante: '',

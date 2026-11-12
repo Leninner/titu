@@ -24,7 +24,7 @@ const version = (id: string, signed = true): DocumentVersion => ({
 function proposalWorkspace(): Workspace {
   return {
     ...emptyWorkspace(),
-    profile: { ...newProfile(), modalidad: 'research' },
+    profile: { ...newProfile(), modalidad: 'research', aplicaEmpresa: false },
     documents: [
       { id: 'document-personal', name: 'Cédula', category: 'personal', createdAt: '' },
       { id: 'document-solicitud', name: 'Anexo 1', category: 'solicitud', createdAt: '' },

@@ -136,7 +136,7 @@ it('previews an uploaded image without leaving the workflow', async () => {
 })
 
 it('registers the Council resolution in Resultado, completes the proposal and reuses it for graders', async () => {
-  await repository.saveProfile({ ...newProfile(), modalidad: 'research' })
+  await repository.saveProfile({ ...newProfile(), modalidad: 'research', aplicaEmpresa: false })
   const personal = await repository.addDocumentVersion({
     file: new Blob(['identity'], { type: 'image/png' }),
     originalName: 'cedula.png',

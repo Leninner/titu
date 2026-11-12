@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest'
-import { applicableWorkflows, evaluateTask, progress } from '../../src/domain/workflow'
+import { applicableWorkflows, evaluateTask, progress, taskInputs } from '../../src/domain/workflow'
+import { catalog as realCatalog } from '../../src/catalog'
 import { emptyWorkspace, newProfile } from '../../src/domain/types'
 import type { CatalogVersion, TaskRecord, WorkflowDefinition } from '../../src/domain/types'
 const definition: WorkflowDefinition = {
@@ -173,6 +174,8 @@ it('filters modalities/company and excludes optional tasks from progress', () =>
     ],
   }
   const w = workspace()
+  expect(applicableWorkflows(w, c).map((d) => d.id)).toEqual(['legal', 'company', 'optional'])
+  w.profile.aplicaEmpresa = false
   expect(applicableWorkflows(w, c).map((d) => d.id)).toEqual(['legal', 'optional'])
   w.tasks = [{ ...task(), status: 'completed' }]
   expect(progress(w, c)).toEqual({ completed: 1, total: 1, percent: 100 })
@@ -305,4 +308,13 @@ it('requires exact aptitud legal submitted versions for day/hour and explains mi
   expect(evaluateTask(t, w, c).missingRequirements.join(' ')).toContain('versiones exactas')
   t.evidenceVersionIds.push('original')
   expect(evaluateTask(t, w, c).ready).toBe(true)
+})
+
+it('starts a new profile working in a company so Empresa al 100 % is requested', () => {
+  const w = { ...emptyWorkspace(), profile: { ...newProfile(), modalidad: 'research' as const } }
+  const graders = realCatalog.workflowDefinitions.find((item) => item.id === 'calificadores-research')!
+  expect(newProfile().aplicaEmpresa).toBe(true)
+  expect(taskInputs(graders, w).map((item) => item.label)).toContain('Empresa al 100 %')
+  w.profile.aplicaEmpresa = false
+  expect(taskInputs(graders, w).map((item) => item.label)).not.toContain('Empresa al 100 %')
 })
