@@ -107,6 +107,16 @@ it('skips Enviar for in-person workflows and points to the visit', () => {
   expect(evaluateTask(task, workspace, catalog).nextActions).toEqual(['Acudir en persona y registrar el resultado'])
 })
 
+it('completes the library review without an endorsement file and keeps its notes optional', () => {
+  const workspace = proposalWorkspace()
+  workspace.documents.push({ id: 'document-tesis', name: 'Trabajo', category: 'tesis', createdAt: '' })
+  workspace.versions.push(version('tesis', false))
+  const task = { ...emptyTask('biblioteca-revision'), evidenceVersionIds: ['tesis'] }
+  expect(evaluateTask(task, workspace, catalog)).toMatchObject({ canComplete: true, missingOutputs: [] })
+  const noted = { ...task, requirementChecks: { 'aval-inicial-detalle': 'Revisado el 10 de noviembre' } }
+  expect(evaluateTask(noted, workspace, catalog).canComplete).toBe(true)
+})
+
 it('completes only when inputs are ready and every required output is registered', () => {
   const workspace = proposalWorkspace()
   const task = preparedProposal()

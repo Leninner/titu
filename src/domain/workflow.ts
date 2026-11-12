@@ -118,6 +118,11 @@ function fileGap(
   return undefined
 }
 
+function textGap(requirement: Requirement, task: TaskRecord) {
+  const value = task.requirementChecks[requirement.id]
+  return typeof value === 'string' && value.trim() ? undefined : `Anotar: ${requirement.label}`
+}
+
 export const latestDraft = (workspace: Workspace, templateId: string) =>
   workspace.drafts
     .filter((draft) => draft.templateId === templateId)
@@ -139,6 +144,7 @@ export function requirementGap(
   if (requirement.optional) return undefined
   if (requirement.annex) return annexGap({ ...requirement, annex: requirement.annex }, workspace)
   if (numericRequirementIds.has(requirement.id)) return numericGap(requirement, task)
+  if (requirement.text) return textGap(requirement, task)
   if (!requirement.category)
     return task.requirementChecks[requirement.id] === true ? undefined : requirement.label
   return fileGap(

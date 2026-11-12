@@ -31,7 +31,7 @@ El sistema SHALL mostrar al pie del correo de solicitud los archivos que el estu
 
 ### Requirement: Revisión presencial de Biblioteca
 
-El sistema SHALL indicar que la revisión del trabajo sin firmas se hace en persona en Biblioteca FISEI con Monica Paredes, únicamente el 10 de noviembre de 2026 de 8:30 a 12:30 y de 14:30 a 16:30, y SHALL NOT pedir que el trabajo se envíe por correo.
+El sistema SHALL indicar que la revisión del trabajo sin firmas se hace en persona en Biblioteca FISEI con Monica Paredes, únicamente el 10 de noviembre de 2026 de 8:30 a 12:30 y de 14:30 a 16:30, y SHALL NOT pedir que el trabajo se envíe por correo. Como Biblioteca no entrega un documento de aval inicial, el sistema SHALL NOT pedir un archivo de aval y SHALL ofrecer un campo de texto opcional para anotar los detalles del aval. Fuente: `BIB-01`.
 
 #### Scenario: Guía de la revisión
 
@@ -46,7 +46,12 @@ El sistema SHALL indicar que la revisión del trabajo sin firmas se hace en pers
 #### Scenario: Sin paso Enviar
 
 - **WHEN** abre el trámite "Biblioteca: revisión del trabajo sin firmas"
-- **THEN** ve solo las pestañas "Preparar" y "Resultado", sin borrador de correo ni botón "Confirmar envío", y Resultado pide solo el aval inicial, sin capturas del correo de respuesta.
+- **THEN** ve solo las pestañas "Preparar" y "Resultado", sin borrador de correo ni botón "Confirmar envío", y Resultado no pide capturas del correo de respuesta.
+
+#### Scenario: Detalles del aval sin archivo
+
+- **WHEN** abre la pestaña "Resultado" de "Biblioteca: revisión del trabajo sin firmas"
+- **THEN** ve el campo de texto "Detalles del aval de Biblioteca", no ve un espacio para subir el aval inicial y puede completar el trámite con el trabajo preparado aunque el campo esté vacío.
 
 ### Requirement: Paquete ZIP numerado
 

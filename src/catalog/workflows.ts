@@ -6,6 +6,7 @@ type Label = string | [label: string, detail: string]
 const labelled = (text: Label) =>
   typeof text === 'string' ? { label: text } : { label: text[0], detail: text[1] }
 const check = (id: string, text: Label): Requirement => ({ id, ...labelled(text) })
+const note = (id: string, text: Label): Requirement => ({ ...check(id, text), text: true, optional: true })
 const doc = (id: string, text: Label, category = id, signed = true): Requirement => ({
   id,
   ...labelled(text),
@@ -467,7 +468,7 @@ add({
       modalities: ['article'],
     },
   ],
-  outputs: [doc('aval-inicial', ['Aval inicial de Biblioteca', 'Autoriza recoger las firmas'], 'aval-inicial')],
+  outputs: [note('aval-inicial-detalle', ['Detalles del aval de Biblioteca', 'Biblioteca no entrega un documento: anota la fecha, quién revisó y lo que te indicaron'])],
   guide: {
     steps: [
       step('deliver', 'Estudiante', 'Acércate en persona a Biblioteca FISEI el 10 de noviembre, de 8:30 a 12:30 o de 14:30 a 16:30, con el trabajo sin firmas.'),

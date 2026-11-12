@@ -446,3 +446,15 @@ it('creates the Anexo 11 from the uploaded Anexo 5 and keeps the format notes in
   expect(signed.queryByText('anexo-11-sin-firma.pdf')).toBeNull()
   expect(signed.getByRole('button', { name: /^Subir archivo/ })).toBeTruthy()
 })
+
+it('records the library endorsement as text instead of a file', async () => {
+  await repository.saveProfile({ ...newProfile(), modalidad: 'research' })
+  await openTask('biblioteca-revision', 'Biblioteca: revisión del trabajo sin firmas')
+
+  fireEvent.click(screen.getByRole('tab', { name: /Resultado/ }))
+  expect(screen.queryByRole('article', { name: 'Aval inicial de Biblioteca' })).toBeNull()
+  expect(screen.queryByLabelText(/Subir archivo/)).toBeNull()
+  const details = screen.getByRole('textbox', { name: 'Detalles del aval de Biblioteca' }) as HTMLTextAreaElement
+  fireEvent.change(details, { target: { value: 'Revisado por Monica Paredes' } })
+  expect(details.value).toBe('Revisado por Monica Paredes')
+})

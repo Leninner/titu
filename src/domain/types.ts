@@ -166,6 +166,7 @@ export interface Requirement {
   category?: string
   submissionName?: string
   optional?: boolean
+  text?: boolean
   modalities?: Modality[]
   annex?: string
   template?: string

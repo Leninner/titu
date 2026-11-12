@@ -64,7 +64,7 @@ describe('institutional catalog', () => {
     expect(outputs('calificadores-research')).toEqual([
       'resolucion-designacion', 'notas', 'grade-1', 'grade-2', 'respuesta',
     ])
-    expect(outputs('biblioteca-revision')).toEqual(['aval-inicial'])
+    expect(outputs('biblioteca-revision')).toEqual(['aval-inicial-detalle'])
     expect(outputs('biblioteca-decanato')).toEqual(['biblioteca', 'respuesta'])
     expect(outputs('cambio-tutor')).toEqual(['resolucion-tramite', 'respuesta'])
     expect(byId('desarrollo')!.dependsOn).toEqual(['propuesta'])

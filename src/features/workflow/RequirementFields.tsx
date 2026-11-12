@@ -17,9 +17,13 @@ export function RequirementFields({
   onChange: (id: string, value: CheckValue) => void
 }) {
   const numeric = requirements.filter((requirement) => numericRequirementIds.has(requirement.id))
+  const notes = requirements.filter((requirement) => requirement.text)
   const checks = requirements.filter(
     (requirement) =>
-      !requirement.category && !requirement.annex && !numericRequirementIds.has(requirement.id),
+      !requirement.category &&
+      !requirement.annex &&
+      !requirement.text &&
+      !numericRequirementIds.has(requirement.id),
   )
   return (
     <>
@@ -42,6 +46,24 @@ export function RequirementFields({
                 />
                 {requirement.detail && <InfoTip label={requirement.label} text={requirement.detail} />}
               </div>
+            )
+          })}
+        </div>
+      )}
+      {notes.length > 0 && (
+        <div className="task-requirement-notes">
+          {notes.map((requirement) => {
+            const value = task.requirementChecks[requirement.id]
+            return (
+              <label className="field" id={`${anchorPrefix}-${requirement.id}`} key={requirement.id}>
+                <span>{requirement.label}</span>
+                <textarea
+                  name={requirement.id}
+                  placeholder={requirement.detail}
+                  value={typeof value === 'string' ? value : ''}
+                  onChange={(event) => onChange(requirement.id, event.target.value)}
+                />
+              </label>
             )
           })}
         </div>
