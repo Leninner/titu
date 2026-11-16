@@ -255,3 +255,52 @@ it('requests the review endorsement with only the email to the graduation unit',
   expect(email.getByText(/bajo la tutoría del Ing\. Leonardo Torres Valverde Mg\. Saludos/)).toBeTruthy()
   expect(dialog.queryByRole('article', { name: 'Documento editable' })).toBeNull()
 })
+
+it('lets the student review a request marked after a profile change and download it', async () => {
+  const profile = {
+    ...newProfile(),
+    nombres: 'María Muñoz Vásquez',
+    cedula: '1804567890',
+    email: 'mmunoz@uta.edu.ec',
+    carrera: 'Software',
+    tema: 'Accesibilidad web',
+  }
+  await repository.saveProfile(profile)
+  URL.createObjectURL = vi.fn(() => 'blob:habilitantes')
+  URL.revokeObjectURL = vi.fn()
+  window.history.replaceState(null, '', '#/proceso/aptitud-legal-research')
+  const openRequest = async () => {
+    render(
+      <WorkspaceProvider>
+        <AppShell />
+      </WorkspaceProvider>,
+    )
+    await screen.findByRole('button', { name: 'Cómo se tramita' })
+    fireEvent.click(
+      within(screen.getByRole('article', { name: 'Requisitos habilitantes' })).getByRole('button', { name: 'Solicitar' }),
+    )
+    return within(await screen.findByRole('dialog', { name: 'Solicitud de requisitos habilitantes' }))
+  }
+  fireEvent.click((await openRequest()).getByRole('button', { name: 'Cerrar' }))
+  cleanup()
+  await repository.saveProfile({ ...profile, tema: 'Accesibilidad web en servicios públicos' })
+
+  const dialog = await openRequest()
+  fireEvent.click(dialog.getByRole('button', { name: 'Actualizar datos y revisar campos' }))
+  await waitFor(() => expect(dialog.queryByRole('button', { name: 'Actualizar datos y revisar campos' })).toBeNull())
+  const document = within(dialog.getByRole('article', { name: 'Documento editable' }))
+  for (const [name, value] of [[/Coordinador de Carrera/, 'Ing. Coordinador'], ['Nivel que cursas', 'Décimo']] as const) {
+    const input = document.getByRole('textbox', { name })
+    input.textContent = value
+    fireEvent.input(input)
+  }
+  fireEvent.click(dialog.getByRole('button', { name: /^Descargar PDF/ }))
+
+  await waitFor(() =>
+    expect(renderAnnex).toHaveBeenCalledWith(
+      expect.objectContaining({ templateId: 'solicitud-habilitantes', needsReview: false }),
+      'pdf',
+    ),
+  )
+  expect(dialog.queryByText('Completa los campos marcados antes de descargar.')).toBeNull()
+})

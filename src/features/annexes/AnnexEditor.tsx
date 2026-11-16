@@ -9,6 +9,7 @@ import { repository } from '../../storage/repository'
 import { downloadBlob, errorMessage } from '../../components/download'
 import { ChevronRight, Download } from 'lucide-react'
 import { AnnexDocument } from './AnnexDocument'
+import { DraftReviewNotice } from './DraftReviewNotice'
 import { MonthlyAnnexEditor } from './MonthlyAnnexEditor'
 import { useDraftAutosave } from './useDraftAutosave'
 import { buildFinalReport } from '../../domain/final-report'
@@ -156,24 +157,7 @@ export function AnnexEditor({ initial, headerTarget }: { initial: AnnexDraft; he
       )}
       <div className="document-workspace">
         <div className="document-controls">
-          {draft.needsReview && (
-            <div className="notice">
-              <p>
-                Tu modalidad o período cambió. Comprueba si esta plantilla sigue siendo aplicable.
-              </p>
-              <button
-                onClick={() =>
-                  update({
-                    ...draft,
-                    profileSnapshot: { ...workspace.profile! },
-                    needsReview: false,
-                  })
-                }
-              >
-                Actualizar datos y revisar campos
-              </button>
-            </div>
-          )}
+          <DraftReviewNotice draft={draft} update={update} />
           {stale.length > 0 && (
             <div className="notice">
               <h3>Hay informes mensuales modificados</h3>

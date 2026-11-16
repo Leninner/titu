@@ -104,7 +104,7 @@ export function validateAnnex(draft: AnnexDraft, previousMonthly?: AnnexDraft): 
     errors.tema =
       'El tema debe coincidir con el perfil aprobado. Registrar la resolución de cambio en el perfil y revisar el borrador.'
   if (draft.needsReview)
-    errors.needsReview = 'Revisar el borrador tras el cambio de perfil o modalidad'
+    errors.needsReview = 'Pulsa "Actualizar datos y revisar campos": tu perfil cambió'
   if (draft.templateId === 'anexo-5' && !/^\d{4}-(0[1-9]|1[0-2])$/.test(draft.monthlyPeriod))
     errors.monthlyPeriod = 'Seleccionar el mes del informe'
   if (report) {

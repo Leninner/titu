@@ -4,6 +4,7 @@ import { errorMessage } from '../../components/download'
 import { validateAnnex } from '../../domain/annex'
 import type { AnnexDraft } from '../../domain/types'
 import { AnnexDocument } from './AnnexDocument'
+import { DraftReviewNotice } from './DraftReviewNotice'
 import { downloadAnnex } from './export-annex'
 import { useDraftAutosave } from './useDraftAutosave'
 
@@ -82,6 +83,7 @@ export function AnnexDraftEditor({
           </button>
         </div>
       </div>
+      <DraftReviewNotice draft={draft} update={update} />
       {showErrors && !validation.valid && (
         <div className="notice error" role="alert">
           <ul>
