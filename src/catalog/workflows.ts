@@ -554,7 +554,7 @@ add({
   modalities: work,
   sourceIds: ['UT-22', 'UT-23'],
   dependsOn: ['biblioteca-revision', 'calificacion'],
-  requirements: [doc('firma-estudiante', ['Trabajo firmado por el estudiante', 'Con la página de autoría (y derechos de autor en el Proyecto) firmada'], 'tesis')],
+  requirements: [doc('firma-estudiante', ['Trabajo firmado por el estudiante', 'Con la página de autoría (y derechos de autor en el Proyecto) firmada'], 'tesis-firma-estudiante')],
   guide: {
     steps: [
       step('library', 'Estudiante', 'Cuando lleguen las notas de los calificadores, vuelve a Biblioteca con el trabajo corregido según la revisión inicial.'),
@@ -578,7 +578,7 @@ add({
     check('tutor-firma', ['Firma del tutor', 'En la página de aprobación del tutor']),
     check('calificador-1-firma', ['Firma del primer calificador', 'En la página de aprobación del tribunal']),
     check('calificador-2-firma', ['Firma del segundo calificador', 'En la página de aprobación del tribunal']),
-    doc('docentes-firmados', ['Trabajo con firmas docentes', 'Versión con las firmas del tutor y de los dos calificadores'], 'tesis'),
+    doc('docentes-firmados', ['Trabajo con firmas docentes', 'Versión con las firmas del tutor y de los dos calificadores'], 'tesis-firmas-docentes'),
   ],
   guide: {
     steps: [
@@ -600,7 +600,7 @@ add({
   modalities: work,
   sourceIds: ['UT-22', 'UT-23'],
   dependsOn: ['biblioteca-firmas-docentes'],
-  requirements: [doc('decanato-firma', ['Trabajo firmado por Decanato', 'El Decano firma como presidente del tribunal'], 'tesis')],
+  requirements: [doc('decanato-firma', ['Trabajo firmado por Decanato', 'El Decano firma como presidente del tribunal'], 'tesis-decanato')],
   outputs: [doc('biblioteca', 'Aval final de Biblioteca', 'biblioteca')],
   guide: {
     steps: [
@@ -644,12 +644,12 @@ add({
       modalities: work,
     },
     {
-      ...doc('tesis-final', ['Trabajo final firmado', 'Avalado y firmado, en PDF con OCR'], 'tesis'),
+      ...doc('tesis-final', ['Trabajo final firmado', 'Avalado y firmado, en PDF con OCR'], 'tesis-decanato'),
       modalities: ['research'],
       checklist: projectPreliminaryPages,
     },
     {
-      ...doc('tesis-final', ['Preliminares y artículo firmados', 'Firmados y avalados, en PDF con OCR'], 'tesis'),
+      ...doc('tesis-final', ['Preliminares y artículo firmados', 'Firmados y avalados, en PDF con OCR'], 'tesis-decanato'),
       modalities: ['article'],
     },
     { ...doc('biblioteca', 'Aval final de Biblioteca', 'biblioteca'), modalities: work },
@@ -821,7 +821,7 @@ exceptional({
     personal,
     doc('acta-recalificacion', ['Acta de reunión', 'Firmada por el Presidente de la Unidad de Titulación, el tutor, los calificadores y el estudiante'], 'acta-recalificacion'),
     doc('similitud', ['Informe de similitud', 'Turnitin actualizado desde la cuenta del tutor, máximo 10 %'], 'similitud', false),
-    { ...thesis, ...labelled(['Trabajo corregido', 'PDF con texto seleccionable (OCR)']) },
+    { ...thesis, ...labelled(['Trabajo corregido', 'PDF con texto seleccionable (OCR)']), category: 'tesis-corregido' },
   ],
   outputs: [gradeReports, ...grades],
   guide: {

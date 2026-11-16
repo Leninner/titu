@@ -10,6 +10,8 @@ import type {
 } from '../domain/types'
 import { workflowDefinitions } from '../catalog/workflows'
 import { migrateTaskRecords, moveReceivedFiles } from './migrate-workspace'
+import { splitThesisStages } from './consolidate-files'
+import { writeConsolidatedFiles } from './stored-files'
 
 export interface StoredBlobRecord {
   id: string
@@ -86,5 +88,10 @@ export class WorkspaceDatabase extends Dexie {
         )
         await transaction.table('tasks').bulkPut(tasks)
       })
+    this.version(6)
+      .stores({})
+      .upgrade((transaction) =>
+        writeConsolidatedFiles((name) => transaction.table(name), splitThesisStages),
+      )
   }
 }

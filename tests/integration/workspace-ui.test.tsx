@@ -215,14 +215,17 @@ it('uploads original document bytes and appends a signed correction without muta
   })
   fireEvent.click(card.getByText('Firma y fechas'))
   fireEvent.click(card.getByLabelText('Los archivos de esta carga ya están firmados'))
-  fireEvent.click(card.getByRole('button', { name: /Historial/ }))
-  fireEvent.click(card.getByRole('button', { name: 'Subir nueva versión' }))
+  fireEvent.click(card.getByRole('button', { name: 'Reemplazar Solicitud firmada.png' }))
   fireEvent.change(input, {
     target: {
       files: [new File(['corrected signed bytes'], 'correccion.png', { type: 'image/png' })],
     },
   })
-  await screen.findByText('Firma reportada por ti', { exact: false })
+  await waitFor(() =>
+    expect((card.getByRole('checkbox', {
+      name: 'Este archivo ya tiene las firmas requeridas: Solicitud firmada.png',
+    }) as HTMLInputElement).checked).toBe(true),
+  )
   const snapshot = await repository.snapshot()
   expect(snapshot.documents).toHaveLength(1)
   expect(snapshot.versions).toHaveLength(2)
@@ -236,7 +239,7 @@ it('uploads original document bytes and appends a signed correction without muta
   expect((card.getByLabelText('Los archivos de esta carga ya están firmados') as HTMLInputElement).checked)
     .toBe(false)
 })
-it('confirms the signature beside the saved file and keeps the unsigned version', async () => {
+it('confirms the signature beside the saved file without keeping another copy', async () => {
   await repository.saveProfile(newProfile())
   mount()
   await screen.findByRole('navigation', { name: 'Principal' })
@@ -252,12 +255,11 @@ it('confirms the signature beside the saved file and keeps the unsigned version'
   expect(card.getByText('Revisar firma')).toBeTruthy()
   fireEvent.click(signature)
   await waitFor(async () => {
-    expect((await repository.loadWorkspace()).versions).toHaveLength(2)
     expect(signature.checked).toBe(true)
     expect(card.getByText('Listo')).toBeTruthy()
   })
   expect((await repository.loadWorkspace()).versions.map((version) => version.signatureStatus))
-    .toContain('unsigned')
+    .toEqual(['reported-signed'])
 })
 it('names uploads after their category and replaces the file of a single-file category', async () => {
   await repository.saveProfile(newProfile())
@@ -277,8 +279,7 @@ it('names uploads after their category and replaces the file of a single-file ca
   await card.findByRole('heading', { name: 'Copia de Cédula.pdf' })
   const workspace = await repository.loadWorkspace()
   expect(workspace.documents).toHaveLength(1)
-  expect(workspace.versions.map((version) => version.originalName).sort())
-    .toEqual(['Copia de Cédula.pdf', 'Copia de Cédula.png'])
+  expect(workspace.versions.map((version) => version.originalName)).toEqual(['Copia de Cédula.pdf'])
 })
 it('reopens the current saved revision after navigating to the annex library', async () => {
   await repository.saveProfile(newProfile())

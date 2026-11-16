@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { existsSync } from 'node:fs'
 import { catalog, sources } from '../../src/catalog'
+import { workflowDefinitions } from '../../src/catalog/workflows'
 
 describe('institutional catalog', () => {
   it('places every template in a stage with its issuer and every editable one with its signers', () => {
@@ -171,4 +172,18 @@ describe('institutional catalog', () => {
     }
   })
 
+})
+
+it('asks each thesis stage for its own document', () => {
+  const categoryOf = (workflowId: string, requirementId: string) =>
+    workflowDefinitions
+      .find((workflow) => workflow.id === workflowId)
+      ?.requirements.filter((requirement) => requirement.id === requirementId)
+      .map((requirement) => requirement.category)
+  expect(categoryOf('biblioteca-revision', 'tesis')).toEqual(['tesis'])
+  expect(categoryOf('biblioteca-firma-estudiante', 'firma-estudiante')).toEqual(['tesis-firma-estudiante'])
+  expect(categoryOf('biblioteca-firmas-docentes', 'docentes-firmados')).toEqual(['tesis-firmas-docentes'])
+  expect(categoryOf('biblioteca-decanato', 'decanato-firma')).toEqual(['tesis-decanato'])
+  expect(categoryOf('dia-hora', 'tesis-final')).toEqual(['tesis-decanato', 'tesis-decanato'])
+  expect(categoryOf('recalificacion-research', 'tesis')).toEqual(['tesis-corregido'])
 })

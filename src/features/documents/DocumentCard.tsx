@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Download, Plus, RefreshCw, Search, Trash2, Upload } from 'lucide-react'
+import { Download, RefreshCw, Trash2, Upload } from 'lucide-react'
 import type { DocumentVersion } from '../../domain/types'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { EvidencePreview } from '../../components/EvidencePreview'
@@ -18,7 +18,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const [expanded, setExpanded] = useState(false)
   const [signed, setSigned] = useState(false)
   const [issuedOn, setIssuedOn] = useState('')
   const [expiresOn, setExpiresOn] = useState('')
@@ -95,6 +94,18 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
     input.current?.click()
   }
 
+  async function download(version: DocumentVersion) {
+    await run(async () => {
+      const blob = await repository.getBlob(version.blobId)
+      if (blob) downloadBlob(blob, version.originalName)
+    })
+  }
+
+  function remove(version: DocumentVersion) {
+    if (window.confirm(`¿Eliminar ${version.originalName}? Se quitará de los trámites que aún no envías.`))
+      void run(() => repository.removeVersion(version.id))
+  }
+
   async function changeSignature(version: DocumentVersion, signedNow: boolean) {
     await run(async () => {
       const blob = await repository.getBlob(version.blobId)
@@ -165,6 +176,25 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
                   Tiene firmas
                 </label>
               )}
+              <button
+                type="button"
+                className="icon-button"
+                title="Descargar"
+                aria-label={`Descargar ${focus.originalName}`}
+                onClick={() => void download(focus)}
+              >
+                <Download size={16} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="icon-button"
+                title="Eliminar"
+                aria-label={`Eliminar ${focus.originalName}`}
+                disabled={busy}
+                onClick={() => remove(focus)}
+              >
+                <Trash2 size={15} aria-hidden="true" />
+              </button>
               {single ? (
                 <button
                   type="button"
@@ -233,18 +263,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
             </>
           )}
         </details>}
-        {versions.length > 0 && (
-          <button
-            type="button"
-            className="file-row-link"
-            aria-expanded={expanded}
-            onClick={() => setExpanded(!expanded)}
-          >
-            Historial · {versions.length} {versions.length === 1 ? 'versión' : 'versiones'}
-            {documents.length > 1 && ` en ${documents.length} documentos`}
-            <ChevronDown size={15} aria-hidden="true" />
-          </button>
-        )}
       </div>
       {dragging && (
         <div className="file-drop-overlay" aria-hidden="true">
@@ -270,81 +288,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
         </p>
       )}
       <output className="file-card-notice" aria-live="polite">{notice}</output>
-      {expanded && (
-        <div className="card-files">
-          {documents.map((document) => (
-            <div className="card-file" key={document.id}>
-              <h4>{document.name}</h4>
-              {versions
-                .filter((version) => version.documentId === document.id)
-                .map((version, index) => (
-                  <div className="file-version document-version" key={version.id}>
-                    <div>
-                      <span className="file-name">{version.originalName}</span>
-                      <small>
-                        {version.signatureStatus === 'reported-signed'
-                          ? 'Firma reportada por ti'
-                          : 'Sin firma reportada'}
-                        {index === 0 ? ' · Actual' : ''}
-                      </small>
-                      {version.issuedOn && (
-                        <small>
-                          Emitido: {version.issuedOn}
-                          {version.expiresOn ? ` · Vence: ${version.expiresOn}` : ''}
-                        </small>
-                      )}
-                      {version.textualPdfStatus === 'no-text-detected' && (
-                        <small className="error">Sin texto detectable. Revisar OCR.</small>
-                      )}
-                    </div>
-                    <div className="actions">
-                      <button
-                        className="icon-button"
-                        title="Vista previa"
-                        aria-label={`Vista previa de ${version.originalName}`}
-                        onClick={() => setPreview(version)}
-                      >
-                        <Search size={16} />
-                      </button>
-                      <button
-                        className="icon-button"
-                        title="Descargar versión"
-                        aria-label={`Descargar ${version.originalName}`}
-                        onClick={() =>
-                          void run(async () => {
-                            const blob = await repository.getBlob(version.blobId)
-                            if (blob) downloadBlob(blob, version.originalName)
-                          })
-                        }
-                      >
-                        <Download size={16} />
-                      </button>
-                      <button
-                        className="icon-button"
-                        title="Eliminar versión"
-                        aria-label={`Eliminar ${version.originalName}`}
-                        disabled={busy}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              '¿Eliminar esta versión? Las versiones usadas en trámites o envíos están protegidas.',
-                            )
-                          )
-                            void run(() => repository.removeVersion(version.id))
-                        }}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              <button className="text-button" onClick={() => select(document.id)}>
-                <Plus size={14} /> Subir nueva versión
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
       {preview && <EvidencePreview version={preview} onClose={() => setPreview(null)} />}
     </article>
   )

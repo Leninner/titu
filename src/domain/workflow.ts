@@ -11,6 +11,7 @@ import { evidenceIdsForTask } from './task-evidence'
 import { monthlyCoverage, monthlyGaps } from './monthly-report'
 import { validateAnnex } from './annex'
 import { numeric } from './numeric'
+import { isThesisCategory } from './thesis-stages'
 import { gradeIds, gradingSummary } from './grading'
 
 export function applicableWorkflows(
@@ -105,7 +106,7 @@ function fileGap(
       return `No adeudar: ${validities[0].label}`
   }
   if (
-    requirement.category === 'tesis' &&
+    isThesisCategory(requirement.category) &&
     !signedEvidence.some(
       (version) =>
         version.mime === 'application/pdf' && version.textualPdfStatus === 'text-detected',

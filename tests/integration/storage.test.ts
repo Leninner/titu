@@ -350,3 +350,62 @@ it('migrates a backup created before reception workflows were merged', async () 
   })
   expect(restored.submissions[0].taskId).toBe('propuesta')
 })
+
+const taskUsing = (evidenceVersionIds: string[]) => ({
+  id: 'task',
+  definitionId: 'propuesta',
+  status: 'preparing' as const,
+  requirementChecks: {},
+  evidenceVersionIds,
+  outputVersionIds: [],
+  note: '',
+  history: [],
+})
+
+it('keeps one file per document and moves unsent workflows to the replacement', async () => {
+  const first = await repo.addDocumentVersion({ file: new Blob(['old']), originalName: 'cedula.pdf', category: 'personal' })
+  await repo.saveTask(taskUsing([first.id]))
+  const replacement = await repo.addDocumentVersion({
+    file: new Blob(['new']),
+    originalName: 'cedula.pdf',
+    documentId: first.documentId,
+  })
+  const workspace = await repo.loadWorkspace()
+  expect(workspace.versions.map((version) => version.id)).toEqual([replacement.id])
+  expect(workspace.tasks[0].evidenceVersionIds).toEqual([replacement.id])
+  expect(await repo.getBlob(first.blobId)).toBeUndefined()
+})
+
+it('keeps the file of a registered submission when it is replaced', async () => {
+  const sent = await repo.addDocumentVersion({ file: new Blob(['sent']), originalName: 'cedula.pdf', category: 'personal' })
+  await repo.saveTask(taskUsing([sent.id]))
+  await repo.recordSubmission({ taskId: 'task', exactVersionIds: [sent.id], recipient: 'secretaria', sentAt: '2026-11-01T10:00:00.000Z', note: '' })
+  const replacement = await repo.addDocumentVersion({ file: new Blob(['new']), originalName: 'cedula.pdf', documentId: sent.documentId })
+  const workspace = await repo.loadWorkspace()
+  expect(workspace.versions.map((version) => version.id).sort()).toEqual([replacement.id, sent.id].sort())
+  expect(workspace.tasks[0].evidenceVersionIds).toEqual([sent.id])
+  expect(await (await repo.getBlob(sent.blobId))!.text()).toBe('sent')
+  await expect(repo.removeVersion(sent.id)).rejects.toThrow('ya se envió')
+})
+
+it('removes an unsent file from the workflows that used it', async () => {
+  const version = await repo.addDocumentVersion({ file: new Blob(['x']), originalName: 'cedula.pdf', category: 'personal' })
+  await repo.saveTask(taskUsing([version.id]))
+  await repo.removeVersion(version.id)
+  const workspace = await repo.loadWorkspace()
+  expect(workspace.versions).toEqual([])
+  expect(workspace.documents).toEqual([])
+  expect(workspace.tasks[0].evidenceVersionIds).toEqual([])
+})
+
+it('restores an old backup with one file per document', async () => {
+  const first = await repo.addDocumentVersion({ file: new Blob(['old']), originalName: 'cedula.pdf', category: 'personal' })
+  const latest = { ...first, id: 'latest', blobId: 'latest-blob', createdAt: '2999-01-01T00:00:00.000Z' }
+  await repo.db.blobs.add({ id: 'latest-blob', data: await new Blob(['old']).arrayBuffer() })
+  await repo.db.versions.add(latest)
+  const backup = await importBackup(await exportBackup(await repo.snapshot(), '1'))
+  await repo.restoreWorkspace(backup)
+  const workspace = await repo.loadWorkspace()
+  expect(workspace.versions.map((version) => version.id)).toEqual(['latest'])
+  expect(await repo.getBlob(first.blobId)).toBeUndefined()
+})

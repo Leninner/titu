@@ -1,5 +1,6 @@
 import type { Workspace, CatalogVersion } from '../../domain/types'
 import { applicableWorkflows, taskInputs, taskOutputs } from '../../domain/workflow'
+import { thesisCategories } from '../../domain/thesis-stages'
 
 const names: Record<string, string> = {
   personal: 'Identificación',
@@ -18,7 +19,11 @@ const names: Record<string, string> = {
   final: 'Informe final',
   'aval-informes': 'Aval del tutor',
   matricula: 'Matrícula',
-  tesis: 'Trabajo de titulación',
+  tesis: 'Trabajo sin firmas',
+  'tesis-corregido': 'Trabajo corregido',
+  'tesis-firma-estudiante': 'Trabajo firmado por el estudiante',
+  'tesis-firmas-docentes': 'Trabajo con firmas docentes',
+  'tesis-decanato': 'Trabajo firmado por Decanato',
   empresa: 'Cumplimiento empresarial',
   similitud: 'Informe de similitud',
   publicacion: 'Aceptación o publicación',
@@ -54,7 +59,7 @@ export function documentCategories(workspace: Workspace, catalog: CatalogVersion
               'mensual',
               'final',
               'aval-informes',
-              'tesis',
+              ...thesisCategories,
               'empresa',
               'similitud',
               'publicacion',

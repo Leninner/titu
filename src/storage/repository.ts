@@ -18,6 +18,8 @@ import {
 } from '../domain/schemas'
 import { storedBlob, WorkspaceDatabase } from './db'
 import { sha256, validateBackup, type ValidatedBackup } from './restore'
+import { splitThesisStages } from './consolidate-files'
+import { writeConsolidatedFiles } from './stored-files'
 
 export class StorageError extends Error {
   constructor(
@@ -54,6 +56,7 @@ export class WorkspaceRepository {
   constructor(name?: string) {
     this.db = new WorkspaceDatabase(name)
   }
+  private tableOf = <T>(name: string) => this.db.table<T, string>(name)
   async loadWorkspace(): Promise<Workspace> {
     return this.db.transaction('r', this.db.tables, async () => {
       const drafts = (await this.db.drafts.toArray()).map(draftWithCompanySnapshot)
@@ -164,7 +167,7 @@ export class WorkspaceRepository {
     }
     await this.db.transaction(
       'rw',
-      [this.db.documents, this.db.versions, this.db.blobs, this.db.drafts, this.db.draftHistory],
+      this.db.tables,
       async () => {
         if (input.documentId && !(await this.db.documents.get(input.documentId)))
           throw new StorageError('invalid', 'El documento no existe')
@@ -184,6 +187,7 @@ export class WorkspaceRepository {
           })
         await this.db.blobs.add({ id: version.blobId, data, mime: input.file.type || version.mime })
         await this.db.versions.add(version)
+        if (input.documentId) await writeConsolidatedFiles(this.tableOf)
       },
     )
     return version
@@ -233,20 +237,19 @@ export class WorkspaceRepository {
   }
   async removeVersion(id: string) {
     await this.db.transaction('rw', this.db.tables, async () => {
-      const workspace = await this.loadWorkspace()
-      if (
-        workspace.tasks.some(
-          (t) => t.evidenceVersionIds.includes(id) || t.outputVersionIds.includes(id),
-        ) ||
-        workspace.submissions.some((s) => s.exactVersionIds.includes(id))
-      )
-        throw new StorageError('referenced', 'Esta versión está vinculada a un trámite o envío')
+      const submissions = await this.db.submissions.toArray()
+      if (submissions.some((submission) => submission.exactVersionIds.includes(id)))
+        throw new StorageError('referenced', 'Este archivo ya se envió en un trámite y se conserva')
       const version = await this.db.versions.get(id)
       if (!version) return
       await this.db.versions.delete(id)
+      await this.db.tasks.toCollection().modify((task) => {
+        task.evidenceVersionIds = task.evidenceVersionIds.filter((item) => item !== id)
+        task.outputVersionIds = task.outputVersionIds.filter((item) => item !== id)
+      })
       if (
         !(await this.db.versions.where('blobId').equals(version.blobId).count()) &&
-        !workspace.submissions.some((s) => s.acknowledgementBlobId === version.blobId)
+        !submissions.some((submission) => submission.acknowledgementBlobId === version.blobId)
       )
         await this.db.blobs.delete(version.blobId)
       if (!(await this.db.versions.where('documentId').equals(version.documentId).count()))
@@ -297,6 +300,7 @@ export class WorkspaceRepository {
       await this.db.settings.bulkAdd(
         Object.entries(snapshot.settings).map(([id, value]) => ({ id, value })),
       )
+      await writeConsolidatedFiles(this.tableOf, splitThesisStages)
     })
   }
 }

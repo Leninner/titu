@@ -105,8 +105,8 @@ it('uploads from a requirement card into Documents and links the new version to 
   })
   const documents = within(await screen.findByRole('article', { name: 'Identificación' }))
   expect(documents.getByRole('heading', { name: 'Copia de Cédula.png', level: 3 })).toBeTruthy()
-  fireEvent.click(documents.getByRole('button', { name: /Historial/ }))
-  expect(await documents.findByRole('heading', { name: 'Copia de Cédula.png', level: 4 })).toBeTruthy()
+  expect(documents.queryByRole('button', { name: /Historial/ })).toBeNull()
+  expect(documents.getByRole('button', { name: 'Descargar Copia de Cédula.png' })).toBeTruthy()
 })
 
 it('previews an uploaded image without leaving the workflow', async () => {
