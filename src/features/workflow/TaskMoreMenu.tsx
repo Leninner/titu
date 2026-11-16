@@ -52,7 +52,7 @@ const guideIcons: Record<GuideIcon, LucideIcon> = {
   deliver: Award,
 }
 
-function GuideTimeline({ definition }: { definition: WorkflowDefinition }) {
+export function GuideTimeline({ definition }: { definition: WorkflowDefinition }) {
   return (
     <>
       <ol className="guide-timeline">

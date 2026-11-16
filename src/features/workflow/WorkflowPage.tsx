@@ -8,6 +8,8 @@ import { ProcessMap } from './ProcessMap'
 import { ReportGuideLinks } from './ReportGuide'
 import { folderFor, processFolders } from '../../domain/process-map'
 import { TaskDetail } from './TaskDetail'
+import { InformationalDetail, informationalLabels } from './InformationalDetail'
+import { informationalStatus } from '../../domain/informational'
 import { useCurrentTime } from './use-current-time'
 
 const viewKey = 'process-view'
@@ -68,7 +70,11 @@ export function WorkflowPage({
   return (
     <div className={`page${selected ? ' workflow-detail-page' : ' process-page'}`}>
       {selected ? (
-        <TaskDetail key={selected.id} definition={selected} headerTarget={headerTarget} />
+        selected.informational ? (
+          <InformationalDetail definition={selected} />
+        ) : (
+          <TaskDetail key={selected.id} definition={selected} headerTarget={headerTarget} />
+        )
       ) : (
         <>
           {view === 'map' && (
@@ -93,6 +99,10 @@ export function WorkflowPage({
                         const task = taskFor(definition.id, workspace)
                         const result = evaluateTask(task, workspace, catalog, now)
                         const index = mainDefinitions.findIndex((item) => item.id === definition.id)
+                        const phase = definition.informational
+                          ? informationalStatus(definition, workspace, catalog, now)
+                          : undefined
+                        const completed = phase ? phase === 'done' : task.status === 'completed'
                         return (
                           <a
                             className="workflow-row"
@@ -100,18 +110,22 @@ export function WorkflowPage({
                             aria-label={definition.title}
                             key={definition.id}
                           >
-                            <span className={`step-number ${task.status === 'completed' ? 'complete' : ''}`}>
-                              {task.status === 'completed' ? <CircleCheck size={20} /> : index + 1}
+                            <span className={`step-number ${completed ? 'complete' : ''}`}>
+                              {completed ? <CircleCheck size={20} /> : index + 1}
                             </span>
                             <div>
                               <h3>{definition.title}</h3>
                               <p>
-                                {task.status === 'completed'
-                                  ? 'Resultado confirmado'
-                                  : result.missingRequirements[0] || 'Requisitos registrados'}
+                                {phase
+                                  ? definition.summary
+                                  : completed
+                                    ? 'Resultado confirmado'
+                                    : result.missingRequirements[0] || 'Requisitos registrados'}
                               </p>
                             </div>
-                            <span className="badge">{statusLabels[task.status]}</span>
+                            <span className="badge">
+                              {phase ? informationalLabels[phase] : statusLabels[task.status]}
+                            </span>
                             <ChevronRight size={18} aria-hidden="true" />
                           </a>
                         )

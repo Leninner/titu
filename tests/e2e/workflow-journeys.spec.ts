@@ -177,6 +177,10 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
         await page.reload()
       }
       await expect(page.getByRole('heading', { name: definition.title, exact: true, level: 1 })).toBeVisible()
+      if (definition.informational) {
+        await expect(page.getByRole('button', { name: 'Completar trámite' })).toHaveCount(0)
+        continue
+      }
       const inputs = inputsOf(definition)
       const outputs = outputsOf(definition)
       await expect(page.getByRole('tablist')).toHaveCount(inputs.length && !definition.autoComplete ? 1 : 0)
@@ -222,7 +226,7 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
     }
     const completed = await records(page)
     expect(completed.tasks.filter((task) => task.status === 'completed')).toHaveLength(
-      definitions.length,
+      definitions.filter((definition) => !definition.informational).length,
     )
     const resolution = versions.resolucion.id
     expect(completed.tasks.find((task) => task.definitionId === 'propuesta')?.outputVersionIds)
@@ -231,7 +235,7 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
       .toContain(resolution)
     await page.reload()
     expect((await records(page)).tasks.filter((task) => task.status === 'completed')).toHaveLength(
-      definitions.length,
+      definitions.filter((definition) => !definition.informational).length,
     )
   })
 }

@@ -75,6 +75,7 @@ function urgency(node: ProcessNode) {
 
 function statusName(node: ProcessNode) {
   if (node.next) return 'Siguiente paso'
+  if (node.definition.informational && node.status === 'waiting') return 'En revisión'
   if (node.definition.optional && node.status === 'active') return 'Si lo necesitas'
   return statusText[node.status]
 }
@@ -297,14 +298,16 @@ function ProcessDialog({
               {monthly && <MonthlyReportCards selectedIds={selectedIds} signed={!!monthly.signed} files={files} />}
             </>
           ) : !annex && (
-            <p className="process-dialog-empty">Este paso no pide documentos.</p>
+            <p className="process-dialog-empty">
+              {definition.informational ? 'Paso informativo: no pide documentos ni se completa aquí.' : 'Este paso no pide documentos.'}
+            </p>
           )}
         </div>
       </div>
       <div className="process-dialog-foot">
         <button type="button" onClick={onClose}>Cerrar</button>
         <a className="button primary" href={`#/proceso/${definition.id}`}>
-          Abrir trámite completo <ArrowRight size={16} aria-hidden="true" />
+          {definition.informational ? 'Ver detalle' : 'Abrir trámite completo'} <ArrowRight size={16} aria-hidden="true" />
         </a>
       </div>
     </dialog>

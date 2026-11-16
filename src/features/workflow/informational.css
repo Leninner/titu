@@ -1,0 +1,42 @@
+.informational-hero {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+.informational-hero > p {
+  margin: 0;
+}
+.informational-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.informational-date div {
+  display: grid;
+}
+.informational-date span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.informational-date strong {
+  color: var(--text);
+}
+.informational-waiting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a5a12;
+  font-size: 0.9rem;
+}
+.informational-guide-title {
+  margin: 28px 0 12px;
+  font-size: 1.05rem;
+}

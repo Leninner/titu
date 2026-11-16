@@ -70,7 +70,7 @@ describe('institutional catalog', () => {
     expect(byId('desarrollo')!.dependsOn).toEqual(['propuesta'])
     expect(byId('complexivo')!.dependsOn).toEqual(['propuesta'])
     expect(byId('aptitud-legal-article')!.dependsOn).toContain('calificadores-article')
-    expect(byId('biblioteca-firma-estudiante')!.dependsOn).toEqual(['biblioteca-revision'])
+    expect(byId('biblioteca-firma-estudiante')!.dependsOn).toEqual(['biblioteca-revision', 'calificacion'])
     expect(byId('dia-hora')!.dependsOn).toContain('biblioteca-decanato')
     expect(byId('dia-hora')!.requirements.map((item) => item.category)).toEqual(
       expect.arrayContaining(['resolucion', 'resolucion-designacion']),
@@ -78,7 +78,9 @@ describe('institutional catalog', () => {
     for (const definition of catalog.workflowDefinitions) {
       const responses = definition.outputs.filter((output) => output.category === 'respuesta')
       expect(responses).toEqual(
-        definition.inPerson ? [] : [expect.objectContaining({ optional: true, signed: false })],
+        definition.inPerson || definition.informational
+          ? []
+          : [expect.objectContaining({ optional: true, signed: false })],
       )
     }
   })

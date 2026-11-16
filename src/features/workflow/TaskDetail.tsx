@@ -10,6 +10,7 @@ import type { DocumentVersion, TaskRecord, TaskStatus, WorkflowDefinition } from
 import { evaluateTask, taskInputs, taskOutputs } from '../../domain/workflow'
 import { repository } from '../../storage/repository'
 import { addEvidence, signEvidence, withEvidence, type EvidenceField } from './evidence-actions'
+import { PendingDependencies } from './PendingDependencies'
 import { PrepareStep, type FileHandlers } from './PrepareStep'
 import { ResultStep } from './ResultStep'
 import { SendStep } from './SendStep'
@@ -126,6 +127,7 @@ export function TaskDetail({
         </button>
       </div>
       {headerTarget ? createPortal(taskMeta, headerTarget) : taskMeta}
+      <PendingDependencies definition={definition} />
       {steps.length > 1 && <StepTabs steps={steps} active={step} onSelect={setActiveStep} />}
       <div
         className="task-step-panel"

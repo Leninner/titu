@@ -1,5 +1,13 @@
 import type { CalendarEvent, CatalogVersion, Requirement, WorkflowDefinition, Workspace } from './types'
-import { applicableWorkflows, evaluateTask, requirementGap, taskInputs, taskOutputs } from './workflow'
+import {
+  applicableWorkflows,
+  evaluateTask,
+  requirementGap,
+  taskInputs,
+  taskOutputs,
+  workflowCompleted,
+} from './workflow'
+import { informationalStatus } from './informational'
 import { calendarForWorkspace, effectiveEvent, eventReminder } from './dates'
 import { taskFor } from './task-record'
 import { evidenceIdsForTask } from './task-evidence'
@@ -26,6 +34,7 @@ const keyDates: Record<string, string> = {
   'informe-final': 'calificadores-limite',
   'calificadores-research': 'calificadores-limite',
   'calificadores-article': 'calificadores-limite',
+  calificacion: 'calificaciones-limite',
   complexivo: 'complexivo-examen',
   'no-adeudar': 'solicitud-no-adeudar',
   'aptitud-legal-research': 'aptitud-solicitud',
@@ -34,6 +43,8 @@ const keyDates: Record<string, string> = {
   'dia-hora': 'dia-hora-limite',
   defensa: 'sustentaciones-limite',
 }
+
+export const keyDateFor = (definitionId: string) => keyDates[definitionId]
 
 const responseDates: Record<string, string> = {
   'calificadores-research': 'calificaciones-limite',
@@ -116,7 +127,7 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
 
   const events = new Map(calendarForWorkspace(workspace, catalog).map((event) => [event.id, event]))
   const completed = new Set(
-    workspace.tasks.filter((task) => task.status === 'completed').map((task) => task.definitionId),
+    definitions.filter((item) => workflowCompleted(item.id, workspace, catalog)).map((item) => item.id),
   )
   const toNode = (definition: WorkflowDefinition, column: number, row: number): ProcessNode => {
     const task = taskFor(definition.id, workspace)
@@ -136,11 +147,13 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
     const checks = requirements.filter((requirement) => !requirement.category)
     const blocked = (deps.get(definition.id) ?? []).some((id) => !completed.has(id))
     const waiting = ['submitted', 'waiting', 'observed'].includes(task.status)
-    const status: NodeStatus = task.status === 'completed'
-      ? 'done'
-      : waiting
-        ? 'waiting'
-        : blocked ? 'blocked' : 'active'
+    const status: NodeStatus = definition.informational
+      ? informationalStatus(definition, workspace, catalog, now)
+      : task.status === 'completed'
+        ? 'done'
+        : waiting
+          ? 'waiting'
+          : blocked ? 'blocked' : 'active'
     const dateId = (waiting && responseDates[definition.id]) || keyDates[definition.id]
     const raw = dateId ? events.get(dateId) : undefined
     const event = raw ? effectiveEvent(raw) : undefined

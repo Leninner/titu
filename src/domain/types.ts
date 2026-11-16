@@ -217,6 +217,7 @@ export interface WorkflowDefinition {
   autoComplete?: boolean
   inPerson?: boolean
   directSend?: boolean
+  informational?: boolean
   summary: string
   guide: WorkflowGuide
   role: string

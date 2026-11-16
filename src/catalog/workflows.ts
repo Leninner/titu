@@ -107,7 +107,10 @@ function add(
   definitions.push({
     role: 'Estudiante',
     ...definition,
-    outputs: [...(definition.outputs ?? []), ...(definition.inPerson ? [] : [responseCaptures])],
+    outputs: [
+      ...(definition.outputs ?? []),
+      ...(definition.inPerson || definition.informational ? [] : [responseCaptures]),
+    ],
   })
 }
 add({
@@ -362,6 +365,28 @@ add({
   role: 'Estudiante, Consejo Directivo y calificadores',
 })
 add({
+  id: 'calificacion',
+  informational: true,
+  summary: 'Los calificadores revisan tu trabajo y consignan sus notas en el Anexo 12; en este paso no envías nada.',
+  title: 'Calificación del trabajo',
+  stage: 'calificadores',
+  modalities: work,
+  sourceIds: ['UT-16', 'UT-17', 'CAL-01', 'CAL-02'],
+  dependsOn: ['calificadores-research', 'calificadores-article'],
+  requirements: [],
+  guide: {
+    steps: [
+      step('grade', 'Calificadores', 'Cada uno revisa el trabajo y consigna su nota en el Anexo 12 dentro de 8 días término.'),
+      step('library', 'Estudiante', 'Con las dos notas, vuelve a Biblioteca con el trabajo corregido para empezar las firmas.'),
+    ],
+    notes: [
+      'El calendario fija la entrega de calificaciones hasta el 4 de diciembre de 2026.',
+      'Con un promedio menor a 7, la Unidad de Titulación convoca a calificadores, tutor y estudiante.',
+    ],
+  },
+  role: 'Calificadores',
+})
+add({
   id: 'complexivo',
   summary: 'Asiste a la preparación y rinde el examen; guarda sus resoluciones.',
   title: 'Examen complexivo',
@@ -481,6 +506,7 @@ add({
       'Ten listos el índice, el formato, el resumen ejecutivo, el abstract y las palabras clave.',
       'La revisión es solo ese día y en esos horarios; no se envía por correo.',
       'Si no pasas la revisión, no se emite el aval.',
+      'Corrige lo que te indiquen: volverás a Biblioteca cuando tengas las notas de los calificadores.',
       'El Proyecto usa la plantilla del Anexo A y la estructura del Anexo 13A.',
     ],
   },
@@ -488,15 +514,16 @@ add({
 })
 add({
   id: 'biblioteca-firma-estudiante',
-  summary: 'Firma tu trabajo en la página de autoría.',
+  summary: 'Con las notas de los calificadores, vuelve a Biblioteca con el trabajo corregido y firma la página de autoría.',
   title: 'Biblioteca: firma del estudiante',
   stage: 'biblioteca',
   modalities: work,
   sourceIds: ['UT-22', 'UT-23'],
-  dependsOn: ['biblioteca-revision'],
+  dependsOn: ['biblioteca-revision', 'calificacion'],
   requirements: [doc('firma-estudiante', ['Trabajo firmado por el estudiante', 'Con la página de autoría (y derechos de autor en el Proyecto) firmada'], 'tesis')],
   guide: {
     steps: [
+      step('library', 'Estudiante', 'Cuando lleguen las notas de los calificadores, vuelve a Biblioteca con el trabajo corregido según la revisión inicial.'),
       step('sign', 'Estudiante', 'Firma la página de autoría y, en el Proyecto, la de derechos de autor.'),
     ],
     notes: [

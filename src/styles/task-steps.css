@@ -817,3 +817,22 @@
   color: var(--muted);
   font-size: 0.82rem;
 }
+.pending-dependencies {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid #ebd9b8;
+  border-radius: 10px;
+  background: #fdf6ea;
+  color: #7a4f10;
+  font-size: 0.88rem;
+}
+.pending-dependencies p {
+  margin: 0;
+}
+.pending-dependencies a {
+  color: inherit;
+  font-weight: 600;
+}

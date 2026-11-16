@@ -182,20 +182,30 @@ function requirementGaps(
   ].filter((gap): gap is string => !!gap)
 }
 
+export const applicableDependencies = (
+  definition: WorkflowDefinition,
+  workspace: Workspace,
+  catalog: CatalogVersion,
+) => {
+  const applicableIds = new Set(applicableWorkflows(workspace, catalog).map((item) => item.id))
+  return definition.dependsOn.filter((dependency) => applicableIds.has(dependency))
+}
+
+export function workflowCompleted(id: string, workspace: Workspace, catalog: CatalogVersion): boolean {
+  const definition = catalog.workflowDefinitions.find((item) => item.id === id)
+  if (definition?.informational)
+    return applicableDependencies(definition, workspace, catalog).every((dependency) =>
+      workflowCompleted(dependency, workspace, catalog))
+  return workspace.tasks.some((item) => item.definitionId === id && item.status === 'completed')
+}
+
 function dependencyGaps(
   definition: WorkflowDefinition,
   workspace: Workspace,
   catalog: CatalogVersion,
 ) {
-  const applicableIds = new Set(applicableWorkflows(workspace, catalog).map((item) => item.id))
-  return definition.dependsOn
-    .filter(
-      (dependency) =>
-        applicableIds.has(dependency) &&
-        !workspace.tasks.some(
-          (item) => item.definitionId === dependency && item.status === 'completed',
-        ),
-    )
+  return applicableDependencies(definition, workspace, catalog)
+    .filter((dependency) => !workflowCompleted(dependency, workspace, catalog))
     .map(
       (dependency) =>
         `Resultado pendiente: ${catalog.workflowDefinitions.find((item) => item.id === dependency)?.title || dependency}`,
