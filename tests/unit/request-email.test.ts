@@ -35,3 +35,12 @@ it('does not double the period after a value that already ends with one', () => 
   )
   expect(email.body.split('\n\n')[0]).toBe('Bajo la tutoría del Ing. Leonardo Torres Valverde Mg.')
 })
+
+it('signs with the first name and first surname and fills the short name in the subject', () => {
+  const email = buildRequestEmail(
+    { to: 'informacion.fisei@uta.edu.ec', subject: 'Solicitud – {{nombreCorto}}', paragraphs: ['Solicito el certificado.'] },
+    { ...newProfile(), nombres: 'Lenin Giovanni Mazabanda Pullutaxi' },
+  )
+  expect(email.subject).toBe('Solicitud – Lenin Mazabanda')
+  expect(email.body).toBe('Solicito el certificado.\n\nAtentamente,\nLenin Mazabanda')
+})

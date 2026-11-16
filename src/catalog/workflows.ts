@@ -46,6 +46,21 @@ const business = {
   template: 'cumplimiento-empresarial',
 }
 const noDebt = doc('no-adeudar', ['Formulario de no adeudar', 'Vigente: vale 30 días desde su emisión'], 'no-adeudar')
+const projectPreliminaryPages = {
+  title: 'Páginas obligatorias',
+  items: [
+    'Portada (igual a la pasta)',
+    'Aprobación del tutor',
+    'Autoría',
+    'Derechos de autor',
+    'Aprobación del tribunal',
+    'Dedicatoria (opcional)',
+    'Agradecimiento (opcional)',
+    'Índice general',
+    'Índice de tablas y figuras',
+    'Resumen y abstract (máx. 1 página)',
+  ],
+}
 const legalCertificate = doc(
   'aptitud-legal',
   ['Certificado de aptitud legal', 'Emitido por Secretaría; es distinto de la solicitud Anexo 15'],
@@ -56,16 +71,16 @@ const enablingCertificate: Requirement = {
   template: 'solicitud-habilitantes',
   requestEmail: {
     to: 'informacion.fisei@uta.edu.ec',
-    subject: 'Solicitud de certificado de requisitos habilitantes',
+    subject: 'Solicitud de certificado de requisitos habilitantes – {{nombreCorto}}',
     paragraphs: [
       'Estimados señores:',
       'Reciban un cordial saludo.',
       'Solicito de la manera más comedida su apoyo con la emisión del certificado de requisitos habilitantes.',
-      'Adjunto la copia de mi cédula de ciudadanía.',
       'Quedo atento a su confirmación.',
     ],
-    attachments: [{ label: 'Copia de cédula', category: 'personal' }],
+    attach: 'Solicitud firmada en PDF',
   },
+  letterAppendices: [{ label: 'cédula', category: 'personal' }],
 }
 const grades = [
   check('grade-1', ['Nota del primer calificador', 'Sobre 10, según su Anexo 12']),
@@ -383,6 +398,16 @@ add({
       'El calendario fija la entrega de calificaciones hasta el 4 de diciembre de 2026.',
       'Con un promedio menor a 7, la Unidad de Titulación convoca a calificadores, tutor y estudiante.',
     ],
+    rubric: {
+      title: 'Rúbrica del Anexo 12',
+      criteria: [
+        { label: 'Marco teórico', points: 2 },
+        { label: 'Metodología', points: 2.5 },
+        { label: 'Resultados y discusión', points: 2.5 },
+        { label: 'Conclusiones y recomendaciones', points: 2 },
+        { label: 'Referencias y anexos', points: 1 },
+      ],
+    },
   },
   role: 'Calificadores',
 })
@@ -416,15 +441,24 @@ add({
   sourceIds: ['UT-20', 'UT-21'],
   dependsOn: [],
   requirements: [],
-  outputs: [doc('no-adeudar', ['Formulario de no adeudar', 'Firmado electrónicamente; se descarga cuando su estado es Finalizado y vale 30 días'], 'no-adeudar')],
+  outputs: [
+    {
+      ...noDebt,
+      ...labelled(['Formulario de no adeudar', 'Firmado electrónicamente; se descarga cuando su estado es Finalizado']),
+      notice: 'Vale 30 días desde su emisión · debe estar vigente al pedir día y hora',
+    },
+  ],
   guide: {
     steps: [
-      step('send', 'Estudiante', 'Solicítalo en servicios.uta.edu.ec, Sistema Integrado.'),
+      step('send', 'Estudiante', 'Entra a servicios.uta.edu.ec/SistemaIntegrado con tu correo sin @uta.edu.ec.'),
+      step('prepare', 'Estudiante', 'Ve a «Gestión › Formularios de No Adeudar › Gestión solicitud › Registrar solicitud» y elige Grado, Facultad y Carrera.'),
       step('review', 'Secretaría de Facultad', 'Genera la orden de pago y cada dependencia valida la solicitud.'),
-      step('download', 'Estudiante', 'Descarga el formulario cuando su estado sea Finalizado.'),
+      step('download', 'Estudiante', 'Sigue el avance en «Gestión solicitud › Avance». Descarga cuando esté Finalizado y las 4 columnas digan SI.'),
     ],
     notes: [
-      'Vale treinta días desde su emisión; después caduca.',
+      '¿Lo pediste por error? Escribe a ddlm.montenegro@uta.edu.ec antes de que se valide.',
+      '¿Sin orden de pago? Financiero: 3730260 / 3730261, 08h00–13h00 y 14h00–16h00.',
+      '¿No puedes entrar? DITIC, primer piso de Ciencias Aplicadas.',
     ],
   },
   role: 'Estudiante, Secretaría de Facultad y dependencias',
@@ -469,7 +503,6 @@ for (const modality of all) {
       notes: [
         ...sendRules,
         'El certificado es distinto de la solicitud; sus anexos se presentan igual al pedir la fecha de sustentación.',
-        'El formulario de no adeudar debe seguir vigente hasta que pidas día y hora.',
         'Si falta un requisito, el trámite no avanza y se te notifica para completarlo.',
       ],
     },
@@ -490,6 +523,7 @@ add({
       ...thesis,
       ...labelled(['Trabajo sin firmas', 'Hojas preliminares y trabajo en un solo PDF con OCR, sin firmas']),
       modalities: ['research'],
+      checklist: projectPreliminaryPages,
     },
     {
       ...doc('preliminares', ['Hojas preliminares sin firmas', 'Unificadas en un PDF, sin firmas y sin el artículo'], 'preliminares', false),
@@ -600,7 +634,7 @@ add({
       template: `anexo-14-${modality}`,
     })),
     { ...legalCertificate, ...labelled(['Certificado de aptitud legal', 'Con los mismos anexos presentados para obtenerlo']) },
-    { ...noDebt, ...labelled(['Formulario de no adeudar', 'Vigente a la fecha de ingreso de la solicitud']) },
+    { ...noDebt, ...labelled(['Formulario de no adeudar', 'Vigente a la fecha de ingreso de la solicitud']), notice: 'Debe estar vigente al enviar esta solicitud' },
     doc('bachiller', ['Título de bachiller', 'Certificado de registro descargado del sitio del Ministerio de Educación, no el acta de grado del colegio'], 'bachiller'),
     { ...resolution, ...labelled(['Resoluciones de modalidad y tema', 'Resoluciones de Consejo Directivo de modalidad, tema y sus cambios; en complexivo, la de aprobación o cambio de modalidad']) },
     { ...designation, label: 'Notificación de calificadores designados', modalities: work },
@@ -612,6 +646,7 @@ add({
     {
       ...doc('tesis-final', ['Trabajo final firmado', 'Avalado y firmado, en PDF con OCR'], 'tesis'),
       modalities: ['research'],
+      checklist: projectPreliminaryPages,
     },
     {
       ...doc('tesis-final', ['Preliminares y artículo firmados', 'Firmados y avalados, en PDF con OCR'], 'tesis'),
@@ -655,12 +690,20 @@ add({
   guide: {
     steps: [
       step('calendar', 'Estudiante', 'Preséntate en la fecha y hora de tu notificación.'),
-      step('grade', 'Tribunal', 'Cada miembro califica la sustentación (7), los recursos (1,5) y la expresión oral (1,5) en el Anexo 16.'),
+      step('grade', 'Tribunal', 'Cada miembro te califica en el Anexo 16.'),
       step('deliver', 'Estudiante', 'Recibes el acta de sustentación.'),
     ],
     notes: [
       'La fecha límite del calendario no es una cita individual.',
     ],
+    rubric: {
+      title: 'Rúbrica del Anexo 16',
+      criteria: [
+        { label: 'Sustentación del trabajo', points: 7 },
+        { label: 'Recursos visuales y tecnológicos', points: 1.5 },
+        { label: 'Expresión oral, postura y tiempo', points: 1.5 },
+      ],
+    },
   },
   role: 'Tribunal e institución',
 })

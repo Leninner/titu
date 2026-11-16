@@ -195,10 +195,10 @@ it('requests the enabling requirements certificate with a ready email and letter
   )
   const dialog = within(await screen.findByRole('dialog', { name: 'Solicitud de requisitos habilitantes' }))
   const email = within(dialog.getByRole('region', { name: 'Correo de la solicitud' }))
-  expect(email.getByText('Solicitud de certificado de requisitos habilitantes')).toBeTruthy()
+  expect(email.getByText('Solicitud de certificado de requisitos habilitantes – María Muñoz')).toBeTruthy()
   expect(email.getByText('Para informacion.fisei@uta.edu.ec')).toBeTruthy()
   fireEvent.click(email.getByRole('button', { name: 'Copiar mensaje' }))
-  await waitFor(() => expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Atentamente,\nMaría Muñoz Vásquez')))
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Atentamente,\nMaría Muñoz')))
   const document = within(dialog.getByRole('article', { name: 'Documento editable' }))
   expect(document.getByText((_, element) =>
     element?.tagName === 'P' && element.textContent?.toUpperCase() === 'COORDINADOR DE LA CARRERA DE SOFTWARE')).toBeTruthy()

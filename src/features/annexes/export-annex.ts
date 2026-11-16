@@ -3,9 +3,16 @@ import type { AnnexDraft, Workspace } from '../../domain/types'
 import { repository } from '../../storage/repository'
 import { downloadBlob } from '../../components/download'
 
-export async function downloadAnnex(draft: AnnexDraft, format: 'pdf' | 'docx') {
+async function withAppendices(blob: Blob, appendices: Blob[]) {
+  if (!appendices.length) return blob
+  const { mergePdf } = await import('../../export/merge-pdf')
+  return mergePdf(blob, appendices)
+}
+
+export async function downloadAnnex(draft: AnnexDraft, format: 'pdf' | 'docx', pdfAppendices: Blob[] = []) {
   const { renderAnnex } = await import('../../export/render-annex')
-  const blob = await renderAnnex(structuredClone(draft), format)
+  const rendered = await renderAnnex(structuredClone(draft), format)
+  const blob = format === 'pdf' ? await withAppendices(rendered, pdfAppendices) : rendered
   const name = `${draft.name.replace(/[^\p{L}\p{N}_ -]/gu, '')}-r${draft.revision}.${format}`
   downloadBlob(blob, name)
   return { blob, name }

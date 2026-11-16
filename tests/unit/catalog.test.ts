@@ -86,7 +86,7 @@ describe('institutional catalog', () => {
   })
   it('describes each workflow by its facts, without instructions for using the app', () => {
     for (const definition of catalog.workflowDefinitions)
-      expect([...definition.guide.steps.map((item) => item.text), ...definition.guide.notes].join(' ')).not.toMatch(
+      expect([...definition.guide.steps.map((item) => item.text), ...definition.guide.notes].join(' ').replace(/«[^»]*»/g, '')).not.toMatch(
         /aplicaci[oó]n|\bapp\b|marcar|registrar|subir|arrastr|adjunta|selecciona/i,
       )
   })
@@ -126,9 +126,10 @@ describe('institutional catalog', () => {
     expect(enabling.length).toBeGreaterThanOrEqual(3)
     for (const requirement of enabling) {
       expect(requirement.template).toBe('solicitud-habilitantes')
-      expect(requirement.requestEmail?.subject).toBe('Solicitud de certificado de requisitos habilitantes')
-      expect(requirement.requestEmail?.attachments).toEqual([{ label: 'Copia de cédula', category: 'personal' }])
-      expect(requirement.requestEmail?.paragraphs).toContain('Adjunto la copia de mi cédula de ciudadanía.')
+      expect(requirement.requestEmail?.subject).toBe('Solicitud de certificado de requisitos habilitantes – {{nombreCorto}}')
+      expect(requirement.letterAppendices).toEqual([{ label: 'cédula', category: 'personal' }])
+      expect(requirement.requestEmail?.attach).toBe('Solicitud firmada en PDF')
+      expect(requirement.requestEmail?.paragraphs).not.toContain('Adjunto la copia de mi cédula de ciudadanía.')
     }
   })
   it('follows the Anexo 15 attachments for the legal aptitude certificate', () => {
@@ -141,4 +142,33 @@ describe('institutional catalog', () => {
     expect(requirement('habilitantes').requestEmail?.to).toBe('informacion.fisei@uta.edu.ec')
     expect(requirement('notas').detail).toContain('promedio de 7')
   })
+  it('warns about the no-debt validity only in its own process and in the day and hour request', () => {
+    const noticeOf = (workflowId: string) =>
+      catalog.workflowDefinitions
+        .find((definition) => definition.id === workflowId)!
+        [workflowId === 'no-adeudar' ? 'outputs' : 'requirements'].find((item) => item.category === 'no-adeudar')?.notice
+    expect(noticeOf('no-adeudar')).toBe('Vale 30 días desde su emisión · debe estar vigente al pedir día y hora')
+    expect(noticeOf('dia-hora')).toBe('Debe estar vigente al enviar esta solicitud')
+    expect(noticeOf('aptitud-legal-research')).toBeUndefined()
+  })
+  it('guides the no-debt form through the integrated system with its contacts', () => {
+    const guide = catalog.workflowDefinitions.find((definition) => definition.id === 'no-adeudar')!.guide
+    const text = [...guide.steps.map((item) => item.text), ...guide.notes].join(' ')
+    for (const fragment of ['SistemaIntegrado', 'Registrar solicitud', 'Avance', '4 columnas digan SI', 'ddlm.montenegro@uta.edu.ec', '3730260', 'DITIC'])
+      expect(text).toContain(fragment)
+  })
+  it('lists the mandatory preliminary pages on the project work cards', () => {
+    const lists = catalog.workflowDefinitions
+      .flatMap((definition) => definition.requirements)
+      .filter((requirement) => requirement.checklist)
+    expect(lists.map((requirement) => requirement.label)).toEqual(['Trabajo sin firmas', 'Trabajo final firmado'])
+    expect(lists[0].checklist?.items).toHaveLength(10)
+  })
+  it('shows the Anexo 12 and Anexo 16 rubrics adding up to ten', () => {
+    for (const id of ['calificacion', 'defensa']) {
+      const rubric = catalog.workflowDefinitions.find((definition) => definition.id === id)!.guide.rubric!
+      expect(rubric.criteria.reduce((sum, criterion) => sum + criterion.points, 0)).toBe(10)
+    }
+  })
+
 })

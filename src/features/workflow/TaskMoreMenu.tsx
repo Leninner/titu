@@ -17,7 +17,7 @@ import {
   TriangleAlert,
   type LucideIcon,
 } from 'lucide-react'
-import type { GuideIcon, TaskRecord, WorkflowDefinition } from '../../domain/types'
+import type { GuideIcon, RubricCriterion, TaskRecord, WorkflowDefinition } from '../../domain/types'
 import { Dialog } from '../../components/Dialog'
 import { useDismiss } from '../../components/useDismiss'
 import { SourceCriteria } from './SourceCriteria'
@@ -52,6 +52,32 @@ const guideIcons: Record<GuideIcon, LucideIcon> = {
   deliver: Award,
 }
 
+const points = (value: number) => new Intl.NumberFormat('es-EC').format(value)
+
+function Rubric({ title, criteria }: { title: string; criteria: RubricCriterion[] }) {
+  const total = criteria.reduce((sum, criterion) => sum + criterion.points, 0)
+  const highest = Math.max(...criteria.map((criterion) => criterion.points))
+  return (
+    <section className="guide-rubric" aria-label={title}>
+      <h3>{title}</h3>
+      <ul>
+        {criteria.map((criterion) => (
+          <li key={criterion.label}>
+            <span>{criterion.label}</span>
+            <span className="guide-rubric-track" aria-hidden="true">
+              <span style={{ width: `${(criterion.points / highest) * 100}%` }} />
+            </span>
+            <strong>{points(criterion.points)}</strong>
+          </li>
+        ))}
+      </ul>
+      <p>
+        Total <strong>{points(total)}</strong>
+      </p>
+    </section>
+  )
+}
+
 export function GuideTimeline({ definition }: { definition: WorkflowDefinition }) {
   return (
     <>
@@ -71,6 +97,7 @@ export function GuideTimeline({ definition }: { definition: WorkflowDefinition }
           )
         })}
       </ol>
+      {definition.guide.rubric && <Rubric {...definition.guide.rubric} />}
       {definition.guide.notes.length > 0 && (
         <section className="guide-notes" aria-labelledby="guide-notes-title">
           <h3 id="guide-notes-title">

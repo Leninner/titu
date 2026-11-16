@@ -171,15 +171,22 @@ export interface Requirement {
   annex?: string
   template?: string
   requestEmail?: RequestEmail
+  letterAppendices?: LetterAppendix[]
+  notice?: string
+  checklist?: Checklist
 }
 export interface RequestEmail {
   to: string
   subject: string
   paragraphs: string[]
   closing?: string
-  attachments?: RequestAttachment[]
+  attach?: string
 }
-export interface RequestAttachment {
+export interface Checklist {
+  title: string
+  items: string[]
+}
+export interface LetterAppendix {
   label: string
   category: string
 }
@@ -199,9 +206,14 @@ export interface GuideStep {
   actor: string
   text: string
 }
+export interface RubricCriterion {
+  label: string
+  points: number
+}
 export interface WorkflowGuide {
   steps: GuideStep[]
   notes: string[]
+  rubric?: { title: string; criteria: RubricCriterion[] }
 }
 export interface WorkflowDefinition {
   id: string

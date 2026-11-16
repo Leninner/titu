@@ -7,6 +7,11 @@ import { AnnexDocument } from './AnnexDocument'
 import { downloadAnnex } from './export-annex'
 import { useDraftAutosave } from './useDraftAutosave'
 
+export interface PdfOptions {
+  label: string
+  appendices: () => Promise<Blob[]>
+}
+
 export interface DraftActions {
   draft: AnnexDraft
   update: (next: AnnexDraft) => void
@@ -18,10 +23,12 @@ export function AnnexDraftEditor({
   initial,
   label,
   extraActions,
+  pdf,
 }: {
   initial: AnnexDraft
   label: string
   extraActions?: (actions: DraftActions) => ReactNode
+  pdf?: PdfOptions
 }) {
   const { draft, update, flush, status } = useDraftAutosave(initial)
   const [error, setError] = useState('')
@@ -46,7 +53,8 @@ export function AnnexDraftEditor({
     act(async () => {
       setShowErrors(true)
       if (!validation.valid) throw new Error('Completa los campos marcados antes de descargar.')
-      await downloadAnnex(await flush(), format)
+      const appendices = format === 'pdf' && pdf ? await pdf.appendices() : []
+      await downloadAnnex(await flush(), format, appendices)
     })
 
   return (
@@ -67,10 +75,10 @@ export function AnnexDraftEditor({
             type="button"
             className="primary"
             disabled={working}
-            aria-label="Descargar PDF"
+            aria-label={`Descargar ${pdf?.label ?? 'PDF'}`}
             onClick={() => void download('pdf')}
           >
-            <FileDown size={15} aria-hidden="true" /> PDF
+            <FileDown size={15} aria-hidden="true" /> {pdf?.label ?? 'PDF'}
           </button>
         </div>
       </div>

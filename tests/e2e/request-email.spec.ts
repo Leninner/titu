@@ -1,28 +1,37 @@
 import { expect, test, type Page } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
+import { PDFDocument } from 'pdf-lib'
+
+const onePixelPng =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
 
 async function seedProfile(page: Page, withIdCard = false) {
   await page.goto('/')
-  await page.evaluate(async (withIdCard) => {
+  await page.evaluate(async ({ withIdCard, png }) => {
     const repositoryPath = '/src/storage/repository.ts'
     const typesPath = '/src/domain/types.ts'
     const { repository } = await import(repositoryPath)
     const { newProfile } = await import(typesPath)
     await repository.saveProfile({
       ...newProfile(),
-      nombres: 'Estudiante de prueba',
+      nombres: 'Lenin Giovanni Mazabanda Pullutaxi',
+      cedula: '1850994623',
+      email: 'estudiante@uta.edu.ec',
+      facultad: 'FISEI',
+      tema: 'Organizador de titulación',
       modalidad: 'article',
       carrera: 'Software',
       tutor: 'Tutor de prueba',
     })
     if (withIdCard)
       await repository.addDocumentVersion({
-        file: new Blob(['cedula'], { type: 'image/png' }),
+        file: new Blob([Uint8Array.from(atob(png), (char) => char.charCodeAt(0))], { type: 'image/png' }),
         originalName: 'cedula-papeleta.png',
         category: 'personal',
         signatureStatus: 'unsigned',
         textualPdfStatus: 'unknown',
       })
-  }, withIdCard)
+  }, { withIdCard, png: onePixelPng })
 }
 
 async function openRequest(page: Page, workflowId: string, label: string) {
@@ -31,28 +40,38 @@ async function openRequest(page: Page, workflowId: string, label: string) {
   return page.getByRole('region', { name: 'Correo de la solicitud' })
 }
 
-test('descarga desde el correo la cédula guardada en Documentos', async ({ page }) => {
+test('el correo de habilitantes no presenta la cédula como adjunto', async ({ page }) => {
   await seedProfile(page, true)
   const email = await openRequest(page, 'aptitud-legal-article', 'Requisitos habilitantes')
-  await expect(email.locator('.request-email-body')).toContainText('Adjunto la copia de mi cédula de ciudadanía.')
-  const attachments = email.getByRole('region', { name: 'Adjuntos' })
-  await expect(attachments).toContainText('cedula-papeleta.png')
-  const download = page.waitForEvent('download')
-  await attachments.getByRole('button', { name: 'Descargar Copia de cédula', exact: true }).click()
-  expect((await download).suggestedFilename()).toBe('cedula-papeleta.png')
+  await expect(email.getByText('Solicitud de certificado de requisitos habilitantes – Lenin Mazabanda')).toBeVisible()
+  await expect(email.locator('.request-email-body')).toContainText('Atentamente,\nLenin Mazabanda')
+  await expect(email).toContainText('Adjunta: Solicitud firmada en PDF')
+  await expect(email.getByRole('region', { name: 'Adjuntos' })).toHaveCount(0)
 })
 
-test('sin cédula en Documentos el adjunto enlaza a Documentos', async ({ page }) => {
+test('sin cédula en Documentos el PDF avisa que falta y enlaza a Documentos', async ({ page }) => {
   await seedProfile(page)
-  const email = await openRequest(page, 'aptitud-legal-article', 'Requisitos habilitantes')
-  const attachments = email.getByRole('region', { name: 'Adjuntos' })
-  await expect(attachments).toContainText('Aún no la subes')
-  await expect(attachments.getByRole('link', { name: 'Ir a Documentos' })).toHaveAttribute('href', '#/documentos')
+  await openRequest(page, 'aptitud-legal-article', 'Requisitos habilitantes')
+  await expect(page.getByRole('link', { name: 'Falta cédula' })).toHaveAttribute('href', '#/documentos')
+  await expect(page.getByRole('button', { name: 'Descargar PDF', exact: true })).toBeVisible()
 })
 
-test('un correo sin adjuntos no muestra la sección de adjuntos', async ({ page }) => {
+test('un correo sin anexos no muestra avisos de anexos', async ({ page }) => {
   await seedProfile(page)
   const email = await openRequest(page, 'calificadores-article', 'Aval de informes')
   await expect(email).toBeVisible()
-  await expect(email.getByRole('region', { name: 'Adjuntos' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /^Falta/ })).toHaveCount(0)
+})
+
+test('el PDF de la solicitud de habilitantes une la cédula después de la firma', async ({ page }, info) => {
+  await seedProfile(page, true)
+  await openRequest(page, 'aptitud-legal-article', 'Requisitos habilitantes')
+  await page.getByRole('textbox', { name: 'Tratamiento y nombre del Coordinador de Carrera' }).fill('Ing. Coordinador')
+  await page.getByRole('textbox', { name: 'Nivel que cursas' }).fill('noveno')
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Descargar PDF + cédula' }).click()
+  const path = info.outputPath('solicitud.pdf')
+  await (await download).saveAs(path)
+  const merged = await PDFDocument.load(await readFile(path))
+  expect(merged.getPageCount()).toBe(2)
 })

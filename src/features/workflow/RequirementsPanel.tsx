@@ -1,5 +1,5 @@
 import { useRef, useState, type DragEvent } from 'react'
-import { Circle, CircleAlert, CircleCheck, Plus, RefreshCw, Upload } from 'lucide-react'
+import { Circle, CircleAlert, CircleCheck, Clock, ListChecks, Plus, RefreshCw, Upload } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { FilePage, FileTile } from '../../components/FileTile'
 import { EvidencePreview } from '../../components/EvidencePreview'
@@ -188,6 +188,21 @@ function Viewer({
         {requirement.category === 'mensual' && <a href="#/anexos">Crear Anexo 5</a>}
         {(requirement.template || requirement.requestEmail) && <RequestButton requirement={requirement} />}
       </div>
+      {requirement.notice && (
+        <p className="req-viewer-notice" role="note">
+          <Clock size={14} aria-hidden="true" /> {requirement.notice}
+        </p>
+      )}
+      {requirement.checklist && (
+        <details className="req-viewer-checklist">
+          <summary>
+            <ListChecks size={14} aria-hidden="true" /> {requirement.checklist.title} · {requirement.checklist.items.length}
+          </summary>
+          <ol>
+            {requirement.checklist.items.map((item) => <li key={item}>{item}</li>)}
+          </ol>
+        </details>
+      )}
       {note && <p className="req-viewer-usage">{note}</p>}
       {focus ? (
         <>

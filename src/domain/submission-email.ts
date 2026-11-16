@@ -1,4 +1,5 @@
 import type { RequestEmail, StudentProfile, TaskRecord, WorkflowDefinition, Workspace } from './types'
+import { shortName } from './student-name'
 import { submissionEntries } from './submission-entries'
 import { evidenceIdsForTask } from './task-evidence'
 
@@ -49,20 +50,28 @@ export function buildSubmissionEmail(
   }
 }
 
-const profileLabels: Partial<Record<keyof StudentProfile, string>> = {
+type EmailValues = StudentProfile & { nombreCorto: string }
+
+const placeholderLabels: Partial<Record<keyof EmailValues, string>> = {
   nombres: 'Tu nombre',
+  nombreCorto: 'Tu nombre',
   tutor: 'Nombre del tutor',
 }
 
-function withProfile(text: string, profile: StudentProfile | null) {
-  return text.replace(/\{\{(\w+)\}\}(\.?)/g, (_, key: keyof StudentProfile, period: string) => {
-    const value = String(profile?.[key] || `[${profileLabels[key] ?? key}]`)
+function emailValues(profile: StudentProfile | null): Partial<EmailValues> {
+  return profile ? { ...profile, nombreCorto: shortName(profile.nombres) } : {}
+}
+
+function fillPlaceholders(text: string, values: Partial<EmailValues>) {
+  return text.replace(/\{\{(\w+)\}\}(\.?)/g, (_, key: keyof EmailValues, period: string) => {
+    const value = String(values[key] || `[${placeholderLabels[key] ?? key}]`)
     return period && value.endsWith('.') ? value : `${value}${period}`
   })
 }
 
 export function buildRequestEmail(email: RequestEmail, profile: StudentProfile | null) {
-  const signature = `${email.closing ?? 'Atentamente,'}\n{{nombres}}`
-  const body = [...email.paragraphs, signature].map((text) => withProfile(text, profile)).join('\n\n')
-  return { to: email.to, subject: withProfile(email.subject, profile), body }
+  const values = emailValues(profile)
+  const signature = `${email.closing ?? 'Atentamente,'}\n{{nombreCorto}}`
+  const body = [...email.paragraphs, signature].map((text) => fillPlaceholders(text, values)).join('\n\n')
+  return { to: email.to, subject: fillPlaceholders(email.subject, values), body }
 }

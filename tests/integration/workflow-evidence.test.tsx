@@ -470,3 +470,11 @@ it('records the library endorsement as text instead of a file', async () => {
   fireEvent.change(details, { target: { value: 'Revisado por Monica Paredes' } })
   expect(details.value).toBe('Revisado por Monica Paredes')
 })
+
+it('shows the no-debt validity note and the preliminary pages on the day and hour request', async () => {
+  await repository.saveProfile({ ...newProfile(), modalidad: 'research' })
+  await openTask('dia-hora', 'Solicitud de fecha de sustentación o incorporación')
+  const card = within(screen.getByRole('article', { name: 'Formulario de no adeudar' }))
+  expect(card.getByRole('note').textContent).toContain('Debe estar vigente al enviar esta solicitud')
+  expect(screen.getByRole('article', { name: 'Trabajo final firmado' }).textContent).toContain('Páginas obligatorias · 10')
+})

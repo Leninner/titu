@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { Check, Copy, Mail } from 'lucide-react'
+import { Check, Copy, Mail, Paperclip } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { buildRequestEmail } from '../../domain/submission-email'
 import type { RequestEmail } from '../../domain/types'
-import { RequestAttachments } from './RequestAttachments'
 
 function CopyIcon({ done }: { done: boolean }) {
   return done ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />
@@ -36,7 +35,11 @@ export function RequestEmailCard({ email }: { email: RequestEmail }) {
         </button>
       </div>
       <p className="request-email-body">{body}</p>
-      {email.attachments?.length ? <RequestAttachments attachments={email.attachments} /> : null}
+      {email.attach && (
+        <p className="request-email-attach">
+          <Paperclip size={14} aria-hidden="true" /> Adjunta: {email.attach}
+        </p>
+      )}
     </section>
   )
 }
