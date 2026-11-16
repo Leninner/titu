@@ -5,10 +5,11 @@ it('preserves exact period dates, optional hours and modality boundaries', () =>
   expect(calendarEvents).toHaveLength(16)
   const event = (id: string) => calendarEvents.find((item) => item.id === id)!
   expect(event('calificadores-limite')).toMatchObject({
-    startDate: '2026-11-19',
+    startDate: '2026-11-18',
     localTime: '18:00',
     modalities: ['research', 'article'],
   })
+  expect(event('consejo-calificadores').startDate).toBe('2026-11-19')
   expect(event('biblioteca-revision')).toMatchObject({
     startDate: '2026-11-10',
     localTime: '08:30',

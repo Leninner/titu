@@ -15,11 +15,11 @@ const rows: [
     'calificadores-limite',
     'Entrega informe final y solicitud calificadores',
     'deadline',
-    '2026-11-19',
+    '2026-11-18',
     undefined,
     '18:00',
   ],
-  ['consejo-calificadores', 'Sesión Consejo: calificadores', 'administrative', '2026-11-20'],
+  ['consejo-calificadores', 'Sesión Consejo: calificadores', 'administrative', '2026-11-19'],
   [
     'proceso-calificadores',
     'Proceso administrativo: calificadores',

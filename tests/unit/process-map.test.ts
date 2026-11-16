@@ -33,7 +33,7 @@ it('marks only the first available step as next and attaches its key calendar da
   expect(at(map, 'desarrollo').status).toBe('blocked')
   expect(at(map, 'biblioteca-revision').status).toBe('active')
   expect(at(map, 'informe-final').event?.id).toBe('calificadores-limite')
-  expect(at(map, 'informe-final').reminder?.daysRemaining).toBe(9)
+  expect(at(map, 'informe-final').reminder?.daysRemaining).toBe(8)
 })
 
 it('skips grader steps for complexivo and links the exam date', () => {
