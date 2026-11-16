@@ -12,9 +12,9 @@ import {
 } from 'lucide-react'
 import { useWorkspace } from './WorkspaceContext'
 import { Onboarding } from '../features/onboarding/Onboarding'
-const ProfileSettings = lazy(() =>
-  import('../features/onboarding/ProfileSettings').then((module) => ({
-    default: module.ProfileSettings,
+const SettingsPage = lazy(() =>
+  import('../features/settings/SettingsPage').then((module) => ({
+    default: module.SettingsPage,
   })),
 )
 import { HomePage } from '../features/workflow/HomePage'
@@ -199,7 +199,7 @@ export function AppShell() {
               ) : route === 'fechas' ? (
                 <CalendarPage />
               ) : route === 'ajustes' ? (
-                <ProfileSettings />
+                <SettingsPage />
               ) : (
                 <HomePage />
               )}

@@ -7,6 +7,7 @@ test('exporta la revisión actual y recupera el respaldo completo', async ({ pag
   await page.getByLabel('¿Cómo te llamas?').fill('María Muñoz')
   await page.getByRole('button', { name: 'Crear mi expediente' }).click()
   await page.getByRole('link', { name: 'Ajustes y respaldo' }).click()
+  await page.getByRole('button', { name: 'Editar Titulación' }).click()
   for (const [label, value] of [
     ['Carrera', 'Ingeniería de Software'],
     ['Tema aprobado', 'Organización del proceso de titulación'],
@@ -15,7 +16,7 @@ test('exporta la revisión actual y recupera el respaldo completo', async ({ pag
   ]) {
     await page.getByLabel(label, { exact: true }).fill(value)
   }
-  await page.getByRole('button', { name: 'Guardar perfil' }).click()
+  await page.getByRole('button', { name: 'Guardar', exact: true }).click()
   await expect(page.getByText('Guardado', { exact: true })).toBeVisible()
   await page.getByRole('link', { name: 'Anexos', exact: true }).click()
   await page.getByLabel('Mes del informe').fill('2026-10')
@@ -47,6 +48,7 @@ test('exporta la revisión actual y recupera el respaldo completo', async ({ pag
   await expect(page.getByRole('region', { name: 'Registro del informe mensual' })).toBeVisible()
   await page.screenshot({ path: info.outputPath('editor.png'), fullPage: true })
   await page.getByRole('link', { name: 'Ajustes y respaldo' }).click()
+  await page.getByRole('tab', { name: 'Respaldo' }).click()
   const backupPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: 'Descargar respaldo completo' }).click()
   const backupPath = info.outputPath('respaldo.zip')

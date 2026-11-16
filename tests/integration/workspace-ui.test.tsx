@@ -170,8 +170,9 @@ it('creates and autosaves a monthly draft, recovers it after remount and preserv
     saved.name,
   )
   await navigate('#/ajustes')
-  fireEvent.change(await screen.findByLabelText('Modalidad'), { target: { value: 'complexivo' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Guardar perfil' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Editar Titulación' }))
+  fireEvent.change(screen.getByLabelText('Modalidad'), { target: { value: 'complexivo' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Guardar' }))
   await waitFor(async () =>
     expect((await repository.loadWorkspace()).profile?.modalidad).toBe('complexivo'),
   )
