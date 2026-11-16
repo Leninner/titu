@@ -55,3 +55,10 @@ it('shows the grading phase in review once the designation is ready and done wit
   expect(at(map, 'calificacion').status).toBe('done')
   expect(at(map, 'biblioteca-firma-estudiante').status).toBe('active')
 })
+
+it('counts only real workflows, without the informational grading step', () => {
+  const map = processMap(workspaceFor('research'), catalog)
+  const informational = map.nodes.filter((node) => node.definition.informational)
+  expect(informational.map((node) => node.definition.id)).toEqual(['calificacion'])
+  expect(map.total).toBe(map.nodes.length - 1)
+})

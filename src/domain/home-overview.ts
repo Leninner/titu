@@ -41,7 +41,7 @@ export function homeOverview(workspace: Workspace, catalog: CatalogVersion, now 
     focus,
     current: map.nodes.filter((node) => inProgress(node) && node !== focus),
     completed: map.completed,
-    total: map.nodes.length,
+    total: map.total,
     nodes: map.nodes,
   }
 }

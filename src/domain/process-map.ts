@@ -193,6 +193,7 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
     edges,
     columns: last + 1,
     rows: rowCount,
-    completed: nodes.filter((node) => node.status === 'done').length,
+    total: nodes.filter((node) => !node.definition.informational).length,
+    completed: nodes.filter((node) => !node.definition.informational && node.status === 'done').length,
   }
 }

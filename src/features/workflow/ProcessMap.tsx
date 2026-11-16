@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
+  ArrowDown,
   ArrowRight,
   CalendarClock,
+  Eye,
+  EyeOff,
   Circle,
   CircleCheck,
   FileText,
@@ -27,16 +30,8 @@ import { persistTask } from './task-persistence'
 import { taskFor } from './task-record'
 import { ReportGuideLinks } from './ReportGuide'
 import { shortDate } from '../calendar/short-date'
+import { processPhases, type PhaseStep, type ProcessPhase } from '../../domain/process-phases'
 
-const NODE_WIDTH = 228
-const NODE_HEIGHT = 148
-const GAP_X = 64
-const GAP_Y = 24
-const PADDING = 28
-const LANE_GAP = 56
-
-const edgeStates = ['is-done', 'is-ready', 'is-pending'] as const
-const folderShort = { trabajo: 'Trabajo', calificadores: 'Calificadores', sustentacion: 'Sustentación' }
 
 function useCompact(query = '(max-width: 760px)') {
   const [compact, setCompact] = useState(() => typeof window.matchMedia === 'function' && window.matchMedia(query).matches)
@@ -49,6 +44,7 @@ function useCompact(query = '(max-width: 760px)') {
   }, [query])
   return compact
 }
+
 
 function dateLabel(node: ProcessNode) {
   const event = node.event
@@ -87,16 +83,14 @@ function nodeLabel(node: ProcessNode) {
   return parts.join(' · ')
 }
 
-function NodeContent({ node }: { node: ProcessNode }) {
+function NodeContent({ node, needs = [] }: { node: ProcessNode; needs?: ProcessNode[] }) {
   const Icon = statusIcons[node.status]
   const total = node.documents.total + node.checks.total
   const done = node.documents.done + node.checks.done
   return (
     <>
       <span className="process-node-top">
-        <span className={`process-node-folder is-${node.definition.optional ? 'otros' : node.folder}`}>
-          {node.definition.optional ? 'Opcional' : folderShort[node.folder]}
-        </span>
+        {node.definition.optional && <span className="process-node-folder is-otros">Opcional</span>}
         <span className="process-node-status">
           <Icon size={14} aria-hidden="true" />
           {statusName(node)}
@@ -120,6 +114,12 @@ function NodeContent({ node }: { node: ProcessNode }) {
             <span className="process-node-bar" aria-hidden="true">
               <span style={{ width: `${Math.round((done / total) * 100)}%` }} />
             </span>
+          </span>
+        )}
+        {needs.length > 0 && (
+          <span className="process-node-needs">
+            <Lock size={12} aria-hidden="true" />
+            Necesita: {needs.map((item) => item.definition.title).join(' · ')}
           </span>
         )}
       </span>
@@ -314,72 +314,127 @@ function ProcessDialog({
   )
 }
 
+const completedKey = 'process-show-completed'
+
+function savedShowCompleted() {
+  try {
+    return window.localStorage.getItem(completedKey) !== 'false'
+  } catch {
+    return true
+  }
+}
+
+const phaseDone = (phase: ProcessPhase) => phase.total > 0 && phase.completed === phase.total
+
+function StepCard({
+  step,
+  compact,
+  selectedId,
+  onOpen,
+}: {
+  step: PhaseStep
+  compact: boolean
+  selectedId?: string
+  onOpen: (id: string) => void
+}) {
+  const { node, needs } = step
+  const className = `process-node is-${node.status} ${node.next ? 'is-next' : ''} ${node.definition.id === selectedId ? 'is-selected' : ''}`
+  return compact ? (
+    <a className={className} href={`#/proceso/${node.definition.id}`} aria-label={nodeLabel(node)}>
+      <NodeContent node={node} needs={needs} />
+    </a>
+  ) : (
+    <button
+      type="button"
+      className={className}
+      aria-label={nodeLabel(node)}
+      aria-haspopup="dialog"
+      onClick={() => onOpen(node.definition.id)}
+    >
+      <NodeContent node={node} needs={needs} />
+    </button>
+  )
+}
+
+function PhaseRow({
+  phase,
+  compact,
+  selectedId,
+  onOpen,
+}: {
+  phase: ProcessPhase
+  compact: boolean
+  selectedId?: string
+  onOpen: (id: string) => void
+}) {
+  const done = phaseDone(phase)
+  return (
+    <section className={`process-phase ${done ? 'is-done' : ''}`} aria-labelledby={`phase-${phase.id}`}>
+      <header className="process-phase-head">
+        <span className="process-phase-number" aria-hidden="true">
+          {done ? <CircleCheck size={16} /> : phase.number}
+        </span>
+        <h2 id={`phase-${phase.id}`}>{phase.title}</h2>
+        <span className="process-phase-count">
+          {phase.completed} de {phase.total}
+        </span>
+      </header>
+      <ol className="process-phase-steps">
+        {phase.steps.map((step, index) => (
+          <li key={step.node.definition.id} className={index > 0 && !step.followsPrevious ? 'is-parallel' : undefined}>
+            {index > 0 && step.followsPrevious && (
+              <span className="process-phase-arrow" aria-hidden="true">
+                {compact ? <ArrowDown size={16} /> : <ArrowRight size={16} />}
+              </span>
+            )}
+            <StepCard step={step} compact={compact} selectedId={selectedId} onOpen={onOpen} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNode }) {
   const { workspace } = useWorkspace()
   const map = processMap(workspace, catalog, now)
   const compact = useCompact()
   const [selectedId, setSelectedId] = useState<string>()
-  const canvas = useRef<HTMLDivElement>(null)
-  const pan = useRef<{ x: number; left: number } | null>(null)
-  const everyNode = [...map.nodes, ...map.optional]
-  const selected = everyNode.find((node) => node.definition.id === selectedId)
+  const [showCompleted, setShowCompleted] = useState(savedShowCompleted)
+  const selected = [...map.nodes, ...map.optional].find((node) => node.definition.id === selectedId)
   const nextNode = map.nodes.find((node) => node.next)
   const upcoming = map.nodes
     .filter((node) => node.event && node.status !== 'done' && !node.reminder?.expired)
     .sort((a, b) => a.event!.startDate.localeCompare(b.event!.startDate))[0]
-  const columns = Math.max(map.columns, map.optional.length + 1)
-  const laneTop = PADDING + map.rows * (NODE_HEIGHT + GAP_Y) + LANE_GAP
-  const width = PADDING * 2 + columns * NODE_WIDTH + (columns - 1) * GAP_X
-  const height = laneTop + NODE_HEIGHT + PADDING
-  const position = (node: ProcessNode) => ({
-    x: PADDING + node.column * (NODE_WIDTH + GAP_X),
-    y: node.definition.optional ? laneTop : PADDING + node.row * (NODE_HEIGHT + GAP_Y),
-  })
-  const nextId = nextNode?.definition.id
+  const phases = processPhases(map.nodes)
+  const hidden = showCompleted ? [] : phases.filter(phaseDone)
+  const visible = phases.filter((phase) => !hidden.includes(phase))
 
-  useEffect(() => {
-    const element = canvas.current
-    const target = element?.querySelector<HTMLElement>('.process-node.is-next')
-    if (element && target) element.scrollLeft = Math.max(0, target.offsetLeft - element.clientWidth / 3)
-  }, [compact, nextId])
+  function toggleCompleted() {
+    const next = !showCompleted
+    setShowCompleted(next)
+    try {
+      window.localStorage.setItem(completedKey, String(next))
+    } catch {
+      // The preference is a convenience; the map works without storage.
+    }
+  }
 
   function open(id: string) {
     if (compact) window.location.assign(`#/proceso/${id}`)
     else setSelectedId(id)
   }
 
-  function startPan(event: ReactPointerEvent<HTMLDivElement>) {
-    if ((event.target as HTMLElement).closest('button, a') || event.pointerType !== 'mouse') return
-    pan.current = { x: event.clientX, left: event.currentTarget.scrollLeft }
-    event.currentTarget.setPointerCapture(event.pointerId)
-    event.currentTarget.classList.add('is-panning')
-  }
-  function movePan(event: ReactPointerEvent<HTMLDivElement>) {
-    if (pan.current) event.currentTarget.scrollLeft = pan.current.left - (event.clientX - pan.current.x)
-  }
-  function endPan(event: ReactPointerEvent<HTMLDivElement>) {
-    pan.current = null
-    event.currentTarget.classList.remove('is-panning')
-  }
-
-  const ordered = [...map.nodes].sort((a, b) => a.column - b.column || a.row - b.row)
-  const nodeClass = (node: ProcessNode) =>
-    `process-node is-${node.status} ${node.next ? 'is-next' : ''} ${node.definition.optional ? 'is-optional' : ''} ${node.definition.id === selectedId ? 'is-selected' : ''}`
-
-  const guideNote = (
-    <section className="process-guide-note" aria-labelledby="process-guide-title">
-      <span className="process-node-folder is-guia">Consulta</span>
-      <h2 id="process-guide-title">Guía del informe final</h2>
-      <div className="process-guide-links">
-        <ReportGuideLinks />
-      </div>
-    </section>
-  )
-
   return (
     <div className="process-map">
       <div className="process-toolbar">
-        {viewToggle}
+        <div className="process-toolbar-actions">
+          {viewToggle}
+          <button type="button" className="process-completed-toggle" aria-pressed={!showCompleted} onClick={toggleCompleted}>
+            {showCompleted ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
+            {showCompleted ? 'Ocultar completadas' : 'Ver completadas'}
+          </button>
+        </div>
         <ul className="process-legend" aria-label="Estados">
           {(['done', 'active', 'waiting', 'blocked'] as const).map((status) => {
             const Icon = statusIcons[status]
@@ -394,10 +449,10 @@ export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNo
       <div className="process-summary">
         <div className="process-summary-progress">
           <span>
-            <strong>{map.completed}</strong> de {map.nodes.length} trámites completados
+            <strong>{map.completed}</strong> de {map.total} trámites completados
           </span>
           <span className="process-summary-bar" aria-hidden="true">
-            <span style={{ width: `${map.nodes.length ? (map.completed / map.nodes.length) * 100 : 0}%` }} />
+            <span style={{ width: `${map.total ? (map.completed / map.total) * 100 : 0}%` }} />
           </span>
         </div>
         {nextNode && (
@@ -415,116 +470,39 @@ export function ProcessMap({ now, viewToggle }: { now: Date; viewToggle: ReactNo
           </button>
         )}
       </div>
-      {compact ? (
-        <>
-          <ol className="process-timeline" aria-label="Mapa del proceso">
-            {[...new Set(ordered.map((node) => node.column))].map((column) => {
-              const items = ordered.filter((node) => node.column === column)
-              return (
-                <li key={column} className="process-timeline-step">
-                  {items.length > 1 && <span className="process-timeline-parallel">En paralelo</span>}
-                  {items.map((node) => (
-                    <a
-                      key={node.definition.id}
-                      className={nodeClass(node)}
-                      href={`#/proceso/${node.definition.id}`}
-                      aria-label={nodeLabel(node)}
-                    >
-                      <NodeContent node={node} />
-                    </a>
-                  ))}
-                </li>
-              )
-            })}
-          </ol>
-          <div className="process-extras">
-            {guideNote}
-            <section className="process-extras-list" aria-labelledby="process-optional-title">
-              <h2 id="process-optional-title">Otros trámites</h2>
-              {map.optional.map((node) => (
-                <a key={node.definition.id} className={nodeClass(node)} href={`#/proceso/${node.definition.id}`} aria-label={nodeLabel(node)}>
-                  <NodeContent node={node} />
-                </a>
-              ))}
-            </section>
-          </div>
-        </>
-      ) : (
-        <div
-          ref={canvas}
-          className="process-canvas"
-          onPointerDown={startPan}
-          onPointerMove={movePan}
-          onPointerUp={endPan}
-          onPointerCancel={endPan}
-        >
-          <div className="process-canvas-inner" style={{ width, height }}>
-            <svg className="process-edges" width={width} height={height} aria-hidden="true">
-              <defs>
-                {edgeStates.map((state) => (
-                  <marker
-                    key={state}
-                    id={`process-arrow-${state}`}
-                    className={`process-arrow ${state}`}
-                    viewBox="0 0 10 10"
-                    refX="9"
-                    refY="5"
-                    markerWidth="5"
-                    markerHeight="5"
-                    orient="auto"
-                  >
-                    <path d="M 0 0 L 10 5 L 0 10 z" />
-                  </marker>
-                ))}
-              </defs>
-              <line className="process-lane-line" x1={PADDING} x2={width - PADDING} y1={laneTop - LANE_GAP / 2} y2={laneTop - LANE_GAP / 2} />
-              {map.edges.map((edge) => {
-                const from = map.nodes.find((node) => node.definition.id === edge.from)!
-                const to = map.nodes.find((node) => node.definition.id === edge.to)!
-                const start = position(from)
-                const end = position(to)
-                const x1 = start.x + NODE_WIDTH
-                const y1 = start.y + NODE_HEIGHT / 2
-                const x2 = end.x
-                const y2 = end.y + NODE_HEIGHT / 2
-                const bend = Math.max(28, (x2 - x1) / 2)
-                const state = from.status === 'done' ? (to.status === 'done' ? 'is-done' : 'is-ready') : 'is-pending'
-                return (
-                  <g key={`${edge.from}-${edge.to}`} className={`process-edge ${state}`}>
-                    <path
-                      d={`M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2 - 1} ${y2}`}
-                      markerEnd={`url(#process-arrow-${state})`}
-                    />
-                    <circle cx={x1} cy={y1} r={4} />
-                  </g>
-                )
-              })}
-            </svg>
-            <span className="process-lane-label" style={{ left: PADDING, top: laneTop - LANE_GAP / 2 - 10 }}>
-              Fuera del recorrido principal
-            </span>
-            <div className="process-guide-slot" style={{ left: PADDING, top: laneTop, width: NODE_WIDTH, height: NODE_HEIGHT }}>
-              {guideNote}
-            </div>
-            {[...ordered, ...map.optional].map((node) => {
-              const { x, y } = position(node)
-              return (
-                <button
-                  key={node.definition.id}
-                  type="button"
-                  className={nodeClass(node)}
-                  style={{ left: x, top: y, width: NODE_WIDTH, height: NODE_HEIGHT }}
-                  aria-label={nodeLabel(node)}
-                  aria-haspopup="dialog"
-                  onClick={() => setSelectedId(node.definition.id)}
-                >
-                  <NodeContent node={node} />
-                </button>
-              )
-            })}
-          </div>
-        </div>
+      {hidden.length > 0 && (
+        <p className="process-hidden-note">
+          <CircleCheck size={15} aria-hidden="true" />
+          {hidden.length === 1 ? 'Etapa completada oculta' : `${hidden.length} etapas completadas ocultas`}:{' '}
+          {hidden.map((phase) => phase.title).join(' · ')}
+        </p>
       )}
+      <div className="process-phases" aria-label="Mapa del proceso">
+        {visible.map((phase) => (
+          <PhaseRow key={phase.id} phase={phase} compact={compact} selectedId={selectedId} onOpen={open} />
+        ))}
+      </div>
+      <section className="process-extras" aria-labelledby="process-optional-title">
+        <h2 id="process-optional-title">Fuera del recorrido principal</h2>
+        <div className="process-extras-grid">
+          <section className="process-guide-note" aria-labelledby="process-guide-title">
+            <span className="process-node-folder is-guia">Consulta</span>
+            <h2 id="process-guide-title">Guía del informe final</h2>
+            <div className="process-guide-links">
+              <ReportGuideLinks />
+            </div>
+          </section>
+          {map.optional.map((node) => (
+            <StepCard
+              key={node.definition.id}
+              step={{ node, followsPrevious: false, needs: [] }}
+              compact={compact}
+              selectedId={selectedId}
+              onOpen={open}
+            />
+          ))}
+        </div>
+      </section>
       {selected && !compact && (
         <ProcessDialog
           key={selected.definition.id}
