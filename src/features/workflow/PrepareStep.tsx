@@ -1,13 +1,10 @@
 import { useWorkspace } from '../../app/WorkspaceContext'
-import { downloadBlob } from '../../components/download'
 import type { DocumentVersion, Requirement, TaskRecord, WorkflowDefinition } from '../../domain/types'
-import { submissionEntries } from '../../domain/submission-entries'
-import { submissionZip } from '../../export/submission-zip'
-import { repository } from '../../storage/repository'
 import { FinalReportEditor } from './FinalReportEditor'
 import { MonthlyReportCards } from './MonthlyReportCards'
 import { RequirementFields } from './RequirementFields'
 import { RequirementsPanel, type FileRequirement } from './RequirementsPanel'
+import { SubmissionZipButton } from './SubmissionZipButton'
 
 export interface FileHandlers {
   onToggle: (versionId: string, checked: boolean) => void
@@ -40,7 +37,7 @@ export function PrepareStep({
   onTaskChange: (task: TaskRecord) => void
   onSave: () => void
 }) {
-  const { workspace, run, busy } = useWorkspace()
+  const { workspace, busy } = useWorkspace()
   const documents = fileRequirements(inputs)
   const inputCategories = new Set(inputs.map((requirement) => requirement.category))
   const monthly = documents.find((requirement) => requirement.category === 'mensual')
@@ -102,22 +99,7 @@ export function PrepareStep({
           <button className="primary" disabled={busy} onClick={onSave}>
             Guardar cambios
           </button>
-          <button
-            disabled={busy || !selectedIds.length}
-            onClick={() =>
-              void run(async () =>
-                downloadBlob(
-                  await submissionZip(
-                    await repository.snapshot(),
-                    submissionEntries(definition, workspace, selectedIds),
-                  ),
-                  `${ready ? 'paquete' : 'borrador'}-${definition.id}.zip`,
-                ),
-              )
-            }
-          >
-            Descargar {ready ? 'paquete ZIP' : 'borrador ZIP'}
-          </button>
+          <SubmissionZipButton definition={definition} selectedIds={selectedIds} ready={ready} />
         </div>
       </div>}
     </>

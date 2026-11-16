@@ -222,6 +222,13 @@ it('registers the Council resolution in Resultado, completes the proposal and re
     name: 'Incluir Resolución de Consejo Directivo.png en esta entrega',
   }) as HTMLInputElement
   expect(resolution.checked).toBe(true)
+  expect(screen.getByRole('tab', { name: /Enviar/ }).textContent).toContain('listo')
+  fireEvent.click(screen.getByRole('tab', { name: /Enviar/ }))
+  expect(screen.getByRole('button', { name: 'Copiar mensaje' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Descargar ZIP' })).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'Copiar correo completo' })).toBeNull()
+  expect(screen.queryByRole('button', { name: 'Solo el mensaje' })).toBeNull()
+  expect(screen.queryByRole('button', { name: 'Confirmar envío' })).toBeNull()
 })
 
 it('shows only Resultado for a workflow without inputs and records an observation', async () => {

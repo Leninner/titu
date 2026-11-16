@@ -174,3 +174,13 @@ it('completes the final report with only the signed Anexo 11, without the editab
   expect(evaluateTask({ ...task, outputVersionIds: ['final'] }, workspace, catalog).missingOutputs)
     .toEqual(['Firma pendiente: Anexo 11 firmado'])
 })
+
+it('shows Enviar as done by default for the grader designation, without a submission', () => {
+  const workspace = proposalWorkspace()
+  for (const id of ['calificadores-research', 'calificadores-article']) {
+    const { steps } = taskSteps(emptyTask(id), definition(id), workspace, catalog)
+    expect(steps.find((step) => step.id === 'send')).toMatchObject({ done: true, detail: 'listo' })
+  }
+  const { steps } = taskSteps(emptyTask('propuesta'), definition('propuesta'), workspace, catalog)
+  expect(steps.find((step) => step.id === 'send')).toMatchObject({ done: false, detail: 'pendiente' })
+})

@@ -3,13 +3,18 @@ import { Check, Copy, Mail, Paperclip } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import type { TaskRecord, WorkflowDefinition } from '../../domain/types'
 import { buildSubmissionEmail } from '../../domain/submission-email'
+import { SubmissionZipButton } from './SubmissionZipButton'
 
 export function EmailComposer({
   definition,
   task,
+  selectedIds,
+  ready,
 }: {
   definition: WorkflowDefinition
   task: TaskRecord
+  selectedIds: string[]
+  ready: boolean
 }) {
   const { workspace, run } = useWorkspace()
   const [copyReceipt, setCopyReceipt] = useState({ part: '', content: '' })
@@ -75,21 +80,33 @@ export function EmailComposer({
         <small>Adjunta el ZIP manualmente</small>
       </div>
       <div className="email-actions">
-        <button
-          className="primary"
-          onClick={() =>
-            copy(
-              'all',
-              `Asunto: ${email.subject}\n\n${body}`,
-            )
-          }
-        >
-          {copied === 'all' ? <Check size={16} /> : <Copy size={16} />}
-          {copied === 'all' ? 'Correo copiado' : 'Copiar correo completo'}
-        </button>
-        <button onClick={() => copy('body', body)}>
-          {copied === 'body' ? 'Mensaje copiado' : 'Solo el mensaje'}
-        </button>
+        {definition.directSend ? (
+          <>
+            <button className="primary" onClick={() => copy('body', body)}>
+              {copied === 'body' ? <Check size={16} /> : <Copy size={16} />}
+              {copied === 'body' ? 'Mensaje copiado' : 'Copiar mensaje'}
+            </button>
+            <SubmissionZipButton
+              definition={definition}
+              selectedIds={selectedIds}
+              ready={ready}
+              label="Descargar ZIP"
+            />
+          </>
+        ) : (
+          <>
+            <button
+              className="primary"
+              onClick={() => copy('all', `Asunto: ${email.subject}\n\n${body}`)}
+            >
+              {copied === 'all' ? <Check size={16} /> : <Copy size={16} />}
+              {copied === 'all' ? 'Correo copiado' : 'Copiar correo completo'}
+            </button>
+            <button onClick={() => copy('body', body)}>
+              {copied === 'body' ? 'Mensaje copiado' : 'Solo el mensaje'}
+            </button>
+          </>
+        )}
         {customBody !== null && (
           <button className="text-button" onClick={() => setCustomBody(null)}>
             Restablecer borrador

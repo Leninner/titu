@@ -40,7 +40,8 @@ function prepareStep(
   }
 }
 
-function sendStep(task: TaskRecord, workspace: Workspace): TaskStep {
+function sendStep(task: TaskRecord, definition: WorkflowDefinition, workspace: Workspace): TaskStep {
+  if (definition.directSend) return { id: 'send', label: 'Enviar', done: true, detail: 'listo' }
   const latest = workspace.submissions
     .filter((submission) => submission.taskId === task.id)
     .sort((a, b) => b.sentAt.localeCompare(a.sentAt))[0]
@@ -81,7 +82,7 @@ export function taskSteps(
   const steps = taskInputs(definition, workspace).length
     ? [
         prepareStep(task, definition, workspace, catalog, ready(), now),
-        ...(definition.inPerson ? [] : [sendStep(task, workspace)]),
+        ...(definition.inPerson ? [] : [sendStep(task, definition, workspace)]),
         result,
       ]
     : [result]

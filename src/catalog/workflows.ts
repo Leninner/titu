@@ -269,6 +269,7 @@ const enrollment = doc(
 const graderOutputs = [designation, gradeReports, ...grades]
 add({
   id: 'calificadores-research',
+  directSend: true,
   summary: 'Envía el Anexo 10 con tu trabajo terminado y espera a los calificadores y sus notas.',
   title: 'Designación de calificadores del Proyecto',
   stage: 'calificadores',
@@ -323,6 +324,7 @@ add({
 })
 add({
   id: 'calificadores-article',
+  directSend: true,
   summary: 'Envía el Anexo 10 con tu artículo aceptado y espera a los calificadores y sus notas.',
   title: 'Designación de calificadores del Artículo',
   stage: 'calificadores',

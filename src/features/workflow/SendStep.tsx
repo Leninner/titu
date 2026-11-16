@@ -12,11 +12,13 @@ const sentAtLabel = (timestamp: string) =>
 export function SendStep({
   definition,
   task,
+  selectedIds,
   ready,
   onSubmit,
 }: {
   definition: WorkflowDefinition
   task: TaskRecord
+  selectedIds: string[]
   ready: boolean
   onSubmit: () => void
 }) {
@@ -26,14 +28,21 @@ export function SendStep({
     .sort((a, b) => a.sentAt.localeCompare(b.sentAt))
   return (
     <>
-      <EmailComposer definition={definition} task={task} />
-      <div className="submission-confirm">
-        <button className="primary" disabled={busy || !ready} onClick={onSubmit}>
-          Confirmar envío
-        </button>
-        {!ready && <p className="hint">Preparar tiene requisitos pendientes.</p>}
-      </div>
-      {submissions.length > 0 && (
+      <EmailComposer
+        definition={definition}
+        task={task}
+        selectedIds={selectedIds}
+        ready={ready}
+      />
+      {!definition.directSend && (
+        <div className="submission-confirm">
+          <button className="primary" disabled={busy || !ready} onClick={onSubmit}>
+            Confirmar envío
+          </button>
+          {!ready && <p className="hint">Preparar tiene requisitos pendientes.</p>}
+        </div>
+      )}
+      {!definition.directSend && submissions.length > 0 && (
         <section className="task-submissions" aria-labelledby="task-submissions-title">
           <h3 id="task-submissions-title">Envíos confirmados</h3>
           <ul>

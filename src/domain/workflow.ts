@@ -261,8 +261,9 @@ function nextActionsFor(
   if (task.status === 'completed') return ['Resultado registrado']
   if (['submitted', 'waiting', 'observed'].includes(task.status))
     return missingOutputs.length ? missingOutputs : ['Completar el trámite con el resultado recibido']
-  return definition.inPerson
-    ? ['Acudir en persona y registrar el resultado']
+  if (definition.inPerson) return ['Acudir en persona y registrar el resultado']
+  return definition.directSend
+    ? ['Enviar el correo con el ZIP y registrar el resultado']
     : ['Revisar paquete y registrar el envío manual']
 }
 

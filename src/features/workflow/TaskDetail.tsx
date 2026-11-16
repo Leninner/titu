@@ -147,7 +147,13 @@ export function TaskDetail({
           />
         )}
         {step === 'send' && (
-          <SendStep definition={definition} task={task} ready={evaluation.ready} onSubmit={submit} />
+          <SendStep
+            definition={definition}
+            task={task}
+            selectedIds={selectedEvidenceIds}
+            ready={evaluation.ready}
+            onSubmit={submit}
+          />
         )}
         {step === 'result' && (
           <ResultStep
