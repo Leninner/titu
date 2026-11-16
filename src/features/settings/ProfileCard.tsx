@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { Check, Pencil } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import type { StudentProfile } from '../../domain/types'
@@ -30,7 +30,7 @@ function ProfileData({ section, profile }: { section: ProfileSection; profile: S
       {visibleFields(section, profile).map((field) => {
         const value = displayValue(field, profile)
         return (
-          <div key={field.key} className={field.wide ? 'is-wide' : undefined}>
+          <div key={field.key} className={field.span && `is-${field.span}`}>
             <dt>{field.label}</dt>
             <dd>{value || <span className="profile-empty">Sin completar</span>}</dd>
           </div>
@@ -40,7 +40,7 @@ function ProfileData({ section, profile }: { section: ProfileSection; profile: S
   )
 }
 
-export function ProfileCard({ section }: { section: ProfileSection }) {
+export function ProfileCard({ section, children }: { section: ProfileSection; children?: ReactNode }) {
   const { workspace, run, busy } = useWorkspace()
   const profile = workspace.profile!
   const [draft, setDraft] = useState<StudentProfile | null>(null)
@@ -80,11 +80,12 @@ export function ProfileCard({ section }: { section: ProfileSection }) {
           )}
         </div>
       </header>
+      {!draft && children}
       {draft ? (
         <form className="settings-card-form" onSubmit={save}>
           <div className="profile-form-grid">
             {visibleFields(section, draft).map((field) => (
-              <div key={field.key} className={field.wide ? 'is-wide' : undefined}>
+              <div key={field.key} className={field.span && `is-${field.span}`}>
                 <ProfileFieldInput
                   field={field}
                   profile={draft}

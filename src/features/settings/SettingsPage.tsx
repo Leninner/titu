@@ -3,6 +3,7 @@ import { Archive, UserRound } from 'lucide-react'
 import { Tabs, tabId, tabPanelId, type TabItem } from '../../components/Tabs'
 import { BackupPanel } from './BackupPanel'
 import { ProfileCard } from './ProfileCard'
+import { ResolutionImport } from './ResolutionImport'
 import { profileSections } from './profile-sections'
 import './settings.css'
 
@@ -21,13 +22,17 @@ export function SettingsPage() {
       <p className="lead">Revisa tus datos y guarda respaldos de tu expediente.</p>
       <Tabs scope="settings" label="Secciones de ajustes" tabs={tabs} active={active} onSelect={setActive} />
       <div
-        className="settings-panel"
+        className={`settings-panel is-${active}`}
         role="tabpanel"
         id={tabPanelId('settings', active)}
         aria-labelledby={tabId('settings', active)}
       >
         {active === 'expediente'
-          ? profileSections.map((section) => <ProfileCard key={section.id} section={section} />)
+          ? profileSections.map((section) => (
+              <ProfileCard key={section.id} section={section}>
+                {section.id === 'titulacion' && <ResolutionImport />}
+              </ProfileCard>
+            ))
           : <BackupPanel />}
       </div>
     </div>

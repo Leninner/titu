@@ -5,7 +5,8 @@ export interface ProfileField {
   label: string
   input: 'text' | 'email' | 'date' | 'select' | 'checkbox'
   options?: Record<string, string>
-  wide?: boolean
+  span?: 'wide' | 'row'
+  placeholder?: string
   when?: (profile: StudentProfile) => boolean
 }
 
@@ -37,10 +38,10 @@ export const profileSections: ProfileSection[] = [
     title: 'Datos personales',
     description: 'Aparecen en los anexos y en tus correos.',
     fields: [
-      { key: 'nombres', label: 'Nombres y apellidos', input: 'text', wide: true },
+      { key: 'nombres', label: 'Nombres y apellidos', input: 'text', span: 'wide' },
       { key: 'cedula', label: 'Cédula', input: 'text' },
       { key: 'email', label: 'Correo', input: 'email' },
-      { key: 'direccion', label: 'Dirección', input: 'text', wide: true },
+      { key: 'direccion', label: 'Dirección', input: 'text', span: 'wide' },
     ],
   },
   {
@@ -50,12 +51,17 @@ export const profileSections: ProfileSection[] = [
     fields: [
       { key: 'modalidad', label: 'Modalidad', input: 'select', options: modalityLabels },
       { key: 'periodo', label: 'Período', input: 'select', options: periodLabels },
-      { key: 'facultad', label: 'Facultad', input: 'text', wide: true },
+      { key: 'facultad', label: 'Facultad', input: 'text', span: 'wide' },
       { key: 'carrera', label: 'Carrera', input: 'text' },
       { key: 'titulo', label: 'Título a obtener', input: 'text' },
-      { key: 'tema', label: 'Tema aprobado', input: 'text', wide: true },
+      { key: 'tema', label: 'Tema aprobado', input: 'text', span: 'wide' },
       { key: 'aprobacionFecha', label: 'Fecha de aprobación', input: 'date' },
-      { key: 'aprobacionResolucion', label: 'Resolución de aprobación o cambio', input: 'text' },
+      {
+        key: 'aprobacionResolucion',
+        label: 'Número de resolución de aprobación',
+        input: 'text',
+        placeholder: 'Ej.: 0942-P-CD-FISEI-UTA-2026',
+      },
       { key: 'tutor', label: 'Tutor', input: 'text' },
     ],
     hint: 'Cambiar de modalidad o período conserva tus archivos y envíos. Revisa los borradores afectados antes de exportarlos.',
@@ -65,7 +71,7 @@ export const profileSections: ProfileSection[] = [
     title: 'Empresa',
     description: 'Datos de la empresa o institución donde realizas el trabajo.',
     fields: [
-      { key: 'aplicaEmpresa', label: 'El trabajo se realiza en una empresa', input: 'checkbox', wide: true },
+      { key: 'aplicaEmpresa', label: 'El trabajo se realiza en una empresa', input: 'checkbox', span: 'row' },
       companyField('empresa', 'Empresa o institución'),
       companyField('representante', 'Representante'),
       companyField('cargoRepresentante', 'Cargo del representante'),
@@ -76,6 +82,9 @@ export const profileSections: ProfileSection[] = [
     ],
   },
 ]
+
+export const profileField = (key: keyof StudentProfile) =>
+  profileSections.flatMap((section) => section.fields).find((field) => field.key === key)!
 
 export const visibleFields = (section: ProfileSection, profile: StudentProfile) =>
   section.fields.filter((field) => field.when?.(profile) ?? true)

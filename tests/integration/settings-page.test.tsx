@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { Blob as NodeBlob, File as NodeFile } from 'node:buffer'
 import { webcrypto } from 'node:crypto'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -7,8 +8,19 @@ import { AppShell } from '../../src/app/AppShell'
 import { repository } from '../../src/storage/repository'
 import { newProfile } from '../../src/domain/types'
 
+vi.mock('../../src/features/documents/extract-text', () => ({
+  extractText: async (file: File) =>
+    (await file.text()).startsWith('resolucion')
+      ? 'Resolución 0942-P-CD-FISEI-UTA-2026 en sesión ordinaria del día 21 de agosto de 2026, estudiante de la Carrera de Software. DESIGNAR COMO TUTOR/A PARA EL TRABAJO A EL/LA ING. JOSÉ NÚÑEZ MG., CONFORME'
+      : 'texto sin datos',
+}))
+
+const pdf = (content: string) => new NodeFile([content], 'resolucion.pdf', { type: 'application/pdf' })
+
 beforeEach(async () => {
   vi.stubGlobal('crypto', webcrypto)
+  vi.stubGlobal('Blob', NodeBlob)
+  vi.stubGlobal('File', NodeFile)
   await repository.db.open()
   await repository.db.transaction('rw', repository.db.tables, async () => {
     for (const table of repository.db.tables) await table.clear()
@@ -80,4 +92,31 @@ it('groups backup actions in their own tab', () => {
   expect(card('Recuperar un respaldo').getByLabelText('Importar respaldo ZIP')).toBeTruthy()
   expect(card('Cambiar de estudiante').getByRole('button', { name: 'Crear otro expediente' })).toBeTruthy()
   expect(screen.getByText('Todavía no has descargado uno')).toBeTruthy()
+})
+
+it('fills the confirmed data from the approval resolution and stores the PDF', async () => {
+  fireEvent.change(screen.getByLabelText('Subir resolución de aprobación'), {
+    target: { files: [pdf('resolucion firmada')] },
+  })
+  const review = within(await screen.findByRole('region', { name: 'Datos encontrados en la resolución' }))
+  expect(review.getByText('0942-P-CD-FISEI-UTA-2026')).toBeTruthy()
+  expect(review.getByText('Ya coincide')).toBeTruthy()
+  fireEvent.click(review.getByLabelText('Tutor'))
+  fireEvent.click(review.getByRole('button', { name: 'Usar datos marcados' }))
+  await waitFor(async () => {
+    const workspace = await repository.loadWorkspace()
+    expect(workspace.profile?.aprobacionResolucion).toBe('0942-P-CD-FISEI-UTA-2026')
+    expect(workspace.profile?.tutor).toBe('')
+    expect(workspace.documents.map((document) => document.category)).toEqual(['resolucion'])
+  })
+  expect(await screen.findByText('Datos actualizados y resolución guardada en Documentos')).toBeTruthy()
+  expect(card('Titulación').getByText('0942-P-CD-FISEI-UTA-2026')).toBeTruthy()
+})
+
+it('warns without changing the profile when the PDF has no resolution data', async () => {
+  fireEvent.change(screen.getByLabelText('Subir resolución de aprobación'), {
+    target: { files: [pdf('otro documento')] },
+  })
+  expect((await screen.findByRole('alert')).textContent).toContain('No encontramos datos')
+  expect((await repository.loadWorkspace()).profile?.aprobacionResolucion).toBe('')
 })

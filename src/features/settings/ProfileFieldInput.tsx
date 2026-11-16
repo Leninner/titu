@@ -41,6 +41,7 @@ export function ProfileFieldInput({
       name={field.key}
       label={field.label}
       type={field.input}
+      placeholder={field.placeholder}
       value={String(value)}
       onChange={(event) => onChange(event.target.value)}
     />
