@@ -118,3 +118,12 @@ En "Designación de calificadores del Proyecto" y "Designación de calificadores
 
 - **WHEN** Preparar está listo en la designación de calificadores
 - **THEN** la pestaña Enviar aparece como lista y el trámite se abre en Resultado sin registrar un envío.
+
+### Requirement: Copiar mensaje y descargar ZIP en todos los envíos
+
+En el paso Enviar de cualquier trámite, el sistema SHALL mostrar el botón "Copiar mensaje" y a su lado "Descargar ZIP" con los documentos seleccionados, y SHALL NOT mostrar "Copiar correo completo" ni "Solo el mensaje". Los trámites sin envío directo SHALL conservar "Confirmar envío".
+
+#### Scenario: Trámite con confirmación
+
+- **WHEN** el estudiante abre Enviar en "Propuesta y aprobación de modalidad"
+- **THEN** ve "Copiar mensaje", "Descargar ZIP" y "Confirmar envío", y no ve "Copiar correo completo" ni "Solo el mensaje".

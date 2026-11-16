@@ -80,33 +80,16 @@ export function EmailComposer({
         <small>Adjunta el ZIP manualmente</small>
       </div>
       <div className="email-actions">
-        {definition.directSend ? (
-          <>
-            <button className="primary" onClick={() => copy('body', body)}>
-              {copied === 'body' ? <Check size={16} /> : <Copy size={16} />}
-              {copied === 'body' ? 'Mensaje copiado' : 'Copiar mensaje'}
-            </button>
-            <SubmissionZipButton
-              definition={definition}
-              selectedIds={selectedIds}
-              ready={ready}
-              label="Descargar ZIP"
-            />
-          </>
-        ) : (
-          <>
-            <button
-              className="primary"
-              onClick={() => copy('all', `Asunto: ${email.subject}\n\n${body}`)}
-            >
-              {copied === 'all' ? <Check size={16} /> : <Copy size={16} />}
-              {copied === 'all' ? 'Correo copiado' : 'Copiar correo completo'}
-            </button>
-            <button onClick={() => copy('body', body)}>
-              {copied === 'body' ? 'Mensaje copiado' : 'Solo el mensaje'}
-            </button>
-          </>
-        )}
+        <button className="primary" onClick={() => copy('body', body)}>
+          {copied === 'body' ? <Check size={16} /> : <Copy size={16} />}
+          {copied === 'body' ? 'Mensaje copiado' : 'Copiar mensaje'}
+        </button>
+        <SubmissionZipButton
+          definition={definition}
+          selectedIds={selectedIds}
+          ready={ready}
+          label="Descargar ZIP"
+        />
         {customBody !== null && (
           <button className="text-button" onClick={() => setCustomBody(null)}>
             Restablecer borrador

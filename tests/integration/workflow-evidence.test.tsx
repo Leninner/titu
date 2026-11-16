@@ -183,6 +183,10 @@ it('registers the Council resolution in Resultado, completes the proposal and re
   expect(screen.queryByLabelText('Destinatario (verificar)')).toBeNull()
   expect(screen.queryByLabelText(/Fecha y hora del envío/)).toBeNull()
   expect(screen.getByRole('button', { name: 'Confirmar envío' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Copiar mensaje' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Descargar ZIP' })).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'Copiar correo completo' })).toBeNull()
+  expect(screen.queryByRole('button', { name: 'Solo el mensaje' })).toBeNull()
   fireEvent.click(screen.getByRole('tab', { name: /Resultado/ }))
   const complete = screen.getByRole('button', { name: 'Completar trámite' }) as HTMLButtonElement
   expect(complete.disabled).toBe(true)
