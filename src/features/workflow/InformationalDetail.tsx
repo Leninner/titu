@@ -1,12 +1,12 @@
-import { ArrowRight, CalendarClock, Hourglass } from 'lucide-react'
+import { CalendarClock, Hourglass } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
 import { calendarForWorkspace, effectiveEvent, ECUADOR_TIME_ZONE } from '../../domain/dates'
 import { informationalStatus, type InformationalStatus } from '../../domain/informational'
 import type { WorkflowDefinition } from '../../domain/types'
-import { applicableDependencies } from '../../domain/workflow'
 import { keyDateFor } from '../../domain/process-map'
 import { GuideTimeline } from './TaskMoreMenu'
+import { GradingBoard } from './GradingBoard'
 import { useCurrentTime } from './use-current-time'
 import './informational.css'
 import { statusIcons } from './workflow-icons'
@@ -41,8 +41,6 @@ export function InformationalDetail({ definition }: { definition: WorkflowDefini
   const status = informationalStatus(definition, workspace, catalog, now)
   const Icon = statusIcons[status]
   const event = useKeyDate(definition)
-  const origins = applicableDependencies(definition, workspace, catalog)
-    .map((id) => catalog.workflowDefinitions.find((item) => item.id === id)!)
   return (
     <section className="task-detail informational-detail">
       <div className="informational-hero">
@@ -65,13 +63,9 @@ export function InformationalDetail({ definition }: { definition: WorkflowDefini
             enviar nada por ahora.
           </p>
         )}
-        <div className="actions">
-          {origins.map((origin) => (
-            <a key={origin.id} className="button" href={`#/proceso/${origin.id}`}>
-              Registrar las notas en {origin.title} <ArrowRight size={16} aria-hidden="true" />
-            </a>
-          ))}
-        </div>
+      </div>
+      <div className="informational-board">
+        <GradingBoard definition={definition} status={status} />
       </div>
       <h2 className="informational-guide-title">Cómo avanza</h2>
       <GuideTimeline definition={definition} />

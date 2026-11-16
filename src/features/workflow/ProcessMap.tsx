@@ -31,6 +31,8 @@ import { taskFor } from './task-record'
 import { ReportGuideLinks } from './ReportGuide'
 import { shortDate } from '../calendar/short-date'
 import { processPhases, type PhaseStep, type ProcessPhase } from '../../domain/process-phases'
+import { informationalStatus } from '../../domain/informational'
+import { GradingBoard } from './GradingBoard'
 
 
 function useCompact(query = '(max-width: 760px)') {
@@ -278,7 +280,9 @@ function ProcessDialog({
         </div>
         <div className="process-dialog-docs">
           {annex && <AnnexPreviewSection templateId={annex.annex!} label={annex.label} />}
-          {documents.length > 0 ? (
+          {definition.informational ? (
+            <GradingBoard definition={definition} status={informationalStatus(definition, workspace, catalog)} />
+          ) : documents.length > 0 ? (
             <>
               <h3>
                 {result ? 'Resultado' : 'Documentos'}{' '}
@@ -298,17 +302,17 @@ function ProcessDialog({
               {monthly && <MonthlyReportCards selectedIds={selectedIds} signed={!!monthly.signed} files={files} />}
             </>
           ) : !annex && (
-            <p className="process-dialog-empty">
-              {definition.informational ? 'Paso informativo: no pide documentos ni se completa aquí.' : 'Este paso no pide documentos.'}
-            </p>
+            <p className="process-dialog-empty">Este paso no pide documentos.</p>
           )}
         </div>
       </div>
       <div className="process-dialog-foot">
         <button type="button" onClick={onClose}>Cerrar</button>
-        <a className="button primary" href={`#/proceso/${definition.id}`}>
-          {definition.informational ? 'Ver detalle' : 'Abrir trámite completo'} <ArrowRight size={16} aria-hidden="true" />
-        </a>
+        {!definition.informational && (
+          <a className="button primary" href={`#/proceso/${definition.id}`}>
+            Abrir trámite completo <ArrowRight size={16} aria-hidden="true" />
+          </a>
+        )}
       </div>
     </dialog>
   )

@@ -10,6 +10,8 @@ import { ecuadorDate, noDebtValidity } from './dates'
 import { evidenceIdsForTask } from './task-evidence'
 import { monthlyCoverage, monthlyGaps } from './monthly-report'
 import { validateAnnex } from './annex'
+import { numeric } from './numeric'
+import { gradeIds, gradingSummary } from './grading'
 
 export function applicableWorkflows(
   workspace: Workspace,
@@ -59,11 +61,6 @@ export const numericRequirementIds = new Set(['grade-1', 'grade-2', 'similarity'
 export const numericMaximum = (requirementId: string) =>
   requirementId.startsWith('grade-') ? 10 : 100
 
-const numeric = (value: unknown): number | undefined => {
-  if (typeof value !== 'number' && (typeof value !== 'string' || !value.trim())) return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
 
 function numericGap(requirement: Requirement, task: TaskRecord) {
   const value = numeric(task.requirementChecks[requirement.id])
@@ -157,11 +154,8 @@ export function requirementGap(
 }
 
 function averageGap(requirements: Requirement[], task: TaskRecord) {
-  if (!['grade-1', 'grade-2'].every((id) => requirements.some((item) => item.id === id)))
-    return undefined
-  const first = numeric(task.requirementChecks['grade-1'])
-  const second = numeric(task.requirementChecks['grade-2'])
-  return first !== undefined && second !== undefined && (first + second) / 2 < 7
+  if (!gradeIds.every((id) => requirements.some((item) => item.id === id))) return undefined
+  return gradingSummary(task.requirementChecks).passed === false
     ? 'Promedio inferior a 7: revisar o solicitar recalificación'
     : undefined
 }
