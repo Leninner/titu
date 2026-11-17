@@ -13,6 +13,7 @@ import { validateAnnex } from './annex'
 import { numeric } from './numeric'
 import { isThesisCategory } from './thesis-stages'
 import { gradeIds, gradingSummary } from './grading'
+import { taskFor } from './task-record'
 
 export function applicableWorkflows(
   workspace: Workspace,
@@ -186,12 +187,41 @@ export const applicableDependencies = (
   return definition.dependsOn.filter((dependency) => applicableIds.has(dependency))
 }
 
+const definitionFor = (id: string, catalog: CatalogVersion) =>
+  catalog.workflowDefinitions.find((item) => item.id === id)
+
+export function informationalSources(
+  definition: WorkflowDefinition,
+  workspace: Workspace,
+  catalog: CatalogVersion,
+): WorkflowDefinition[] {
+  return applicableDependencies(definition, workspace, catalog)
+    .map((id) => definitionFor(id, catalog)!)
+    .flatMap((dependency) =>
+      dependency.informational ? informationalSources(dependency, workspace, catalog) : [dependency])
+}
+
+const taskCompleted = (id: string, workspace: Workspace) =>
+  workspace.tasks.some((item) => item.definitionId === id && item.status === 'completed')
+
+export function outputRecorded(
+  source: WorkflowDefinition,
+  outputIds: string[],
+  workspace: Workspace,
+  catalog: CatalogVersion,
+) {
+  const task = taskFor(source.id, workspace)
+  return taskOutputs(source, workspace)
+    .filter((requirement) => outputIds.includes(requirement.id))
+    .some((requirement) =>
+      !requirementGap({ ...requirement, optional: false }, task, task.outputVersionIds, workspace, catalog))
+}
+
 export function workflowCompleted(id: string, workspace: Workspace, catalog: CatalogVersion): boolean {
-  const definition = catalog.workflowDefinitions.find((item) => item.id === id)
+  const definition = definitionFor(id, catalog)
   if (definition?.informational)
-    return applicableDependencies(definition, workspace, catalog).every((dependency) =>
-      workflowCompleted(dependency, workspace, catalog))
-  return workspace.tasks.some((item) => item.definitionId === id && item.status === 'completed')
+    return informationalSources(definition, workspace, catalog).every((source) => taskCompleted(source.id, workspace))
+  return taskCompleted(id, workspace)
 }
 
 function dependencyGaps(

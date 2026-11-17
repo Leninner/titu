@@ -29,13 +29,6 @@
 .informational-date strong {
   color: var(--text);
 }
-.informational-waiting {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #8a5a12;
-  font-size: 0.9rem;
-}
 .informational-board {
   margin-top: 16px;
   padding: 22px 24px;

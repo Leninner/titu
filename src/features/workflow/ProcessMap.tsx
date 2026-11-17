@@ -32,7 +32,7 @@ import { ReportGuideLinks } from './ReportGuide'
 import { shortDate } from '../calendar/short-date'
 import { processPhases, type PhaseStep, type ProcessPhase } from '../../domain/process-phases'
 import { informationalStatus } from '../../domain/informational'
-import { GradingBoard } from './GradingBoard'
+import { InformationalBoard } from './InformationalBoard'
 
 
 function useCompact(query = '(max-width: 760px)') {
@@ -73,7 +73,7 @@ function urgency(node: ProcessNode) {
 
 function statusName(node: ProcessNode) {
   if (node.next) return 'Siguiente paso'
-  if (node.definition.informational && node.status === 'waiting') return 'En revisión'
+  if (node.stageLabel) return node.stageLabel
   if (node.definition.optional && node.status === 'active') return 'Si lo necesitas'
   return statusText[node.status]
 }
@@ -281,7 +281,7 @@ function ProcessDialog({
         <div className="process-dialog-docs">
           {annex && <AnnexPreviewSection templateId={annex.annex!} label={annex.label} />}
           {definition.informational ? (
-            <GradingBoard definition={definition} status={informationalStatus(definition, workspace, catalog)} />
+            <InformationalBoard definition={definition} status={informationalStatus(definition, workspace, catalog)} />
           ) : documents.length > 0 ? (
             <>
               <h3>

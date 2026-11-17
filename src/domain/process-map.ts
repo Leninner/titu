@@ -7,7 +7,7 @@ import {
   taskOutputs,
   workflowCompleted,
 } from './workflow'
-import { informationalStatus } from './informational'
+import { informationalStage, informationalStatus } from './informational'
 import { calendarForWorkspace, effectiveEvent, eventReminder } from './dates'
 import { taskFor } from './task-record'
 import { evidenceIdsForTask } from './task-evidence'
@@ -34,7 +34,6 @@ const keyDates: Record<string, string> = {
   'informe-final': 'calificadores-limite',
   'calificadores-research': 'calificadores-limite',
   'calificadores-article': 'calificadores-limite',
-  calificacion: 'calificaciones-limite',
   complexivo: 'complexivo-examen',
   'no-adeudar': 'solicitud-no-adeudar',
   'aptitud-legal-research': 'aptitud-solicitud',
@@ -43,8 +42,6 @@ const keyDates: Record<string, string> = {
   'dia-hora': 'dia-hora-limite',
   defensa: 'sustentaciones-limite',
 }
-
-export const keyDateFor = (definitionId: string) => keyDates[definitionId]
 
 const responseDates: Record<string, string> = {
   'calificadores-research': 'calificaciones-limite',
@@ -65,6 +62,7 @@ export interface ProcessNode {
   documents: { done: number; total: number }
   checks: { done: number; total: number }
   missing: string[]
+  stageLabel?: string
 }
 
 export interface ProcessEdge {
@@ -154,7 +152,10 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
         : waiting
           ? 'waiting'
           : blocked ? 'blocked' : 'active'
-    const dateId = (waiting && responseDates[definition.id]) || keyDates[definition.id]
+    const stage = definition.informational
+      ? informationalStage(definition, workspace, catalog, now)
+      : undefined
+    const dateId = stage?.keyDate ?? ((waiting && responseDates[definition.id]) || keyDates[definition.id])
     const raw = dateId ? events.get(dateId) : undefined
     const event = raw ? effectiveEvent(raw) : undefined
     return {
@@ -171,6 +172,7 @@ export function processMap(workspace: Workspace, catalog: CatalogVersion, now = 
       documents: { done: documents.filter(isDone).length, total: documents.length },
       checks: { done: checks.filter(isDone).length, total: checks.length },
       missing: step === 'result' ? evaluation.missingOutputs : evaluation.missingRequirements,
+      stageLabel: status === 'waiting' ? stage?.label : undefined,
     }
   }
   const nodes = definitions.map((definition) =>

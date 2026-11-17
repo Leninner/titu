@@ -8,8 +8,8 @@ import { ProcessMap } from './ProcessMap'
 import { ReportGuideLinks } from './ReportGuide'
 import { folderFor, processFolders } from '../../domain/process-map'
 import { TaskDetail } from './TaskDetail'
-import { InformationalDetail, informationalLabels } from './InformationalDetail'
-import { informationalStatus } from '../../domain/informational'
+import { InformationalDetail } from './InformationalDetail'
+import { informationalLabel, informationalStatus } from '../../domain/informational'
 import { useCurrentTime } from './use-current-time'
 
 const viewKey = 'process-view'
@@ -124,7 +124,7 @@ export function WorkflowPage({
                               </p>
                             </div>
                             <span className="badge">
-                              {phase ? informationalLabels[phase] : statusLabels[task.status]}
+                              {phase ? informationalLabel(definition, workspace, catalog, now) : statusLabels[task.status]}
                             </span>
                             <ChevronRight size={18} aria-hidden="true" />
                           </a>

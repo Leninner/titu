@@ -43,13 +43,25 @@ it('skips grader steps for complexivo and links the exam date', () => {
   expect(at(map, 'complexivo').event?.id).toBe('complexivo-examen')
 })
 
+it('moves the grader step from the council session to the grading deadline', () => {
+  const workspace = workspaceFor('research')
+  const before = new Date('2026-11-17T12:00:00-05:00')
+  expect(at(processMap(workspace, catalog, before), 'calificacion')).toMatchObject({
+    status: 'blocked',
+    event: expect.objectContaining({ id: 'consejo-calificadores', startDate: '2026-11-19' }),
+  })
+  workspace.tasks.push({ ...emptyTask('calificadores-research'), status: 'waiting', requirementChecks: { 'grade-1': 8 } })
+  expect(at(processMap(workspace, catalog, before), 'calificacion')).toMatchObject({
+    status: 'waiting',
+    stageLabel: 'Calificando',
+    event: expect.objectContaining({ id: 'calificaciones-limite' }),
+  })
+})
+
 it('shows the grading phase in review once the designation is ready and done with the grades', () => {
   const workspace = workspaceFor('research')
   const designation = { ...emptyTask('calificadores-research'), status: 'completed' as const }
-  expect(at(processMap(workspace, catalog), 'calificacion')).toMatchObject({
-    status: 'blocked',
-    event: expect.objectContaining({ id: 'calificaciones-limite' }),
-  })
+  expect(at(processMap(workspace, catalog), 'calificacion').status).toBe('blocked')
   workspace.tasks.push(designation, { ...emptyTask('biblioteca-revision'), status: 'completed' })
   const map = processMap(workspace, catalog)
   expect(at(map, 'calificacion').status).toBe('done')

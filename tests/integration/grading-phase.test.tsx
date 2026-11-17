@@ -21,7 +21,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-it('explains the grading phase with its deadline and links to where the grades are recorded', async () => {
+it('shows the council session date and the milestones until the grades', async () => {
   window.history.replaceState(null, '', '#/proceso/calificacion')
   render(
     <WorkspaceProvider>
@@ -29,8 +29,11 @@ it('explains the grading phase with its deadline and links to where the grades a
     </WorkspaceProvider>,
   )
   expect(await screen.findByText('Aún no empieza')).toBeTruthy()
-  expect(screen.getByText('Entrega calificaciones')).toBeTruthy()
-  expect(screen.getByText('viernes, 4 de diciembre de 2026')).toBeTruthy()
+  expect(screen.getByText('Sesión Consejo: calificadores')).toBeTruthy()
+  expect(screen.getByText('jueves, 19 de noviembre de 2026')).toBeTruthy()
+  const timeline = screen.getByRole('list', { name: 'Fechas de la designación y calificación' })
+  expect([...timeline.querySelectorAll('.grader-milestone-label')].map((label) => label.textContent))
+    .toEqual(['Solicitud', 'Consejo', 'Resolución', 'Notificación', 'Notas'])
   expect(screen.getByRole('heading', { name: 'Tus calificaciones' })).toBeTruthy()
   expect(screen.queryByRole('textbox', { name: /Nota del primer calificador/ })).toBeNull()
   expect(screen.queryByRole('button', { name: 'Completar trámite' })).toBeNull()
@@ -46,7 +49,7 @@ it('records each grade in the designation and reveals the average with the next 
       <AppShell />
     </WorkspaceProvider>,
   )
-  expect(await screen.findByText('Falta una nota para revelarlo.')).toBeTruthy()
+  expect(await screen.findByText('Falta una nota')).toBeTruthy()
   const second = screen.getByRole('textbox', { name: 'Nota del segundo calificador' })
   fireEvent.change(second, { target: { value: '9' } })
   fireEvent.keyDown(second, { key: 'Enter' })
@@ -66,6 +69,6 @@ it('tells the student to wait for the grades before going back to the library', 
     </WorkspaceProvider>,
   )
   const notice = await screen.findByRole('complementary', { name: 'Antes de este trámite' })
-  expect(notice.textContent).toContain('Calificación del trabajo')
+  expect(notice.textContent).toContain('Designación y calificación')
   expect(screen.getByText(/vuelve a Biblioteca con el trabajo corregido/)).toBeTruthy()
 })

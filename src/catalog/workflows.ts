@@ -381,23 +381,31 @@ add({
 })
 add({
   id: 'calificacion',
-  informational: true,
-  summary: 'Los calificadores revisan tu trabajo y consignan sus notas en el Anexo 12; en este paso no envías nada.',
-  title: 'Calificación del trabajo',
+  informational: {
+    stages: [
+      { label: 'Esperando al Consejo', keyDate: 'consejo-calificadores' },
+      {
+        label: 'Calificando',
+        keyDate: 'calificaciones-limite',
+        reachedWith: [designation.id, ...grades.map((grade) => grade.id)],
+        reachedAfter: 'notificacion-calificadores',
+      },
+    ],
+  },
+  summary: 'El Consejo designa a tus calificadores y ellos califican tu trabajo; aquí no envías nada.',
+  title: 'Designación y calificación',
   stage: 'calificadores',
   modalities: work,
-  sourceIds: ['UT-16', 'UT-17', 'CAL-01', 'CAL-02'],
+  sourceIds: ['CAL-01', 'CAL-02', 'UT-16', 'UT-17'],
   dependsOn: ['calificadores-research', 'calificadores-article'],
   requirements: [],
   guide: {
     steps: [
-      step('grade', 'Calificadores', 'Cada uno revisa el trabajo y consigna su nota en el Anexo 12 dentro de 8 días término.'),
-      step('library', 'Estudiante', 'Con las dos notas, vuelve a Biblioteca con el trabajo corregido para empezar las firmas.'),
+      step('council', 'Consejo Directivo', 'Designa a tus dos calificadores y te notifica.'),
+      step('grade', 'Calificadores', 'Califican tu trabajo en el Anexo 12.'),
+      step('library', 'Estudiante', 'Con las notas, vuelves a Biblioteca.'),
     ],
-    notes: [
-      'El calendario fija la entrega de calificaciones hasta el 4 de diciembre de 2026.',
-      'Con un promedio menor a 7, la Unidad de Titulación convoca a calificadores, tutor y estudiante.',
-    ],
+    notes: [],
     rubric: {
       title: 'Rúbrica del Anexo 12',
       criteria: [
@@ -409,7 +417,7 @@ add({
       ],
     },
   },
-  role: 'Calificadores',
+  role: 'Consejo Directivo y calificadores',
 })
 add({
   id: 'complexivo',

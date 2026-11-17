@@ -6,7 +6,7 @@ import { gradeIds, gradingSummary, maximumGrade, passingAverage, type GradingSum
 import type { InformationalStatus } from '../../domain/informational'
 import { numeric } from '../../domain/numeric'
 import type { WorkflowDefinition } from '../../domain/types'
-import { applicableDependencies } from '../../domain/workflow'
+import { informationalSources } from '../../domain/workflow'
 import { repository } from '../../storage/repository'
 import { persistTask } from './task-persistence'
 import { taskFor } from './task-record'
@@ -14,10 +14,8 @@ import './grading.css'
 
 const libraryStepId = 'biblioteca-firma-estudiante'
 
-const recordsGrades = (id: string) =>
-  !!catalog.workflowDefinitions
-    .find((item) => item.id === id)
-    ?.outputs?.some((requirement) => requirement.id === gradeIds[0])
+const recordsGrades = (definition: WorkflowDefinition) =>
+  definition.outputs.some((requirement) => requirement.id === gradeIds[0])
 
 const gradeText = (grade: number) =>
   new Intl.NumberFormat('es-EC', { maximumFractionDigits: 2 }).format(grade)
@@ -49,7 +47,6 @@ function GradeInput({ label, initial, onSave }: { label: string; initial?: numbe
 
   return (
     <label className="grade-input">
-      <span>¿Ya llegó? Regístrala</span>
       <span className="grade-input-box">
         <input
           inputMode="decimal"
@@ -116,7 +113,7 @@ function GradeCard({
       ) : locked ? (
         <>
           <span className="grade-card-mystery" aria-hidden="true"><Lock size={26} /></span>
-          <span className="grade-card-hint">Se habilita cuando tu solicitud de calificadores esté lista.</span>
+          <span className="grade-card-hint">Se habilita al enviar tu solicitud</span>
         </>
       ) : (
         <>
@@ -145,8 +142,8 @@ function AverageReveal({ summary }: { summary: GradingSummary }) {
         <strong className="grade-average-value">?</strong>
         <p>
           {missing === gradeIds.length
-            ? 'Se revela cuando lleguen las dos notas.'
-            : 'Falta una nota para revelarlo.'}
+            ? 'Se revela con las dos notas'
+            : 'Falta una nota'}
         </p>
       </div>
     )
@@ -169,7 +166,6 @@ function AverageReveal({ summary }: { summary: GradingSummary }) {
           <p className="grade-average-verdict">
             <PartyPopper size={18} aria-hidden="true" /> ¡Aprobaste la calificación!
           </p>
-          <p>Vuelve a Biblioteca con el trabajo corregido para empezar las firmas.</p>
           <a className="button primary" href={`#/proceso/${libraryStepId}`}>
             Ir a Biblioteca: firma del estudiante <ArrowRight size={16} aria-hidden="true" />
           </a>
@@ -179,10 +175,7 @@ function AverageReveal({ summary }: { summary: GradingSummary }) {
           <p className="grade-average-verdict">
             <TriangleAlert size={18} aria-hidden="true" /> Promedio menor a 7
           </p>
-          <p>
-            La Unidad de Titulación convoca en 5 días término a calificadores, tutor y estudiante. Entregas el
-            trabajo corregido en 8 días término y se vuelve a calificar.
-          </p>
+          <p>La Unidad de Titulación convoca a calificadores, tutor y estudiante.</p>
         </>
       )}
     </div>
@@ -191,7 +184,7 @@ function AverageReveal({ summary }: { summary: GradingSummary }) {
 
 export function GradingBoard({ definition, status }: { definition: WorkflowDefinition; status: InformationalStatus }) {
   const { workspace } = useWorkspace()
-  const designationId = applicableDependencies(definition, workspace, catalog).find(recordsGrades)
+  const designationId = informationalSources(definition, workspace, catalog).find(recordsGrades)?.id
   return designationId ? <GradingPanel designationId={designationId} locked={status === 'blocked'} /> : null
 }
 
@@ -224,7 +217,6 @@ function GradingPanel({ designationId, locked }: { designationId: string; locked
         ))}
       </div>
       <AverageReveal summary={summary} />
-      <p className="grading-board-note">Las notas quedan guardadas en la designación de calificadores.</p>
     </section>
   )
 }

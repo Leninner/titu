@@ -33,7 +33,7 @@ it('groups the research path into one row per phase, in order', () => {
 it('names the pending steps from other phases that block a step', () => {
   const workspace = workspaceFor('research')
   const library = () => processPhases(processMap(workspace, catalog).nodes)[2].steps[1]
-  expect(library().needs.map((node) => node.definition.title)).toEqual(['Calificación del trabajo'])
+  expect(library().needs.map((node) => node.definition.title)).toEqual(['Designación y calificación'])
   workspace.tasks.push({ ...emptyTask('calificadores-research'), status: 'completed' })
   expect(library().needs).toEqual([])
 })

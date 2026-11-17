@@ -1,21 +1,14 @@
-import { CalendarClock, Hourglass } from 'lucide-react'
+import { CalendarClock } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { catalog } from '../../catalog'
 import { calendarForWorkspace, effectiveEvent, ECUADOR_TIME_ZONE } from '../../domain/dates'
-import { informationalStatus, type InformationalStatus } from '../../domain/informational'
+import { informationalLabel, informationalStage, informationalStatus } from '../../domain/informational'
 import type { WorkflowDefinition } from '../../domain/types'
-import { keyDateFor } from '../../domain/process-map'
 import { GuideTimeline } from './TaskMoreMenu'
-import { GradingBoard } from './GradingBoard'
+import { InformationalBoard } from './InformationalBoard'
 import { useCurrentTime } from './use-current-time'
 import './informational.css'
 import { statusIcons } from './workflow-icons'
-
-export const informationalLabels: Record<InformationalStatus, string> = {
-  done: 'Completado',
-  waiting: 'En revisión',
-  blocked: 'Aún no empieza',
-}
 
 const longDate = (isoDate: string) => {
   const [year, month, day] = isoDate.split('-').map(Number)
@@ -28,9 +21,9 @@ const longDate = (isoDate: string) => {
   }).format(new Date(Date.UTC(year, month - 1, day, 12)))
 }
 
-function useKeyDate(definition: WorkflowDefinition) {
+function useStageDate(definition: WorkflowDefinition, now: Date) {
   const { workspace } = useWorkspace()
-  const id = keyDateFor(definition.id)
+  const id = informationalStage(definition, workspace, catalog, now)?.keyDate
   const event = calendarForWorkspace(workspace, catalog).find((item) => item.id === id)
   return event && effectiveEvent(event)
 }
@@ -40,15 +33,15 @@ export function InformationalDetail({ definition }: { definition: WorkflowDefini
   const now = useCurrentTime()
   const status = informationalStatus(definition, workspace, catalog, now)
   const Icon = statusIcons[status]
-  const event = useKeyDate(definition)
+  const event = useStageDate(definition, now)
   return (
     <section className="task-detail informational-detail">
       <div className="informational-hero">
         <span className={`process-panel-status is-${status}`}>
-          <Icon size={14} aria-hidden="true" /> {informationalLabels[status]}
+          <Icon size={14} aria-hidden="true" /> {informationalLabel(definition, workspace, catalog, now)}
         </span>
         <p>{definition.summary}</p>
-        {event && (
+        {event && status !== 'done' && (
           <div className="informational-date">
             <CalendarClock size={20} aria-hidden="true" />
             <div>
@@ -57,15 +50,9 @@ export function InformationalDetail({ definition }: { definition: WorkflowDefini
             </div>
           </div>
         )}
-        {status === 'waiting' && (
-          <p className="informational-waiting">
-            <Hourglass size={15} aria-hidden="true" /> Los docentes están revisando tu trabajo. No tienes que
-            enviar nada por ahora.
-          </p>
-        )}
       </div>
       <div className="informational-board">
-        <GradingBoard definition={definition} status={status} />
+        <InformationalBoard definition={definition} status={status} />
       </div>
       <h2 className="informational-guide-title">Cómo avanza</h2>
       <GuideTimeline definition={definition} />

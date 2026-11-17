@@ -36,7 +36,7 @@ it('shows one row per phase with its progress and the cross-phase blockers', () 
     expect.arrayContaining(['Trabajo de titulación', 'Calificadores', 'Biblioteca', 'Sustentación y título']),
   )
   expect(screen.getByText('3 de 3')).toBeTruthy()
-  expect(screen.getByText('Necesita: Calificación del trabajo')).toBeTruthy()
+  expect(screen.getByText('Necesita: Designación y calificación')).toBeTruthy()
 })
 
 it('hides completed phases on demand and remembers the choice', () => {

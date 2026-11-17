@@ -229,10 +229,19 @@ export interface WorkflowDefinition {
   autoComplete?: boolean
   inPerson?: boolean
   directSend?: boolean
-  informational?: boolean
+  informational?: InformationalStep
   summary: string
   guide: WorkflowGuide
   role: string
+}
+export interface InformationalStage {
+  label: string
+  keyDate: string
+  reachedWith?: string[]
+  reachedAfter?: string
+}
+export interface InformationalStep {
+  stages: InformationalStage[]
 }
 export interface CatalogVersion {
   version: string

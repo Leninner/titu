@@ -112,7 +112,7 @@ El sistema SHALL contar en "X de N trámites completados" solo los trámites, si
 #### Scenario: Calificación informativa
 
 - **WHEN** un estudiante de Proyecto abre Mi proceso
-- **THEN** el contador indica 13 trámites, sin contar "Calificación del trabajo".
+- **THEN** el contador indica 13 trámites, sin contar "Designación y calificación".
 
 ### Requirement: Mapa del proceso por etapas
 
@@ -121,7 +121,7 @@ El sistema SHALL mostrar el mapa del proceso con una fila por etapa que aplica a
 #### Scenario: Paso bloqueado por otra etapa
 
 - **WHEN** un estudiante de Proyecto abre Mi proceso sin la calificación completada
-- **THEN** "Biblioteca: firma del estudiante" aparece en la fila Biblioteca con "Necesita: Calificación del trabajo".
+- **THEN** "Biblioteca: firma del estudiante" aparece en la fila Biblioteca con "Necesita: Designación y calificación".
 
 ### Requirement: Ocultar etapas completadas
 
