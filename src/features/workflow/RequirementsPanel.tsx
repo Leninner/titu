@@ -1,5 +1,5 @@
 import { useRef, useState, type DragEvent } from 'react'
-import { Circle, CircleAlert, CircleCheck, Clock, ListChecks, Plus, RefreshCw, Upload } from 'lucide-react'
+import { Circle, CircleAlert, CircleCheck, Clock, Link2, ListChecks, Plus, RefreshCw, Upload } from 'lucide-react'
 import { useWorkspace } from '../../app/WorkspaceContext'
 import { FilePage, FileTile } from '../../components/FileTile'
 import { EvidencePreview } from '../../components/EvidencePreview'
@@ -7,9 +7,9 @@ import { InfoTip } from '../../components/InfoTip'
 import { errorMessage } from '../../components/download'
 import { multiFileCategories } from '../../domain/file-names'
 import { RequestButton } from './RequestButton'
-import { ValidityDateFields } from './ValidityDateFields'
+import { NoDebtDates } from './NoDebtDates'
 import type { EvidenceRevision } from './evidence-actions'
-import { hasValidityDate, recordsValidity } from '../../domain/dates'
+import { noDebtSubmissionDate, noDebtValidity, recordsValidity } from '../../domain/dates'
 import type { DocumentVersion, Requirement, Workspace } from '../../domain/types'
 
 export type FileRequirement = Requirement & { category: string }
@@ -58,18 +58,19 @@ function requirementState(
   const signed = selected.filter(
     (version) => !requirement.signed || version.signatureStatus === 'reported-signed',
   )
-  const ready = signed.some(
-    (version) => !recordsValidity(requirement.category) || hasValidityDate(version),
-  )
+  const submissionDate = noDebtSubmissionDate(workspace)
+  const ready = signed.some((version) =>
+    !recordsValidity(requirement.category) ||
+    noDebtValidity(version.issuedOn, submissionDate).status !== 'expired')
   const status: Status = ready ? 'done' : selected.length ? 'partial' : 'pending'
   const statusText = ready
     ? 'Listo'
     : signed.length
-      ? 'Falta la emisión'
+      ? 'Vencido'
       : selected.length
         ? 'Confirmar firma'
         : requirement.optional ? 'Opcional' : 'Pendiente'
-  return { requirement, selected, available, multiple, replacing, status, statusText }
+  return { requirement, selected, available, multiple, replacing, status, statusText, submissionDate }
 }
 type RequirementState = ReturnType<typeof requirementState>
 
@@ -134,11 +135,20 @@ function ListItem({
   )
 }
 
+function UsageChip({ label, titles }: { label: string; titles: string[] }) {
+  return (
+    <span className="req-chip">
+      <Link2 size={14} aria-hidden="true" /> {titles.length === 1 ? '1 trámite' : `${titles.length} trámites`}
+      <InfoTip label={`usos de ${label}`} text={`Se usa en: ${titles.join(' · ')}`} />
+    </span>
+  )
+}
+
 function Viewer({
   id,
   state,
   purpose,
-  note,
+  usage,
   uploading,
   error,
   onPick,
@@ -149,7 +159,7 @@ function Viewer({
   id?: string
   state: RequirementState
   purpose: RequirementPurpose
-  note?: string
+  usage?: string[]
   uploading: boolean
   error: string
   onPick: (documentId?: string) => void
@@ -167,6 +177,8 @@ function Viewer({
   const included = focus ? selected.includes(focus) : false
   const { dragging, handlers } = useFileDrop(onFiles, uploading)
   const copy = purposeCopy[purpose]
+  const showsDates = !!focus && included && recordsValidity(requirement.category)
+  const showsNotice = !!requirement.notice && !(showsDates && focus?.issuedOn)
 
   async function revise(version: DocumentVersion, revision: EvidenceRevision) {
     setRevising(true)
@@ -196,10 +208,22 @@ function Viewer({
         {requirement.category === 'mensual' && <a href="#/anexos">Crear Anexo 5</a>}
         {(requirement.template || requirement.requestEmail) && <RequestButton requirement={requirement} />}
       </div>
-      {requirement.notice && (
-        <p className="req-viewer-notice" role="note">
-          <Clock size={14} aria-hidden="true" /> {requirement.notice}
-        </p>
+      {(showsNotice || showsDates || !!usage?.length) && (
+        <div className="req-viewer-chips">
+          {showsNotice && (
+            <span className="req-chip is-notice" role="note">
+              <Clock size={14} aria-hidden="true" /> {requirement.notice}
+            </span>
+          )}
+          {showsDates && focus && (
+            <NoDebtDates
+              version={focus}
+              submissionDate={state.submissionDate}
+              onChange={(dates) => void revise(focus, dates)}
+            />
+          )}
+          {usage?.length ? <UsageChip label={requirement.label} titles={usage} /> : null}
+        </div>
       )}
       {requirement.checklist && (
         <details className="req-viewer-checklist">
@@ -211,7 +235,6 @@ function Viewer({
           </ol>
         </details>
       )}
-      {note && <p className="req-viewer-usage">{note}</p>}
       {focus ? (
         <>
           <FilePage version={focus} onOpen={() => setPreview(focus)} />
@@ -270,9 +293,6 @@ function Viewer({
               )}
             </div>
           </div>
-          {included && recordsValidity(requirement.category) && (
-            <ValidityDateFields version={focus} onChange={(dates) => void revise(focus, dates)} />
-          )}
           {!included && <p className="req-viewer-note">{copy.outside}</p>}
           {files.length > 1 && (
             <div className="req-viewer-strip" aria-label="Archivos de este requisito">
@@ -313,7 +333,7 @@ export function RequirementsPanel({
   anchorPrefix,
   layout = 'split',
   purpose = 'delivery',
-  notes = {},
+  usage = {},
   excludedIds = [],
   onToggle,
   onUpload,
@@ -325,7 +345,7 @@ export function RequirementsPanel({
   // 'cards' shows every requirement at once, each one its own drop target.
   layout?: 'split' | 'cards'
   purpose?: RequirementPurpose
-  notes?: Record<string, string>
+  usage?: Record<string, string[]>
   excludedIds?: string[]
   onToggle: (versionId: string, checked: boolean) => void
   onUpload: (file: File, category: string, documentId?: string) => Promise<unknown>
@@ -398,7 +418,7 @@ export function RequirementsPanel({
             id={`${anchorPrefix}-${state.requirement.id}`}
             state={state}
             purpose={purpose}
-            note={notes[state.requirement.id]}
+            usage={usage[state.requirement.id]}
             uploading={uploadingId === state.requirement.id}
             error={errors[state.requirement.id] ?? ''}
             onPick={(documentId) => pick(state, documentId)}
@@ -428,7 +448,7 @@ export function RequirementsPanel({
         key={active.requirement.id}
         state={active}
         purpose={purpose}
-        note={notes[active.requirement.id]}
+        usage={usage[active.requirement.id]}
         uploading={uploadingId === active.requirement.id}
         error={errors[active.requirement.id] ?? ''}
         onPick={(documentId) => pick(active, documentId)}

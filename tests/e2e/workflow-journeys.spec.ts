@@ -145,7 +145,6 @@ for (const modality of ['research', 'article', 'complexivo'] as const) {
             signatureStatus: 'reported-signed',
             textualPdfStatus: 'text-detected',
             issuedOn: '2026-12-07',
-            expiresOn: '2027-01-15',
             ...(category === 'mensual' && {
               reportAnalysis: {
                 recognized: true,

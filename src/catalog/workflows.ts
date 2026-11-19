@@ -45,7 +45,7 @@ const business = {
   companyOnly: true,
   template: 'cumplimiento-empresarial',
 }
-const noDebt = doc('no-adeudar', ['Formulario de no adeudar', 'Vigente: vale 30 días desde su emisión'], 'no-adeudar')
+const noDebt = doc('no-adeudar', ['Formulario de no adeudar', 'Vigente: vale 30 días desde su emisión'], 'no-adeudar', false)
 const projectPreliminaryPages = {
   title: 'Páginas obligatorias',
   items: [
@@ -453,7 +453,7 @@ add({
     {
       ...noDebt,
       ...labelled(['Formulario de no adeudar', 'Firmado electrónicamente; se descarga cuando su estado es Finalizado']),
-      notice: 'Vale 30 días desde su emisión · debe estar vigente al pedir día y hora',
+      notice: 'Vale 30 días',
     },
   ],
   guide: {
@@ -642,7 +642,7 @@ add({
       template: `anexo-14-${modality}`,
     })),
     { ...legalCertificate, ...labelled(['Certificado de aptitud legal', 'Con los mismos anexos presentados para obtenerlo']) },
-    { ...noDebt, ...labelled(['Formulario de no adeudar', 'Vigente a la fecha de ingreso de la solicitud']), notice: 'Debe estar vigente al enviar esta solicitud' },
+    { ...noDebt, ...labelled(['Formulario de no adeudar', 'Vigente a la fecha de ingreso de la solicitud']), notice: 'Vigente al enviar' },
     doc('bachiller', ['Título de bachiller', 'Certificado de registro descargado del sitio del Ministerio de Educación, no el acta de grado del colegio'], 'bachiller'),
     { ...resolution, ...labelled(['Resoluciones de modalidad y tema', 'Resoluciones de Consejo Directivo de modalidad, tema y sus cambios; en complexivo, la de aprobación o cambio de modalidad']) },
     { ...designation, label: 'Notificación de calificadores designados', modalities: work },

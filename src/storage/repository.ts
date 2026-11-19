@@ -36,7 +36,6 @@ export interface AddDocumentInput {
   category?: string
   documentId?: string
   issuedOn?: string
-  expiresOn?: string
   sourceDraftId?: string
   revision?: number
   signatureStatus?: DocumentVersion['signatureStatus']
@@ -158,7 +157,6 @@ export class WorkspaceRepository {
       sha256: digest,
       createdAt,
       issuedOn: input.issuedOn,
-      expiresOn: input.expiresOn,
       sourceDraftId: input.sourceDraftId,
       revision: input.revision,
       signatureStatus: input.signatureStatus ?? 'unsigned',

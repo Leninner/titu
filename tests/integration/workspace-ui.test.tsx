@@ -213,7 +213,7 @@ it('uploads original document bytes and appends a signed correction without muta
     sentAt: '2026-10-22T18:00:00.000Z',
     note: '',
   })
-  fireEvent.click(card.getByText('Firma y fechas'))
+  fireEvent.click(card.getByText('Firma'))
   fireEvent.click(card.getByLabelText('Los archivos de esta carga ya están firmados'))
   fireEvent.click(card.getByRole('button', { name: 'Reemplazar Solicitud firmada.png' }))
   fireEvent.change(input, {

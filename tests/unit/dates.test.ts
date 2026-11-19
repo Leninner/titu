@@ -31,7 +31,7 @@ describe('Ecuador dates', () => {
   it('uses issuance and marks uncertain day 30', () => {
     expect(noDebtValidity('2026-12-07', '2027-01-06').status).toBe('verify')
     expect(noDebtValidity('2026-12-07', '2027-01-07').status).toBe('expired')
-    expect(noDebtValidity('2026-12-07', '2027-01-06', '2027-01-10').status).toBe('valid')
+    expect(noDebtValidity('2026-12-07', '2027-01-05').status).toBe('valid')
     expect(noDebtValidity(undefined, '2027-01-06').status).toBe('missing')
   })
 })

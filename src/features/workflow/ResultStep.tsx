@@ -18,11 +18,11 @@ function MissingList({ title, items }: { title: string; items: string[] }) {
   )
 }
 
-function usageNotes(outputs: Requirement[], definition: WorkflowDefinition, workspace: Workspace) {
+function usageTitles(outputs: Requirement[], definition: WorkflowDefinition, workspace: Workspace) {
   return Object.fromEntries(
     fileRequirements(outputs).flatMap((requirement) => {
       const titles = outputUsage(requirement.category, definition.id, workspace, catalog)
-      return titles.length ? [[requirement.id, `Se usa en: ${titles.join(' · ')}`]] : []
+      return titles.length ? [[requirement.id, titles]] : []
     }),
   )
 }
@@ -64,7 +64,7 @@ export function ResultStep({
         anchorPrefix="task-output"
         layout="cards"
         purpose="result"
-        notes={usageNotes(outputs, definition, workspace)}
+        usage={usageTitles(outputs, definition, workspace)}
         excludedIds={unavailableIds}
         {...files}
       />

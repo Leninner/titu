@@ -95,17 +95,68 @@
   gap: 12px;
   margin-top: 16px;
 }
-.req-viewer-notice {
+.req-viewer-chips {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   align-items: center;
   margin: -4px 0 0;
-  color: #8a5a00;
+}
+.req-chip {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #f4f7fa;
+  color: #3b4a5c;
   font-size: 0.78rem;
   font-weight: 600;
+  white-space: nowrap;
 }
-.req-viewer-notice svg {
+.req-chip svg {
   flex: none;
+}
+.req-chip .info-tip button {
+  width: 20px;
+  min-height: 20px;
+  margin-right: -6px;
+}
+.req-chip.is-notice,
+.req-chip.is-verify {
+  border-color: #f0dcb8;
+  background: #fdf5e6;
+  color: #7d4f00;
+}
+.req-chip.is-valid {
+  border-color: #cfe5d6;
+  background: #e7f3eb;
+  color: #285e40;
+}
+.req-chip.is-expired {
+  border-color: #efc9c4;
+  background: #fbeceb;
+  color: var(--error);
+}
+.req-chip.is-action {
+  border-style: dashed;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+.req-chip.is-action:hover,
+.req-chip.is-action:focus-visible {
+  background: var(--accent-soft);
+}
+.req-chip-date {
+  min-height: 28px;
+  padding: 2px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.8rem;
 }
 .req-viewer-checklist {
   margin: -4px 0 0;
@@ -149,12 +200,6 @@
   color: #9a5b00;
   font-size: 0.82rem;
   font-weight: 600;
-}
-.req-viewer-usage {
-  margin: -4px 0 0;
-  color: #4f6b5b;
-  font-size: 0.78rem;
-  font-weight: 550;
 }
 .task-result-missing {
   margin-top: 18px;

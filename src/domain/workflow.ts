@@ -6,7 +6,7 @@ import type {
   WorkflowDefinition,
   Workspace,
 } from './types'
-import { ecuadorDate, noDebtValidity } from './dates'
+import { noDebtSubmissionDate, noDebtValidity } from './dates'
 import { evidenceIdsForTask } from './task-evidence'
 import { monthlyCoverage, monthlyGaps } from './monthly-report'
 import { validateAnnex } from './annex'
@@ -98,12 +98,9 @@ function fileGap(
     : evidence
   if (!signedEvidence.length) return `Firma pendiente: ${requirement.label}`
   if (requirement.category === 'no-adeudar') {
-    // The intended submission is the day/hour request, never the defense date.
-    const submissionDate = workspace.settings.dayHourSubmissionDate || ecuadorDate(now)
-    const validities = signedEvidence.map((version) =>
-      noDebtValidity(version.issuedOn, submissionDate, version.expiresOn),
-    )
-    if (!validities.some((validity) => validity.status === 'valid'))
+    const submissionDate = noDebtSubmissionDate(workspace, now)
+    const validities = signedEvidence.map((version) => noDebtValidity(version.issuedOn, submissionDate))
+    if (validities.every((validity) => validity.status === 'expired'))
       return `No adeudar: ${validities[0].label}`
   }
   if (

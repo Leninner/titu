@@ -8,7 +8,6 @@ import { FilePage, FileTile } from '../../components/FileTile'
 import { repository } from '../../storage/repository'
 import { downloadBlob, errorMessage } from '../../components/download'
 import type { DocumentCategory } from './document-categories'
-import { NaturalDateInput } from '../../components/NaturalDateInput'
 import { multiFileCategories, systemFileName } from '../../domain/file-names'
 import { reportAnalysis } from './report-analysis'
 import { issueDate } from './issue-date'
@@ -20,8 +19,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [signed, setSigned] = useState(false)
-  const [issuedOn, setIssuedOn] = useState('')
-  const [expiresOn, setExpiresOn] = useState('')
   const [preview, setPreview] = useState<DocumentVersion | null>(null)
   const input = useRef<HTMLInputElement>(null)
   const targetDocument = useRef<string | undefined>(undefined)
@@ -74,8 +71,7 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
           category: category.id,
           signatureStatus: signed ? 'reported-signed' : 'unsigned',
           textualPdfStatus,
-          issuedOn: issuedOn || await issueDate(file, category.id),
-          expiresOn: expiresOn || undefined,
+          issuedOn: await issueDate(file, category.id),
           reportAnalysis: await reportAnalysis(file, category.id),
         })
         saved++
@@ -119,7 +115,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
         signatureStatus: signedNow ? 'reported-signed' : 'unsigned',
         textualPdfStatus: version.textualPdfStatus,
         issuedOn: version.issuedOn,
-        expiresOn: version.expiresOn,
         reportAnalysis: version.reportAnalysis,
       })
     })
@@ -234,9 +229,9 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
         </button>
       )}
       <div className="file-row-links">
-        {(category.signed || category.id === 'no-adeudar') && <details className="upload-options">
+        {category.signed && <details className="upload-options">
           <summary>
-            Firma y fechas <span>opcional</span>
+            Firma <span>opcional</span>
           </summary>
           <label className="check">
             <input
@@ -247,22 +242,6 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
             Los archivos de esta carga ya están firmados
           </label>
           <p className="hint">Solo registramos tu reporte; no validamos la firma.</p>
-          {category.id === 'no-adeudar' && (
-            <>
-              <NaturalDateInput
-                label="Emisión real"
-                name={`emision-${category.id}`}
-                value={issuedOn}
-                onChange={setIssuedOn}
-              />
-              <NaturalDateInput
-                label="Vencimiento impreso"
-                name={`vencimiento-${category.id}`}
-                value={expiresOn}
-                onChange={setExpiresOn}
-              />
-            </>
-          )}
         </details>}
       </div>
       {dragging && (

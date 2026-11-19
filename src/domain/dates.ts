@@ -78,20 +78,19 @@ export function calendarForWorkspace(
   return [...new Map(applicable.map((event) => [event.id, event])).values()]
 }
 
-export type ValidityDates = Pick<DocumentVersion, 'issuedOn' | 'expiresOn'>
+export type ValidityDates = Pick<DocumentVersion, 'issuedOn'>
 
 export const recordsValidity = (category: string) => category === 'no-adeudar'
 
-export const hasValidityDate = (dates: ValidityDates) => !!(dates.issuedOn || dates.expiresOn)
+export const noDebtSubmissionDate = (workspace: Workspace, now = new Date()) =>
+  workspace.settings.dayHourSubmissionDate || ecuadorDate(now)
 
-export function noDebtValidity(
-  issuedOn: string | undefined,
-  submissionDate: string,
-  expiresOn?: string,
-) {
-  if (!hasValidityDate({ issuedOn, expiresOn }))
-    return { status: 'missing' as const, referenceDate: null, label: 'registra la fecha de emisión' }
-  const referenceDate = expiresOn || addDays(issuedOn!, 30)
+export const noDebtExpiry = (issuedOn: string) => addDays(issuedOn, 30)
+
+export function noDebtValidity(issuedOn: string | undefined, submissionDate: string) {
+  if (!issuedOn)
+    return { status: 'missing' as const, referenceDate: null, label: 'Sin fecha de emisión' }
+  const referenceDate = noDebtExpiry(issuedOn)
   const difference = daysBetween(submissionDate, referenceDate)
   if (difference < 0)
     return {
@@ -99,13 +98,12 @@ export function noDebtValidity(
       referenceDate,
       label: 'Vencido: revisar expediente con Secretaría',
     }
-  if (difference === 0 && !expiresOn)
+  if (difference === 0)
     return { status: 'verify' as const, referenceDate, label: 'Verificar vigencia' }
-  return {
-    status: 'valid' as const,
-    referenceDate,
-    label: expiresOn
-      ? 'Dentro del vencimiento registrado'
-      : 'Dentro de la referencia estimada de 30 días',
-  }
+  return { status: 'valid' as const, referenceDate, label: 'Dentro de los 30 días' }
 }
+
+export const shortDayLabel = (date: string) =>
+  new Intl.DateTimeFormat('es-EC', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .format(new Date(`${date}T00:00:00Z`))
+    .replace('.', '')

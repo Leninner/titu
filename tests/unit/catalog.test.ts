@@ -148,8 +148,8 @@ describe('institutional catalog', () => {
       catalog.workflowDefinitions
         .find((definition) => definition.id === workflowId)!
         [workflowId === 'no-adeudar' ? 'outputs' : 'requirements'].find((item) => item.category === 'no-adeudar')?.notice
-    expect(noticeOf('no-adeudar')).toBe('Vale 30 días desde su emisión · debe estar vigente al pedir día y hora')
-    expect(noticeOf('dia-hora')).toBe('Debe estar vigente al enviar esta solicitud')
+    expect(noticeOf('no-adeudar')).toBe('Vale 30 días')
+    expect(noticeOf('dia-hora')).toBe('Vigente al enviar')
     expect(noticeOf('aptitud-legal-research')).toBeUndefined()
   })
   it('guides the no-debt form through the integrated system with its contacts', () => {

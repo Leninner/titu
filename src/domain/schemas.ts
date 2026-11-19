@@ -85,7 +85,6 @@ export const versionSchema = z.object({
   sha256: z.string().regex(/^[a-f0-9]{64}$/),
   createdAt: timestamp,
   issuedOn: date.optional(),
-  expiresOn: date.optional(),
   sourceDraftId: id.optional(),
   revision: z.number().int().nonnegative().optional(),
   signatureStatus: z.enum(['unsigned', 'pending', 'reported-signed']),

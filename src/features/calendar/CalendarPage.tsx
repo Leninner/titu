@@ -42,7 +42,6 @@ export function CalendarPage() {
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [issued, setIssued] = useState('')
-  const [expiry, setExpiry] = useState('')
   const [delivery, setDelivery] = useState(workspace.settings.dayHourSubmissionDate ?? '')
   const events = calendarForWorkspace(workspace, catalog)
   const [view, setView] = useState<'agenda' | 'calendar'>('agenda')
@@ -75,11 +74,10 @@ export function CalendarPage() {
   const validity =
     delivery &&
     validDate(delivery) &&
-    (!issued || validDate(issued)) &&
-    (!expiry || validDate(expiry))
-      ? noDebtValidity(issued || undefined, delivery, expiry || undefined)
+    (!issued || validDate(issued))
+      ? noDebtValidity(issued || undefined, delivery)
       : {
-          label: 'Registra fechas completas de emisión o vencimiento y de ingreso de la solicitud',
+          label: 'Registra la emisión y el ingreso de la solicitud',
           referenceDate: null,
         }
   return (
@@ -330,23 +328,13 @@ export function CalendarPage() {
       </section>
       <section className="settings-section">
         <h2>Revisar vigencia de no adeudar</h2>
-        <p>
-          La referencia se calcula desde la emisión real, para el ingreso de la solicitud de día y
-          hora. Guarda la emisión y el vencimiento impreso junto al archivo en Documentos para
-          usarlos en los trámites.
-        </p>
+        <p>Vale 30 días desde la emisión.</p>
         <div className="form-grid">
           <NaturalDateInput
             name="issued"
             label="Emisión real"
             value={issued}
             onChange={setIssued}
-          />
-          <NaturalDateInput
-            name="expiry"
-            label="Vencimiento impreso (si existe)"
-            value={expiry}
-            onChange={setExpiry}
           />
           <NaturalDateInput
             name="delivery"

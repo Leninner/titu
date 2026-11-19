@@ -80,7 +80,7 @@ export async function addEvidence(
   return { task: withUploadedVersion(task, workspace, version, category, field), version }
 }
 
-export type EvidenceRevision = Partial<Pick<DocumentVersion, 'signatureStatus' | 'issuedOn' | 'expiresOn'>>
+export type EvidenceRevision = Partial<Pick<DocumentVersion, 'signatureStatus' | 'issuedOn'>>
 
 export async function reviseEvidence(
   task: TaskRecord,
@@ -102,7 +102,6 @@ export async function reviseEvidence(
     signatureStatus: revised.signatureStatus,
     textualPdfStatus: version.textualPdfStatus,
     issuedOn: revised.issuedOn || undefined,
-    expiresOn: revised.expiresOn || undefined,
     reportAnalysis: version.reportAnalysis,
   })
   return {

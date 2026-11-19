@@ -91,7 +91,6 @@ export interface DocumentVersion {
   sha256: string
   createdAt: string
   issuedOn?: string
-  expiresOn?: string
   sourceDraftId?: string
   revision?: number
   signatureStatus: 'unsigned' | 'pending' | 'reported-signed'

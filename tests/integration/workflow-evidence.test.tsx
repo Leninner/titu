@@ -199,9 +199,11 @@ it('registers the Council resolution in Resultado, completes the proposal and re
   const card = within(await screen.findByRole('article', {
     name: 'Resolución de modalidad y tema',
   }))
-  expect(await card.findByText(
+  expect(await card.findByText('2 trámites')).toBeTruthy()
+  const usage = card.getByRole('button', { name: /^Detalle de usos de / })
+  expect(window.document.getElementById(usage.getAttribute('aria-describedby')!)?.textContent).toBe(
     'Se usa en: Designación de calificadores del Proyecto · Solicitud de fecha de sustentación o incorporación',
-  )).toBeTruthy()
+  )
   fireEvent.click(await card.findByRole('checkbox', {
     name: 'Este archivo ya tiene las firmas requeridas: Resolución de Consejo Directivo.png',
   }))
@@ -476,11 +478,11 @@ it('shows the no-debt validity note and the preliminary pages on the day and hou
   await repository.saveProfile({ ...newProfile(), modalidad: 'research' })
   await openTask('dia-hora', 'Solicitud de fecha de sustentación o incorporación')
   const card = within(screen.getByRole('article', { name: 'Formulario de no adeudar' }))
-  expect(card.getByRole('note').textContent).toContain('Debe estar vigente al enviar esta solicitud')
+  expect(card.getByRole('note').textContent).toContain('Vigente al enviar')
   expect(screen.getByRole('article', { name: 'Trabajo final firmado' }).textContent).toContain('Páginas obligatorias · 10')
 })
 
-it('asks for the no-debt issue date before completing the task', async () => {
+it('completes the no-debt task with just the uploaded form', async () => {
   await repository.saveProfile({ ...newProfile(), modalidad: 'complexivo' })
   await openTask('no-adeudar', 'Formulario de no adeudar')
   const complete = screen.getByRole('button', { name: 'Completar trámite' }) as HTMLButtonElement
@@ -489,17 +491,14 @@ it('asks for the no-debt issue date before completing the task', async () => {
     target: { files: [new File(['scan'], 'no-adeudar.png', { type: 'image/png' })] },
   })
   const card = within(await screen.findByRole('article', { name: 'Formulario de no adeudar' }))
-  fireEvent.click(await card.findByRole('checkbox', { name: /^Este archivo ya tiene las firmas requeridas/ }))
-  expect(await card.findByText('Falta la emisión')).toBeTruthy()
-  expect(screen.getByText('Falta para completar')).toBeTruthy()
-  expect(screen.getByText('No adeudar: registra la fecha de emisión')).toBeTruthy()
-  expect(complete.disabled).toBe(true)
-
-  fireEvent.change(card.getAllByLabelText('Fecha en calendario')[0], {
-    target: { value: ecuadorDate() },
-  })
-  fireEvent.click(await card.findByRole('button', { name: /^Usar / }))
   expect(await card.findByText('Listo')).toBeTruthy()
+  expect(card.queryByRole('checkbox', { name: /^Este archivo ya tiene las firmas requeridas/ })).toBeNull()
+  expect(card.queryByText(/Vencimiento impreso/)).toBeNull()
   await waitFor(() => expect(complete.disabled).toBe(false))
   expect(screen.queryByText('Falta para completar')).toBeNull()
+
+  fireEvent.click(card.getByRole('button', { name: 'Agregar emisión' }))
+  fireEvent.change(card.getByLabelText('Fecha de emisión'), { target: { value: ecuadorDate() } })
+  expect(await card.findByText(/^Vence /)).toBeTruthy()
+  expect(card.queryByRole('note')).toBeNull()
 })
