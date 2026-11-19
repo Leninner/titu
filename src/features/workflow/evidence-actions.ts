@@ -2,6 +2,7 @@ import type { DocumentVersion, TaskRecord, Workspace } from '../../domain/types'
 import { repository } from '../../storage/repository'
 import { systemFileName } from '../../domain/file-names'
 import { reportAnalysis } from '../documents/report-analysis'
+import { issueDate } from '../documents/issue-date'
 
 export type EvidenceField = 'evidenceVersionIds' | 'outputVersionIds'
 
@@ -44,6 +45,7 @@ export async function uploadVersion(
     category,
     signatureStatus: 'unsigned',
     textualPdfStatus,
+    issuedOn: await issueDate(file, category),
     reportAnalysis: await reportAnalysis(file, category),
   })
 }
@@ -78,26 +80,29 @@ export async function addEvidence(
   return { task: withUploadedVersion(task, workspace, version, category, field), version }
 }
 
-export async function signEvidence(
+export type EvidenceRevision = Partial<Pick<DocumentVersion, 'signatureStatus' | 'issuedOn' | 'expiresOn'>>
+
+export async function reviseEvidence(
   task: TaskRecord,
   workspace: Workspace,
   version: DocumentVersion,
-  signed: boolean,
+  revision: EvidenceRevision,
   field: EvidenceField = 'evidenceVersionIds',
 ): Promise<TaskRecord> {
   const blob = await repository.getBlob(version.blobId)
   if (!blob) throw new Error('No se encontró el archivo original')
   const document = workspace.documents.find((item) => item.id === version.documentId)
   if (!document) throw new Error('No se encontró el documento')
+  const revised = { ...version, ...revision }
   const updated = await repository.addDocumentVersion({
     file: blob,
     originalName: version.originalName,
     documentId: version.documentId,
     category: document.category,
-    signatureStatus: signed ? 'reported-signed' : 'unsigned',
+    signatureStatus: revised.signatureStatus,
     textualPdfStatus: version.textualPdfStatus,
-    issuedOn: version.issuedOn,
-    expiresOn: version.expiresOn,
+    issuedOn: revised.issuedOn || undefined,
+    expiresOn: revised.expiresOn || undefined,
     reportAnalysis: version.reportAnalysis,
   })
   return {

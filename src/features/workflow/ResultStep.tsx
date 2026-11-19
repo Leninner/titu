@@ -7,6 +7,17 @@ import { fileRequirements, type FileHandlers } from './PrepareStep'
 import { RequirementFields } from './RequirementFields'
 import { RequirementsPanel } from './RequirementsPanel'
 
+function MissingList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="task-result-missing" role="note">
+      <strong>{title}</strong>
+      <ul>
+        {items.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </div>
+  )
+}
+
 function usageNotes(outputs: Requirement[], definition: WorkflowDefinition, workspace: Workspace) {
   return Object.fromEntries(
     fileRequirements(outputs).flatMap((requirement) => {
@@ -21,6 +32,7 @@ export function ResultStep({
   task,
   outputs,
   missingInputs,
+  missingOutputs,
   canComplete,
   files,
   onTaskChange,
@@ -32,6 +44,7 @@ export function ResultStep({
   task: TaskRecord
   outputs: Requirement[]
   missingInputs: string[]
+  missingOutputs: string[]
   canComplete: boolean
   files: FileHandlers
   onTaskChange: (task: TaskRecord) => void
@@ -62,14 +75,9 @@ export function ResultStep({
         onChange={(id, value) =>
           onTaskChange({ ...task, requirementChecks: { ...task.requirementChecks, [id]: value } })}
       />
-      {missingInputs.length > 0 && task.status !== 'completed' && (
-        <div className="task-result-missing" role="note">
-          <strong>Falta en la entrega</strong>
-          <ul>
-            {missingInputs.map((item) => <li key={item}>{item}</li>)}
-          </ul>
-        </div>
-      )}
+      {task.status !== 'completed' && (missingInputs.length > 0
+        ? <MissingList title="Falta en la entrega" items={missingInputs} />
+        : missingOutputs.length > 0 && <MissingList title="Falta para completar" items={missingOutputs} />)}
       {observation !== undefined && (
         <div className="task-observation">
           <label className="field">

@@ -23,7 +23,7 @@ import { latestDraft, requirementGap, taskInputs, taskOutputs } from '../../doma
 import { AnnexDocument } from '../annexes/AnnexDocument'
 import { repository } from '../../storage/repository'
 import { RequirementsPanel } from './RequirementsPanel'
-import { addEvidence, signEvidence, withEvidence, type EvidenceField } from './evidence-actions'
+import { addEvidence, reviseEvidence, withEvidence, type EvidenceField } from './evidence-actions'
 import { fileRequirements, type FileHandlers } from './PrepareStep'
 import { MonthlyReportCards } from './MonthlyReportCards'
 import { persistTask } from './task-persistence'
@@ -201,8 +201,8 @@ function ProcessDialog({
       })
       return uploaded!
     },
-    onSignatureChange: (version, signed) =>
-      update((current, latest) => signEvidence(current, latest, version, signed, field)),
+    onRevise: (version, revision) =>
+      update((current, latest) => reviseEvidence(current, latest, version, revision, field)),
   }
   const monthly = documents.find((requirement) => requirement.category === 'mensual')
   const annex = result ? undefined : requirements.find((requirement) => requirement.annex)

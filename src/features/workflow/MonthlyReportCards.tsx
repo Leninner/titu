@@ -86,7 +86,7 @@ function MonthCard({
 
   async function sign(version: DocumentVersion, signed: boolean) {
     setSigning(true)
-    await run(() => files.onSignatureChange(version, signed))
+    await run(() => files.onRevise(version, { signatureStatus: signed ? 'reported-signed' : 'unsigned' }))
     setSigning(false)
   }
 

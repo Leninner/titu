@@ -5,11 +5,12 @@ import { MonthlyReportCards } from './MonthlyReportCards'
 import { RequirementFields } from './RequirementFields'
 import { RequirementsPanel, type FileRequirement } from './RequirementsPanel'
 import { SubmissionZipButton } from './SubmissionZipButton'
+import type { EvidenceRevision } from './evidence-actions'
 
 export interface FileHandlers {
   onToggle: (versionId: string, checked: boolean) => void
   onUpload: (file: File, category: string, documentId?: string) => Promise<DocumentVersion>
-  onSignatureChange: (version: DocumentVersion, signed: boolean) => Promise<void>
+  onRevise: (version: DocumentVersion, revision: EvidenceRevision) => Promise<void>
 }
 
 export const fileRequirements = (requirements: Requirement[]): FileRequirement[] =>

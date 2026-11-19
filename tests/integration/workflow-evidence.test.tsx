@@ -8,6 +8,7 @@ import { AppShell } from '../../src/app/AppShell'
 import { repository } from '../../src/storage/repository'
 import { newProfile } from '../../src/domain/types'
 import { emptyTask } from '../../src/domain/task-record'
+import { ecuadorDate } from '../../src/domain/dates'
 import { zipSync } from 'fflate'
 
 beforeEach(async () => {
@@ -477,4 +478,28 @@ it('shows the no-debt validity note and the preliminary pages on the day and hou
   const card = within(screen.getByRole('article', { name: 'Formulario de no adeudar' }))
   expect(card.getByRole('note').textContent).toContain('Debe estar vigente al enviar esta solicitud')
   expect(screen.getByRole('article', { name: 'Trabajo final firmado' }).textContent).toContain('Páginas obligatorias · 10')
+})
+
+it('asks for the no-debt issue date before completing the task', async () => {
+  await repository.saveProfile({ ...newProfile(), modalidad: 'complexivo' })
+  await openTask('no-adeudar', 'Formulario de no adeudar')
+  const complete = screen.getByRole('button', { name: 'Completar trámite' }) as HTMLButtonElement
+
+  fireEvent.change(screen.getByLabelText('Subir archivo para Formulario de no adeudar'), {
+    target: { files: [new File(['scan'], 'no-adeudar.png', { type: 'image/png' })] },
+  })
+  const card = within(await screen.findByRole('article', { name: 'Formulario de no adeudar' }))
+  fireEvent.click(await card.findByRole('checkbox', { name: /^Este archivo ya tiene las firmas requeridas/ }))
+  expect(await card.findByText('Falta la emisión')).toBeTruthy()
+  expect(screen.getByText('Falta para completar')).toBeTruthy()
+  expect(screen.getByText('No adeudar: registra la fecha de emisión')).toBeTruthy()
+  expect(complete.disabled).toBe(true)
+
+  fireEvent.change(card.getAllByLabelText('Fecha en calendario')[0], {
+    target: { value: ecuadorDate() },
+  })
+  fireEvent.click(await card.findByRole('button', { name: /^Usar / }))
+  expect(await card.findByText('Listo')).toBeTruthy()
+  await waitFor(() => expect(complete.disabled).toBe(false))
+  expect(screen.queryByText('Falta para completar')).toBeNull()
 })

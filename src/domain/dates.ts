@@ -1,4 +1,4 @@
-import type { CalendarEvent, CatalogVersion, Workspace } from './types'
+import type { CalendarEvent, CatalogVersion, DocumentVersion, Workspace } from './types'
 
 export const ECUADOR_TIME_ZONE = 'America/Guayaquil'
 const dayMilliseconds = 86_400_000
@@ -78,13 +78,19 @@ export function calendarForWorkspace(
   return [...new Map(applicable.map((event) => [event.id, event])).values()]
 }
 
+export type ValidityDates = Pick<DocumentVersion, 'issuedOn' | 'expiresOn'>
+
+export const recordsValidity = (category: string) => category === 'no-adeudar'
+
+export const hasValidityDate = (dates: ValidityDates) => !!(dates.issuedOn || dates.expiresOn)
+
 export function noDebtValidity(
   issuedOn: string | undefined,
   submissionDate: string,
   expiresOn?: string,
 ) {
-  if (!issuedOn && !expiresOn)
-    return { status: 'missing' as const, referenceDate: null, label: 'Pendiente de registrar' }
+  if (!hasValidityDate({ issuedOn, expiresOn }))
+    return { status: 'missing' as const, referenceDate: null, label: 'registra la fecha de emisión' }
   const referenceDate = expiresOn || addDays(issuedOn!, 30)
   const difference = daysBetween(submissionDate, referenceDate)
   if (difference < 0)

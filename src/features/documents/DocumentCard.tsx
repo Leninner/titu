@@ -11,6 +11,7 @@ import type { DocumentCategory } from './document-categories'
 import { NaturalDateInput } from '../../components/NaturalDateInput'
 import { multiFileCategories, systemFileName } from '../../domain/file-names'
 import { reportAnalysis } from './report-analysis'
+import { issueDate } from './issue-date'
 
 export function DocumentCard({ category }: { category: DocumentCategory }) {
   const { workspace, run, busy } = useWorkspace()
@@ -73,7 +74,7 @@ export function DocumentCard({ category }: { category: DocumentCategory }) {
           category: category.id,
           signatureStatus: signed ? 'reported-signed' : 'unsigned',
           textualPdfStatus,
-          issuedOn: issuedOn || undefined,
+          issuedOn: issuedOn || await issueDate(file, category.id),
           expiresOn: expiresOn || undefined,
           reportAnalysis: await reportAnalysis(file, category.id),
         })

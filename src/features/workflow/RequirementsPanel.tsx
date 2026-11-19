@@ -7,6 +7,9 @@ import { InfoTip } from '../../components/InfoTip'
 import { errorMessage } from '../../components/download'
 import { multiFileCategories } from '../../domain/file-names'
 import { RequestButton } from './RequestButton'
+import { ValidityDateFields } from './ValidityDateFields'
+import type { EvidenceRevision } from './evidence-actions'
+import { hasValidityDate, recordsValidity } from '../../domain/dates'
 import type { DocumentVersion, Requirement, Workspace } from '../../domain/types'
 
 export type FileRequirement = Requirement & { category: string }
@@ -52,15 +55,20 @@ function requirementState(
       !usedDocuments.has(version.documentId) &&
       !excludedIds.has(version.id) &&
       versions.findIndex((item) => item.documentId === version.documentId) === index)
-  const ready = selected.some(
+  const signed = selected.filter(
     (version) => !requirement.signed || version.signatureStatus === 'reported-signed',
+  )
+  const ready = signed.some(
+    (version) => !recordsValidity(requirement.category) || hasValidityDate(version),
   )
   const status: Status = ready ? 'done' : selected.length ? 'partial' : 'pending'
   const statusText = ready
     ? 'Listo'
-    : selected.length
-      ? 'Confirmar firma'
-      : requirement.optional ? 'Opcional' : 'Pendiente'
+    : signed.length
+      ? 'Falta la emisión'
+      : selected.length
+        ? 'Confirmar firma'
+        : requirement.optional ? 'Opcional' : 'Pendiente'
   return { requirement, selected, available, multiple, replacing, status, statusText }
 }
 type RequirementState = ReturnType<typeof requirementState>
@@ -136,7 +144,7 @@ function Viewer({
   onPick,
   onFiles,
   onToggle,
-  onSignatureChange,
+  onRevise,
 }: {
   id?: string
   state: RequirementState
@@ -147,28 +155,28 @@ function Viewer({
   onPick: (documentId?: string) => void
   onFiles: (files: FileList) => void
   onToggle: (versionId: string, checked: boolean) => void
-  onSignatureChange: (version: DocumentVersion, signed: boolean) => Promise<void>
+  onRevise: (version: DocumentVersion, revision: EvidenceRevision) => Promise<void>
 }) {
   const { requirement, selected, available, replacing } = state
   const files = [...selected, ...available]
   const [focusId, setFocusId] = useState<string>()
   const [preview, setPreview] = useState<DocumentVersion | null>(null)
-  const [changingSignature, setChangingSignature] = useState(false)
-  const [signatureError, setSignatureError] = useState('')
+  const [revising, setRevising] = useState(false)
+  const [revisionError, setRevisionError] = useState('')
   const focus = files.find((version) => version.id === focusId) ?? files[0]
   const included = focus ? selected.includes(focus) : false
   const { dragging, handlers } = useFileDrop(onFiles, uploading)
   const copy = purposeCopy[purpose]
 
-  async function changeSignature(version: DocumentVersion, signed: boolean) {
-    setChangingSignature(true)
-    setSignatureError('')
+  async function revise(version: DocumentVersion, revision: EvidenceRevision) {
+    setRevising(true)
+    setRevisionError('')
     try {
-      await onSignatureChange(version, signed)
+      await onRevise(version, revision)
     } catch (failure) {
-      setSignatureError(errorMessage(failure))
+      setRevisionError(errorMessage(failure))
     } finally {
-      setChangingSignature(false)
+      setRevising(false)
     }
   }
 
@@ -237,9 +245,10 @@ function Viewer({
                   <input
                     type="checkbox"
                     checked={focus.signatureStatus === 'reported-signed'}
-                    disabled={changingSignature}
+                    disabled={revising}
                     aria-label={`Este archivo ya tiene las firmas requeridas: ${focus.originalName}`}
-                    onChange={(event) => void changeSignature(focus, event.target.checked)}
+                    onChange={(event) =>
+                      void revise(focus, { signatureStatus: event.target.checked ? 'reported-signed' : 'unsigned' })}
                   />
                   Tiene firmas
                 </label>
@@ -261,6 +270,9 @@ function Viewer({
               )}
             </div>
           </div>
+          {included && recordsValidity(requirement.category) && (
+            <ValidityDateFields version={focus} onChange={(dates) => void revise(focus, dates)} />
+          )}
           {!included && <p className="req-viewer-note">{copy.outside}</p>}
           {files.length > 1 && (
             <div className="req-viewer-strip" aria-label="Archivos de este requisito">
@@ -289,7 +301,7 @@ function Viewer({
           {replacing ? 'Suelta para reemplazar el archivo' : 'Suelta para usar en este requisito'}
         </div>
       )}
-      {(error || signatureError) && <p className="error" role="alert">{error || signatureError}</p>}
+      {(error || revisionError) && <p className="error" role="alert">{error || revisionError}</p>}
       {preview && <EvidencePreview version={preview} onClose={() => setPreview(null)} />}
     </article>
   )
@@ -305,7 +317,7 @@ export function RequirementsPanel({
   excludedIds = [],
   onToggle,
   onUpload,
-  onSignatureChange,
+  onRevise,
 }: {
   requirements: FileRequirement[]
   selectedIds: string[]
@@ -317,7 +329,7 @@ export function RequirementsPanel({
   excludedIds?: string[]
   onToggle: (versionId: string, checked: boolean) => void
   onUpload: (file: File, category: string, documentId?: string) => Promise<unknown>
-  onSignatureChange: (version: DocumentVersion, signed: boolean) => Promise<void>
+  onRevise: (version: DocumentVersion, revision: EvidenceRevision) => Promise<void>
 }) {
   const { workspace } = useWorkspace()
   const excluded = new Set(excludedIds)
@@ -392,7 +404,7 @@ export function RequirementsPanel({
             onPick={(documentId) => pick(state, documentId)}
             onFiles={(files) => void upload(state, files)}
             onToggle={onToggle}
-            onSignatureChange={onSignatureChange}
+            onRevise={onRevise}
           />
         ))}
         {fileInput}
@@ -422,7 +434,7 @@ export function RequirementsPanel({
         onPick={(documentId) => pick(active, documentId)}
         onFiles={(files) => void upload(active, files)}
         onToggle={onToggle}
-        onSignatureChange={onSignatureChange}
+        onRevise={onRevise}
       />
       {fileInput}
     </div>

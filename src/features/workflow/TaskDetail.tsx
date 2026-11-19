@@ -6,10 +6,10 @@ import { catalog } from '../../catalog'
 import { withAutomaticCompletion } from '../../domain/auto-completion'
 import { evidenceIdsForTask } from '../../domain/task-evidence'
 import { taskSteps, type StepId } from '../../domain/task-steps'
-import type { DocumentVersion, TaskRecord, TaskStatus, WorkflowDefinition } from '../../domain/types'
+import type { TaskRecord, TaskStatus, WorkflowDefinition } from '../../domain/types'
 import { evaluateTask, taskInputs, taskOutputs } from '../../domain/workflow'
 import { repository } from '../../storage/repository'
-import { addEvidence, signEvidence, withEvidence, type EvidenceField } from './evidence-actions'
+import { addEvidence, reviseEvidence, withEvidence, type EvidenceField } from './evidence-actions'
 import { PendingDependencies } from './PendingDependencies'
 import { PrepareStep, type FileHandlers } from './PrepareStep'
 import { ResultStep } from './ResultStep'
@@ -88,8 +88,8 @@ export function TaskDetail({
       await persistFiles(added.task)
       return added.version
     },
-    onSignatureChange: async (version: DocumentVersion, signed: boolean) =>
-      persistFiles(await signEvidence(latest.current.task, workspace, version, signed, field)),
+    onRevise: async (version, revision) =>
+      persistFiles(await reviseEvidence(latest.current.task, workspace, version, revision, field)),
   })
 
   async function save(status: TaskStatus = task.status, note = task.note) {
@@ -163,6 +163,7 @@ export function TaskDetail({
             task={task}
             outputs={outputs}
             missingInputs={evaluation.missingRequirements}
+            missingOutputs={evaluation.missingOutputs}
             canComplete={evaluation.canComplete}
             files={fileHandlers('outputVersionIds')}
             onTaskChange={change}
